@@ -36,6 +36,7 @@ import { AISolutions } from "./AISolutions";
 import { AboutPage } from "./AboutPage";
 import { AppDevelopment } from "./AppDevelopment";
 import { CareersPage } from "./CareersPage";
+import { WorkPage } from "./WorkPage";
 import { DigitalMarketing } from "./DigitalMarketing";
 import { SEO } from "./SEO";
 import { BrandLogo, FlowField, HeroProject, StudioNote } from "./Studio";
@@ -1793,13 +1794,7 @@ export default function App() {
   let content: React.ReactNode;
   if (path === "/") content = <Home theme={theme} />;
   else if (path === "/work" || path === "/projects")
-    content = (
-      <>
-        <WorkHero />
-        <Work full />
-        <CTA />
-      </>
-    );
+    content = <WorkPage />;
   else if (path === "/services")
     content = (
       <>
