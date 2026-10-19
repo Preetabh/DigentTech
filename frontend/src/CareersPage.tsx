@@ -497,7 +497,8 @@ export function CareersPage() {
 
     try {
       // Connect to Dual Mail backend API
-      const res = await fetch("/api/contact", {
+      const apiBase = ((import.meta.env.VITE_API_URL as string) || "").replace(/\/$/, "");
+      const res = await fetch(`${apiBase}/api/contact`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
