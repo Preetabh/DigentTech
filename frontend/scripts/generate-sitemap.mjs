@@ -3,7 +3,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const siteUrl = process.env.VITE_SITE_URL || "https://digenttech.com";
+const siteUrl = process.env.VITE_SITE_URL || "https://digenttech.workers.dev";
 const today = new Date().toISOString().split("T")[0];
 
 const routes = [

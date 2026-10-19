@@ -11,7 +11,7 @@ export interface PageSEO {
 
 export const SITE_URL =
   ((import.meta as unknown as { env?: Record<string, string> }).env?.VITE_SITE_URL) ||
-  "https://digenttech.com";
+  "https://digenttech.workers.dev";
 
 export const DEFAULT_OG_IMAGE = `${SITE_URL}/assets/og-image.jpg`;
 

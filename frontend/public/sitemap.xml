@@ -4,68 +4,68 @@
         xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
   <url>
-    <loc>https://digenttech.com/</loc>
-    <lastmod>2026-10-09</lastmod>
+    <loc>https://digenttech.workers.dev/</loc>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://digenttech.com/services</loc>
-    <lastmod>2026-10-09</lastmod>
+    <loc>https://digenttech.workers.dev/services</loc>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://digenttech.com/web-development</loc>
-    <lastmod>2026-10-09</lastmod>
+    <loc>https://digenttech.workers.dev/web-development</loc>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://digenttech.com/app-development</loc>
-    <lastmod>2026-10-09</lastmod>
+    <loc>https://digenttech.workers.dev/app-development</loc>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://digenttech.com/digital-marketing</loc>
-    <lastmod>2026-10-09</lastmod>
+    <loc>https://digenttech.workers.dev/digital-marketing</loc>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://digenttech.com/ai-solutions</loc>
-    <lastmod>2026-10-09</lastmod>
+    <loc>https://digenttech.workers.dev/ai-solutions</loc>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://digenttech.com/work</loc>
-    <lastmod>2026-10-09</lastmod>
+    <loc>https://digenttech.workers.dev/work</loc>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://digenttech.com/about</loc>
-    <lastmod>2026-10-09</lastmod>
+    <loc>https://digenttech.workers.dev/about</loc>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://digenttech.com/careers</loc>
-    <lastmod>2026-10-09</lastmod>
+    <loc>https://digenttech.workers.dev/careers</loc>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://digenttech.com/online-courses</loc>
-    <lastmod>2026-10-09</lastmod>
+    <loc>https://digenttech.workers.dev/online-courses</loc>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://digenttech.com/contact</loc>
-    <lastmod>2026-10-09</lastmod>
+    <loc>https://digenttech.workers.dev/contact</loc>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
