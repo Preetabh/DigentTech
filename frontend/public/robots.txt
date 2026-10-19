@@ -5,5 +5,5 @@ Disallow: /api/
 Disallow: /backend/
 
 # Host and Sitemap
-Host: https://digenttech.workers.dev
-Sitemap: https://digenttech.workers.dev/sitemap.xml
+Host: https://www.digenttech.workers.dev
+Sitemap: https://www.digenttech.workers.dev/sitemap.xml
