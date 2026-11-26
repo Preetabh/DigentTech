@@ -40,3 +40,4 @@ Observed results after final edit:
 - `tsc && vite build`: exited `0`, `1999 modules transformed`, built in `33.80s`.
 - Playwright matrix (`light` + `dark` themes at `1920x1080`, `1440x900`, `1024x900`, `390x844`): `pageErrors: []`, `brokenAssets: []`, `overflowX: false` across all 8 combinations.
 - Interactive checks: `stickyHeaderFixedAfterScroll: true`, category filter counts `allCount: 8` / `mobileCount: 3`, subroutes `/services`, `/work`, `/about`, `/contact` all rendered with expected `<h1>` headings.
+
