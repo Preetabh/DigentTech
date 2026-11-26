@@ -8,15 +8,19 @@ import {
     Clock,
     Cloud,
     Code2,
+    Copy,
     Cpu,
     Database,
     Globe2,
     Home as HomeIcon,
     Layers,
     Lock,
+    MapPin,
     Menu,
     Minus,
     Moon,
+    Pause,
+    Play,
     Plus,
     RefreshCw,
     Server,
@@ -31,15 +35,16 @@ import {
     X,
     Zap
 } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { AISolutions } from "./AISolutions";
 import { AboutPage } from "./AboutPage";
 import { AppDevelopment } from "./AppDevelopment";
 import { CareersPage } from "./CareersPage";
 import { WorkPage } from "./WorkPage";
 import { DigitalMarketing } from "./DigitalMarketing";
+import { useHomeGsapChoreography } from "./HomeAnimations";
 import { SEO } from "./SEO";
-import { BrandLogo, FlowField, HeroProject, StudioNote } from "./Studio";
+import { BrandLogo, StudioNote } from "./Studio";
 import {
     CapabilityExplorer,
     DesignDetails,
@@ -47,63 +52,64 @@ import {
     ThemeImage
 } from "./VisualExperience";
 import { WebDevelopment } from "./WebDevelopment";
-import CrystalizedBall from "./CrystalizedBall";
+import GhostFibers from "./GhostFibers";
+import { DeepResearchHeroConsole, DeepResearchWorkbench } from "./HomeDashboard";
 const email = (import.meta.env.VITE_CONTACT_EMAIL as string) || "hr.digenttech@gmail.com";
 const services = [
   {
     path: "/web-development",
     title: "Web development",
-    headline: "Websites with purpose.",
-    text: "Thoughtful websites, online stores and business platforms. Designed around your customers. Built around your goals.",
+    headline: "Platforms built for speed and scale.",
+    text: "Sub-second React & Next.js platforms, multi-tenant SaaS portals, and headless storefronts engineered around measurable conversion.",
     icon: Globe2,
-    tags: ["Business websites", "E-commerce", "Custom platforms"],
+    tags: ["Enterprise SaaS", "Headless Commerce", "Edge SSR"],
     items: [
-      "Responsive interface and design system",
-      "Content management and essential integrations",
-      "Search foundations and performance optimization",
-      "Testing, launch and handover",
+      "Sub-300ms edge rendering and design token architecture",
+      "Typed API contracts, RBAC auth, and CMS integration",
+      "Technical SEO, structured schema, and Core Web Vitals",
+      "Playwright regression suite, rollout, and full repo handover",
     ],
   },
   {
     path: "/app-development",
     title: "App development",
-    headline: "Your idea. In their hands.",
-    text: "Intuitive mobile experiences that turn a useful idea into an everyday habit. From the first prototype to the final release.",
+    headline: "Mobile software teams rely on daily.",
+    text: "Cross-platform iOS & Android applications with offline SQLite synchronization, biometric hardware vaults, and 60fps native responsiveness.",
     icon: Smartphone,
-    tags: ["iOS & Android", "Cross-platform", "Product design"],
+    tags: ["iOS & Android", "Offline Sync", "Biometric Auth"],
     items: [
-      "User journeys and interactive prototypes",
-      "Cross-platform mobile application",
-      "Backend, authentication and integrations",
-      "Release preparation and documentation",
+      "Device-tested interactive prototypes and thumb ergonomics",
+      "Unified React Native / Flutter apps with native bridges",
+      "Offline-first SQLite sync and hardware Secure Enclave auth",
+      "App Store & Google Play release management and OTA updates",
     ],
   },
   {
     path: "/digital-marketing",
     title: "Digital marketing",
-    headline: "Make your next move count.",
-    text: "A clear strategy, compelling creative and measurable campaigns. Reach the people who matter to your business.",
+    headline: "Acquisition grounded in real attribution.",
+    text: "Programmatic SEO, dynamic creative testing, and server-side CAPI tracking built to lower acquisition cost and compound ROAS.",
     icon: BarChart3,
-    tags: ["SEO", "Paid campaigns", "Social strategy"],
+    tags: ["Technical SEO", "Server-Side CAPI", "Paid Scale"],
     items: [
-      "Audience and channel strategy",
-      "Campaign creative and landing page direction",
-      "Analytics and conversion tracking",
-      "Performance reporting and ongoing improvements",
+      "Search intent clustering and conversion funnel architecture",
+      "In-house ad creative sprints and high-converting landing pages",
+      "Server-side GTM, Meta CAPI, and GA4 revenue attribution",
+      "Weekly unit-economics reporting on ROAS, CAC, and LTV",
     ],
   },
   {
     path: "/ai-solutions",
     title: "AI & automation",
-    headline: "Less busywork. More possibility.",
-    text: "Practical tools that connect your systems, simplify repetitive work and give your team time to focus.",
+    headline: "Eliminate manual ops with grounded AI.",
+    text: "Multi-agent workflows, hybrid vector RAG over private company records, and deterministic ERP automations with strict human review gates.",
     icon: Sparkles,
-    tags: ["Workflow automation", "Internal tools", "AI assistants"],
+    tags: ["Multi-Agent RAG", "Private VPC", "ERP Automation"],
     items: [
-      "Workflow discovery and feasibility review",
-      "Connected tools and custom automations",
-      "Human review and access controls",
-      "Documentation and team onboarding",
+      "Workflow bottleneck audit and token-ROI feasibility blueprint",
+      "Hybrid vector RAG with verifiable paragraph citations",
+      "Schema-enforced guardrails and human approval checkpoints",
+      "Private VPC deployment with zero public model training",
     ],
   },
 ];
@@ -112,33 +118,33 @@ const navServices = [
     title: "Web Development",
     href: "/web-development",
     icon: Globe2,
-    badge: "Next.js · React",
-    description: "Sub-second web platforms, enterprise SaaS portals & custom e-commerce.",
-    accent: "#0065fc",
+    badge: "Next.js · Edge SSR",
+    description: "Sub-300ms SaaS portals, enterprise dashboards & headless commerce.",
+    accent: "#3b82f6",
   },
   {
     title: "App Development",
     href: "/app-development",
     icon: Smartphone,
     badge: "iOS · Android",
-    description: "High-performance cross-platform apps with tactile native UX and offline sync.",
-    accent: "#00c6ff",
+    description: "60fps cross-platform apps with offline SQLite sync & biometrics.",
+    accent: "#d6b676",
   },
   {
     title: "Digital Marketing",
     href: "/digital-marketing",
     icon: BarChart3,
-    badge: "SEO · Growth",
-    description: "ROI-driven search optimization, multi-channel ad scaling & conversion funnels.",
+    badge: "SEO · CAPI ROAS",
+    description: "Server-side attribution, technical SEO & conversion-tested acquisition.",
     accent: "#10b981",
   },
   {
     title: "AI Solutions",
     href: "/ai-solutions",
     icon: Sparkles,
-    badge: "Agents · Workflows",
-    description: "Intelligent autonomous agents, workflow automations & LLM integrations.",
-    accent: "#8b5cf6",
+    badge: "Agents · Private RAG",
+    description: "Deterministic multi-agent workflows, vector search & VPC LLMs.",
+    accent: "#6b9fff",
   },
 ];
 
@@ -265,20 +271,20 @@ const projects = [
 ];
 const steps = [
   [
-    "Discover",
-    "We listen first. Together, we define your audience, priorities and what success should look like.",
+    "Discover & Scope",
+    "We audit operational bottlenecks, map data contracts, and lock fixed milestone pricing before writing code.",
   ],
   [
-    "Design",
-    "We turn the brief into a clear direction, with user journeys and designs you can review.",
+    "Prototype & Tokens",
+    "Interactive Figma user flows and accessible dark/light token systems reviewed directly on your devices.",
   ],
   [
-    "Build",
-    "We work in focused milestones, share progress and keep decisions visible throughout.",
+    "Bi-Weekly Sprints",
+    "You test live staging deployments every 14 days with full GitHub visibility and direct staff architect access.",
   ],
   [
-    "Launch & improve",
-    "We test, launch and hand over your product, with a clear path for what comes next.",
+    "Launch & Handover",
+    "Zero-downtime edge rollout, automated E2E checks, team onboarding, and 100% repository & cloud ownership.",
   ],
 ];
 function Button({
@@ -316,16 +322,51 @@ function PageHero({
   label,
   title,
   text,
+  theme = "dark",
+  highlights = [],
 }: {
   label: string;
-  title: string;
+  title: React.ReactNode;
   text: string;
+  theme?: "dark" | "light";
+  highlights?: string[];
 }) {
   return (
-    <header className="page-hero wrap">
-      <span className="eyebrow">{label}</span>
-      <h1>{title}</h1>
-      <p>{text}</p>
+    <header className="atelier-hero-stage">
+      <div className="home-hero-ghost-bg" aria-hidden="true">
+        <GhostFibers
+          lineColor={theme === "light" ? "#264796" : "#16223f"}
+          glowColor={theme === "light" ? "#9a7029" : "#c8a45d"}
+          speed={0.16}
+          scale={1.9}
+          layers={3}
+          brightness={theme === "light" ? 1.08 : 1.25}
+          glowIntensity={theme === "light" ? 0.5 : 0.85}
+          blueBoost={theme === "light" ? 1.0 : 1.1}
+          vignette={0.85}
+          grain={0.03}
+          lightMode={theme === "light"}
+          dpr={1.2}
+          fps={40}
+        />
+      </div>
+      <div className="atelier-hero-inner wrap">
+        <span className="atelier-hero-badge">
+          <i /> {label}
+        </span>
+        <h1>{title}</h1>
+        <p>{text}</p>
+        {highlights.length > 0 && (
+          <div className="atelier-hero-highlights">
+            {highlights.map((h) => (
+              <span key={h} className="atelier-hero-chip">
+                <Check size={13} />
+                {h}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
     </header>
   );
 }
@@ -550,12 +591,22 @@ function WorkHero() {
   );
 }
 
-function Work({ full = false }: { full?: boolean }) {
-  const [selected, setSelected] = useState<number | null>(null);
+function Work({
+  full = false,
+  selectedIdx,
+  onSelectIdx,
+}: {
+  full?: boolean;
+  selectedIdx?: number | null;
+  onSelectIdx?: (idx: number | null) => void;
+}) {
+  const [internalSelected, setInternalSelected] = useState<number | null>(null);
+  const selected = selectedIdx !== undefined ? selectedIdx : internalSelected;
+  const setSelected = onSelectIdx || setInternalSelected;
   const [filter, setFilter] = useState<string>("all");
 
   const categories = [
-    { id: "all", label: "All Projects", count: projects.length },
+    { id: "all", label: "All Projects", count: full ? projects.length : 6 },
     {
       id: "web",
       label: "Web Platforms",
@@ -575,7 +626,7 @@ function Work({ full = false }: { full?: boolean }) {
 
   const displayedProjects =
     filter === "all"
-      ? projects
+      ? (full ? projects : projects.slice(0, 6))
       : projects.filter((p) => p.category === filter);
 
   useEffect(() => {
@@ -620,7 +671,7 @@ function Work({ full = false }: { full?: boolean }) {
         />
         {!full && (
           <a className="text-link" href="/work">
-            View full gallery ({projects.length}) <ArrowUpRight size={18} />
+            View full archive (9) <ArrowUpRight size={18} />
           </a>
         )}
       </div>
@@ -774,7 +825,7 @@ function TechStackShowcase() {
   const technologies = [
     { name: "Next.js 15 / React 19", cat: "frontend", desc: "Sub-second server actions, SSR/ISR pipelines, and micro-frontends.", badge: "Core Engine" },
     { name: "TypeScript Strict", cat: "frontend", desc: "End-to-end typed contract boundaries ensuring zero production runtime surprises.", badge: "Zero Drift" },
-    { name: "Tailwind & Design Tokens", cat: "frontend", desc: "Fluid multi-brand token system with tactile claymorphic elevation layers.", badge: "Design System" },
+    { name: "Tailwind & Design Tokens", cat: "frontend", desc: "Fluid multi-brand token system with WCAG AA+ dark and light surface parity.", badge: "Design System" },
     { name: "React Native / Expo", cat: "mobile", desc: "Native 60/120fps iOS and Android applications with offline-first synchronization.", badge: "Mobile First" },
     { name: "Flutter Engine", cat: "mobile", desc: "Cross-platform high-performance hardware-accelerated interfaces.", badge: "Cross Platform" },
     { name: "Biometric Keystore", cat: "mobile", desc: "Hardware secure enclave for FaceID, TouchID, and local credential tokens.", badge: "Security" },
@@ -980,163 +1031,6 @@ function TestimonialsSection() {
   );
 }
 
-function HomeProjectEstimator() {
-  const [domain, setDomain] = useState<string>("web");
-  const [scale, setScale] = useState<string>("core");
-
-  const domainOptions = [
-    { id: "web", label: "Web Platform & SaaS" },
-    { id: "mobile", label: "Mobile Application (iOS/Android)" },
-    { id: "ai", label: "AI Agent & Workflow Automation" },
-    { id: "modern", label: "Full Digital Modernization" },
-  ];
-
-  const scaleOptions = [
-    { id: "mvp", label: "MVP Sprint (2-4 Weeks)" },
-    { id: "core", label: "Core Production System (6-8 Weeks)" },
-    { id: "enterprise", label: "Enterprise Platform (10-14 Weeks)" },
-  ];
-
-  const getEstimates = () => {
-    if (scale === "mvp") {
-      return {
-        timeline: "2 – 4 Weeks",
-        team: "1 Lead Architect + 1 Senior Fullstack Engineer + 1 UI/UX Specialist",
-        milestones: "3 Bi-weekly Review Milestones",
-        features: [
-          "Interactive Figma Prototype & Design Tokens",
-          "Production Core Architecture & Database",
-          "Responsive Cross-device Frontend",
-          "Continuous Deployment & Staging Preview",
-          "100% Repository & Asset Handover",
-        ],
-      };
-    } else if (scale === "core") {
-      return {
-        timeline: "6 – 8 Weeks",
-        team: "1 Principal Architect + 2 Fullstack Engineers + 1 Mobile Specialist + 1 QA Engineer",
-        milestones: "5 Iterative Sprint Releases",
-        features: [
-          "Complete Design System with Accessible Micro-interactions",
-          "Scalable Microservices / Serverless API Core",
-          "Enterprise Auth, Role-Based Access & Audit Logs",
-          "Performance SLA Optimization (<300ms TTFB)",
-          "Third-party integrations (Stripe, CRM, Cloud Telemetry)",
-          "Production Automated Testing & Security Review",
-        ],
-      };
-    } else {
-      return {
-        timeline: "10 – 14 Weeks",
-        team: "Dedicated Dedicated Squad: Lead Architect + 3 Engineers + 1 DevOps Lead + 1 Product Designer",
-        milestones: "Bi-weekly Continuous Production Releases",
-        features: [
-          "High-Throughput Multi-Region Architecture",
-          "Custom LLM / AI Orchestration & Vector Stores",
-          "Offline-First Realtime Data Sync & WebSocket Feed",
-          "Disaster Recovery, ISO/SOC Compliance Foundations",
-          "Dedicated Slack Channel & 24/7 SLA Support",
-          "Comprehensive Architecture & API Documentation",
-        ],
-      };
-    }
-  };
-
-  const est = getEstimates();
-
-  return (
-    <section className="home-estimator-section wrap">
-      <div className="section-top">
-        <Heading
-          label="PROJECT SCOPING ENGINE"
-          title="Estimate your team, timeline & deliverables."
-          text="Select your target system and scope to visualize the engineering squad and sprint schedule."
-        />
-      </div>
-      <div className="home-estimator-box">
-        <div className="estimator-inputs">
-          <div className="estimator-group">
-            <span className="estimator-label">1. Choose System Domain</span>
-            <div className="estimator-choice-chips">
-              {domainOptions.map((opt) => (
-                <button
-                  key={opt.id}
-                  className={`estimator-choice-btn ${domain === opt.id ? "active" : ""}`}
-                  onClick={() => setDomain(opt.id)}
-                >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="estimator-group">
-            <span className="estimator-label">2. Target Scope &amp; Complexity</span>
-            <div className="estimator-choice-chips">
-              {scaleOptions.map((opt) => (
-                <button
-                  key={opt.id}
-                  className={`estimator-choice-btn ${scale === opt.id ? "active" : ""}`}
-                  onClick={() => setScale(opt.id)}
-                >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="estimator-summary-card">
-          <div className="estimator-summary-top">
-            <span className="estimator-summary-badge">ENGINEERING BLUEPRINT</span>
-            <span className="estimator-time-val">{est.timeline}</span>
-          </div>
-
-          <div className="estimator-team-row">
-            <Users size={16} />
-            <span><strong>Squad:</strong> {est.team}</span>
-          </div>
-
-          <div className="estimator-team-row">
-            <Clock size={16} />
-            <span><strong>Cadence:</strong> {est.milestones}</span>
-          </div>
-
-          <div className="estimator-inclusions">
-            <span className="estimator-inc-title">Core Deliverables Included:</span>
-            <ul>
-              {est.features.map((f) => (
-                <li key={f}>
-                  <Check size={14} />
-                  <span>{f}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <Button
-            href={`/contact?service=${encodeURIComponent(
-              domain === "web"
-                ? "Web development"
-                : domain === "mobile"
-                ? "App development"
-                : domain === "ai"
-                ? "AI & automation"
-                : "Complete Modernization"
-            )}&brief=${encodeURIComponent(
-              `Estimated Timeline: ${est.timeline}. Scope: ${
-                domainOptions.find((d) => d.id === domain)?.label
-              } (${scaleOptions.find((s) => s.id === scale)?.label}).`
-            )}`}
-          >
-            Lock In This Project Scope <ArrowRight size={16} />
-          </Button>
-        </div>
-      </div>
-    </section>
-  );
-}
-
 function HomeFAQ() {
   const [openIdx, setOpenIdx] = useState<number | null>(0);
 
@@ -1210,22 +1104,21 @@ function HomeFAQ() {
 function CTA() {
   return (
     <section className="cta wrap">
-      <span className="eyebrow">LET'S MAKE SOMETHING WORTH OPENING.</span>
+      <span className="eyebrow">READY TO INITIATE YOUR NEXT RELEASE?</span>
       <div>
         <h2>
-          What are you
+          What system are we
           <br />
-          working <em>on?</em>
+          architecting <em>next?</em>
         </h2>
-        <Button>Start a conversation</Button>
+        <Button>Request architectural consultation</Button>
       </div>
       <p>
-        An idea on a napkin. A website you've outgrown. A workflow that needs a
-        rethink.
-        <br />
-        That's enough to start.
+        Whether launching a flagship SaaS platform, replacing legacy operational tooling,
+        or deploying private AI agents—a lead architect responds within 24 hours with a
+        scoped milestone plan.
       </p>
-      <span className="cta-coordinate">DigentTech / NEXT CHAPTER ↗</span>
+      <span className="cta-coordinate">DigentTech ATELIER · EXECUTIVE DESK ↗</span>
 
       <div className="cta-trust-bar">
         <div className="cta-trust-badge">
@@ -1250,60 +1143,201 @@ function CTA() {
 }
 
 function Home({ theme = "dark" }: { theme?: "dark" | "light" }) {
+  const [selectedWorkIdx, setSelectedWorkIdx] = useState<number | null>(null);
+  const homeRootRef = useRef<HTMLDivElement | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  useHomeGsapChoreography(homeRootRef);
+  const [reelPlaying, setReelPlaying] = useState<boolean>(() => {
+    if (typeof window !== "undefined" && window.matchMedia) {
+      return !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    }
+    return true;
+  });
+
+  useEffect(() => {
+    const vid = videoRef.current;
+    if (!vid) return;
+    vid.muted = true;
+    if (reelPlaying) {
+      const p = vid.play();
+      if (p && typeof p.catch === "function") {
+        p.catch(() => {
+          setReelPlaying(false);
+        });
+      }
+    } else {
+      vid.pause();
+    }
+  }, [reelPlaying]);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return;
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const onChange = (e: MediaQueryListEvent) => {
+      setReelPlaying(!e.matches);
+    };
+    mq.addEventListener?.("change", onChange);
+    return () => mq.removeEventListener?.("change", onChange);
+  }, []);
+
+  const handleInspectDossier = (dossierId: string) => {
+    const idMap: Record<string, number> = {
+      infrapilot: 0,
+      hrmitra: 1,
+      novacommerce: 2,
+      aurapay: 3,
+    };
+    const idx = idMap[dossierId];
+    if (idx !== undefined) {
+      setSelectedWorkIdx(idx);
+    }
+  };
+
   return (
-    <>
-      <section className="hero-stage">
-        <FlowField />
-        <div className="hero-crystal-bg" aria-hidden="true">
-          <CrystalizedBall
-            preset="plasma"
-            color="#F25BD0"
-            theme={theme}
-            size={0.78}
-            crackle={0.85}
-            fill={0.5}
-            interactive
-            hoverStrength={0.7}
-          />
-        </div>
-        <div className="hero wrap">
-          <div className="hero-copy">
-            <span className="availability">
-              <i /> DESIGN-LED. ENGINEERING-DRIVEN.
-            </span>
-            <h1>
-              Digital products.
+    <div ref={homeRootRef} className="home-page" data-theme-mode={theme}>
+      <section className="home-editorial-masthead">
+        <aside className="home-social-rail" aria-label="Quick Studio Navigation">
+          <div className="home-rail-links">
+            <a href="/work" title="Client Dossiers">WK</a>
+            <a href="/ai-solutions" title="AI Systems">AI</a>
+            <a href="/services" title="Services">SV</a>
+            <a href="/contact" title="Start Brief">CT</a>
+          </div>
+          <span className="home-rail-line" aria-hidden="true" />
+          <span className="home-rail-label">INDEX</span>
+        </aside>
+
+        <div className="wrap home-editorial-grid">
+          <div className="home-editorial-left">
+            <div className="home-editorial-kicker" tabIndex={0}>
+              <span className="kicker-sizer" aria-hidden="true">DIGENT TECH</span>
+              <span className="kicker-half kicker-half-top" aria-hidden="true">DIGENT TECH</span>
+              <span className="kicker-half kicker-half-bottom" aria-hidden="true">DIGENT TECH</span>
+              <span className="kicker-mid-bar" aria-hidden="true">
+                <span className="kicker-mid-text">
+                  ARCHITECTURE, PRODUCT ENGINEERING &amp; DEEP AI
+                </span>
+              </span>
+              <span className="sr-only">DIGENT TECH</span>
+            </div>
+            <h1 className="home-editorial-title">
+              Engineering Digital Legacies
               <br />
-              Built with <em>intent.</em>
+              in Product, Cloud &amp; <em>Deep AI</em>
             </h1>
-            <p>
-              Websites your customers remember. Apps they come back to. Business
-              tools your team actually wants to use.
+            <p className="home-editorial-disciplines">
+              Web Platforms <span>|</span> Mobile Apps <span>|</span> Autonomous AI{" "}
+              <span>|</span> Cloud Mesh <span>|</span> Product Systems <span>|</span>{" "}
+              Enterprise UI
             </p>
-            <div className="hero-actions">
-              <Button>Tell us your idea</Button>
-              <a className="text-link" href="/work">
-                See what we've built <ArrowUpRight size={18} />
+          </div>
+
+          <div className="home-editorial-right">
+            <div className="home-editorial-seal" aria-hidden="true">
+              <svg viewBox="0 0 120 120" className="home-seal-svg">
+                <defs>
+                  <path
+                    id="digentSealPath"
+                    d="M 60, 60 m -42, 0 a 42,42 0 1,1 84,0 a 42,42 0 1,1 -84,0"
+                  />
+                </defs>
+                <circle cx="60" cy="60" r="54" className="home-seal-outer" />
+                <text className="home-seal-ring-text">
+                  <textPath href="#digentSealPath" startOffset="0%">
+                    DIGENT TECH · DEEP SYSTEMS · ARCHITECTURE · ATELIER ·
+                  </textPath>
+                </text>
+              </svg>
+              <div className="home-seal-core">DT</div>
+            </div>
+
+            <p className="home-editorial-note">
+              We are a collective of systems architects, product designers, and AI
+              engineers working together to craft enduring software anchored in
+              precision and performance.
+            </p>
+
+            <div className="home-editorial-proof-row">
+              <div className="home-editorial-rating-cluster">
+                <div className="home-avatar-stack">
+                  <img
+                    src="/assets/founder.png"
+                    alt="DigentTech Founding Architect"
+                    className="home-avatar-img"
+                  />
+                  <span className="home-avatar-token">AK</span>
+                  <span className="home-avatar-token alt">MT</span>
+                  <a
+                    href="/work"
+                    className="home-avatar-more"
+                    aria-label="Explore verified client work"
+                    title="Explore case studies"
+                  >
+                    +
+                  </a>
+                </div>
+                <span className="home-rating-stem" aria-hidden="true" />
+                <div className="home-rating-stars" aria-label="Rated 4.9 out of 5 stars">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star key={i} size={11} fill="currentColor" />
+                  ))}
+                </div>
+                <span className="home-rating-caption">(4.9) VERIFIED DELIVERY</span>
+              </div>
+
+              <a
+                href="#executive-console"
+                className="home-editorial-arrow-box"
+                aria-label="Inspect live systems architecture console"
+                title="Explore Deep Research Console"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+                  <path d="M8 5v9h11" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M15 10l4 4-4 4" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
               </a>
             </div>
-            <div className="hero-note">
-              <div className="note-line" />
-              <span>
-                Based in India. Built for wherever you are.
-                <br />
-                <strong>Strategy, design and development. Together.</strong>
-              </span>
-            </div>
           </div>
-          <HeroProject />
-        </div>
-        <div className="hero-bottom wrap">
-          <span>
-            SCROLL TO EXPLORE <span>↓</span>
-          </span>
-          <span>GOOD DESIGN IS GOOD BUSINESS.</span>
         </div>
       </section>
+
+      <section id="showreel" className="home-cinema-stage" aria-label="DigentTech Studio Showreel">
+        <video
+          ref={videoRef}
+          className="home-cinema-video"
+          src="/assets/visuals/hero-studio-reel.mp4"
+          poster="/assets/visuals/hero-studio-poster.jpg"
+          autoPlay={reelPlaying}
+          loop
+          muted
+          playsInline
+          preload="auto"
+        />
+        <div className="home-cinema-controls">
+          <span className="home-cinema-chip">Studio Reel · 01–07</span>
+          <button
+            type="button"
+            className="home-reel-toggle"
+            onClick={() => setReelPlaying((p) => !p)}
+            aria-label={reelPlaying ? "Pause studio reel video" : "Play studio reel video"}
+            title={reelPlaying ? "Pause video" : "Play video"}
+          >
+            {reelPlaying ? <Pause size={12} aria-hidden="true" /> : <Play size={12} aria-hidden="true" />}
+            <span>{reelPlaying ? "Pause" : "Play"}</span>
+          </button>
+          <a href="/contact" className="home-cinema-brief-pill">
+            Initiate Brief <ArrowUpRight size={13} />
+          </a>
+        </div>
+      </section>
+
+      <div className="home-post-reel-bridge">
+        <div className="wrap">
+          <span className="home-bridge-kicker">ENGINEERING DISCIPLINES &amp; ARCHITECTURE</span>
+          <h2 className="home-bridge-title">Engineered Systems &amp; Live Intelligence</h2>
+        </div>
+      </div>
+
       <div className="capability-strip">
         <div className="wrap">
           <span>Web experiences</span>
@@ -1312,24 +1346,66 @@ function Home({ theme = "dark" }: { theme?: "dark" | "light" }) {
           <i>＋</i>
           <span>Business platforms</span>
           <i>＋</i>
-          <span>Digital growth</span>
+          <span>AI &amp; automation</span>
         </div>
       </div>
+
+      <section id="executive-console" className="home-console-showcase">
+        <div className="wrap home-console-showcase-grid">
+          <div className="home-console-intro">
+            <span className="home-lux-badge">
+              <i /> DEEP SYSTEMS CONSOLE · LIVE ARCHITECTURAL TELEMETRY
+            </span>
+            <h2>
+              Designed for clarity.
+              <br />
+              Built with <em>deep intent.</em>
+            </h2>
+            <p>
+              Executive web platforms, tactile mobile apps, and autonomous AI systems.
+              Synthesized from first principles with verifiable production telemetry.
+            </p>
+            <div className="hero-actions home-lux-actions">
+              <a className="home-lux-primary-btn" href="/contact">
+                Initiate Project Brief <ArrowUpRight size={17} />
+              </a>
+              <a className="text-link" href="/work">
+                Explore case dossiers <ArrowUpRight size={18} />
+              </a>
+            </div>
+            <div className="home-lux-provenance">
+              <div className="home-lux-prov-item">
+                <span>Origin</span>
+                <strong>India · Global Clients</strong>
+              </div>
+              <div className="home-lux-prov-item">
+                <span>Execution</span>
+                <strong>Staff Architects</strong>
+              </div>
+              <div className="home-lux-prov-item">
+                <span>Sovereignty</span>
+                <strong>100% IP Ownership</strong>
+              </div>
+            </div>
+          </div>
+          <DeepResearchHeroConsole onInspectDossier={handleInspectDossier} />
+        </div>
+      </section>
       <HomeMetricsRibbon />
+      <DeepResearchWorkbench />
       <Services />
-      <Work />
+      <Work selectedIdx={selectedWorkIdx} onSelectIdx={setSelectedWorkIdx} />
       <TechStackShowcase />
       <WhyUsSection />
       <StudioNote />
       <TestimonialsSection />
       <CapabilityExplorer />
       <DesignDetails />
-      <HomeProjectEstimator />
       <Process />
       <HomeFAQ />
       <ProjectStarter />
       <CTA />
-    </>
+    </div>
   );
 }
 function FAQ() {
@@ -1421,53 +1497,119 @@ function ServicePage({ s }: { s: (typeof services)[number] }) {
 function About() {
   return <AboutPage />;
 }
-function Academy() {
+function Academy({ theme = "dark" }: { theme?: "dark" | "light" }) {
+  const tracks = [
+    {
+      title: "Full-Stack Product Engineering",
+      icon: Code2,
+      duration: "12 Weeks · Hybrid",
+      desc: "Master modern interface architecture, strict TypeScript contracts, REST/PostgreSQL APIs, and production edge deployment.",
+      syllabus: [
+        "Semantic HTML5, CSS Grid & Responsive Design Tokens",
+        "React 19, Hooks, State Architecture & TypeScript",
+        "Node.js APIs, PostgreSQL Schemas & Authentication",
+        "Automated Testing, GitHub CI & Cloud Deployment",
+      ],
+      outcome: "Ship a live full-stack SaaS portal with clean GitHub history.",
+    },
+    {
+      title: "Performance Growth & Technical SEO",
+      icon: TrendingUp,
+      duration: "8 Weeks · Hybrid",
+      desc: "Learn commercial acquisition systems: technical search crawling, conversion-rate landing architecture, and revenue attribution.",
+      syllabus: [
+        "Technical SEO Audits, Core Web Vitals & JSON-LD Schema",
+        "Search Intent Clustering & Programmatic Content",
+        "Google Search, Meta CAPI & Server-Side Tagging",
+        "GA4 Attribution Funnels & Unit-Economics Reporting",
+      ],
+      outcome: "Build and audit a live search & conversion attribution model.",
+    },
+    {
+      title: "Product UI/UX & Design Systems",
+      icon: Layers,
+      duration: "10 Weeks · Hybrid",
+      desc: "Solve real operational bottlenecks through user journey research, Figma component systems, and developer-ready handoffs.",
+      syllabus: [
+        "User Workflow Audits & Information Architecture",
+        "Figma Auto-Layout, Variants & Multi-Theme Variables",
+        "WCAG Accessibility Contrast & Typographic Hierarchy",
+        "Interactive Prototypes & Engineering Token Handover",
+      ],
+      outcome: "Deliver an audited multi-brand Figma system & case dossier.",
+    },
+  ];
+
   return (
     <>
       <PageHero
-        label="DigentTech ACADEMY"
-        title="Practical IT training & mentorship."
-        text="Hands-on learning paths in full-stack engineering, product design, and digital marketing for learners in Lucknow, Barabanki, and online."
+        theme={theme}
+        label="DIGENTTECH ACADEMY · APPLIED MENTORSHIP"
+        title={
+          <>
+            Production skills taught by <em>practicing architects.</em>
+          </>
+        }
+        text="Small-cohort engineering, product design, and growth tracks in Lucknow, Barabanki, and live online—focused on shipping real systems rather than slide decks."
+        highlights={[
+          "Max 15 Learners / Cohort",
+          "Staff Engineer Code Reviews",
+          "Live Deployed Capstone",
+        ]}
       />
       <section className="wrap section">
-        <div className="course-grid">
-          {[
-            [
-              "Full-stack development",
-              "From interface fundamentals to connected web applications.",
-              "HTML & CSS / React / APIs",
-            ],
-            [
-              "Digital marketing",
-              "Learn to connect strategy, content and campaign measurement.",
-              "SEO / Content / Analytics",
-            ],
-            [
-              "Product design",
-              "Turn a problem into a clear, usable digital experience.",
-              "Research / Figma / Prototyping",
-            ],
-          ].map(([t, d, tags], i) => (
-            <article className="course-card" key={t}>
-              <span className="eyebrow">LEARNING PATH / 0{i + 1}</span>
-              <div className={"course-art course-" + i} aria-hidden="true">
-                {["{ }", "↗", "✳"][i]}
-              </div>
-              <h3>{t}</h3>
-              <p>{d}</p>
-              <span className="course-topics">{tags}</span>
-              <Button
-                href={"/contact?service=" + encodeURIComponent(t + " course")}
-              >
-                Ask about availability
-              </Button>
-            </article>
-          ))}
+        <div className="atelier-academy-standards">
+          <div className="atelier-std-tile">
+            <strong>Live Code Reviews</strong>
+            <span>Every assignment reviewed line-by-line by active studio engineers</span>
+          </div>
+          <div className="atelier-std-tile">
+            <strong>Real Production Tools</strong>
+            <span>GitHub PR workflows, TypeScript, Figma tokens, and live staging URLs</span>
+          </div>
+          <div className="atelier-std-tile">
+            <strong>Hybrid Cohort Access</strong>
+            <span>In-person mentorship in Lucknow &amp; Barabanki plus interactive remote seats</span>
+          </div>
+          <div className="atelier-std-tile">
+            <strong>Transparent Tuition</strong>
+            <span>Clear batch schedules, syllabus details, and fees shared before enrollment</span>
+          </div>
         </div>
-        <p className="course-note">
-          Contact us for current course availability, format, fees and schedules
-          before enrolling.
-        </p>
+
+        <div className="atelier-course-grid">
+          {tracks.map((tr) => {
+            const Icon = tr.icon;
+            return (
+              <article className="atelier-course-card" key={tr.title}>
+                <div className="atelier-course-top">
+                  <div className="atelier-course-icon">
+                    <Icon size={20} />
+                  </div>
+                  <span className="atelier-course-meta">{tr.duration}</span>
+                </div>
+                <h3>{tr.title}</h3>
+                <p>{tr.desc}</p>
+                <ul className="atelier-syllabus-list">
+                  {tr.syllabus.map((mod) => (
+                    <li key={mod}>
+                      <Check size={14} />
+                      <span>{mod}</span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="atelier-course-outcome">
+                  <strong>Capstone:</strong> {tr.outcome}
+                </p>
+                <Button
+                  href={"/contact?service=" + encodeURIComponent(tr.title + " course")}
+                >
+                  Request batch schedule &amp; fees
+                </Button>
+              </article>
+            );
+          })}
+        </div>
       </section>
       <FAQ />
       <CTA />
@@ -1477,14 +1619,23 @@ function Academy() {
 function Careers() {
   return <CareersPage />;
 }
-function Contact() {
-  const query = new URLSearchParams(location.search).get("service") || "";
+function Contact({ theme = "dark" }: { theme?: "dark" | "light" }) {
+  const params = new URLSearchParams(location.search);
+  const query = params.get("service") || "";
+  const prefilledBrief = params.get("brief") || "";
+  const [copied, setCopied] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<{
     type: "idle" | "success" | "error";
     message: string;
     draftUrl?: string;
   }>({ type: "idle", message: "" });
+
+  const handleCopyEmail = () => {
+    navigator.clipboard?.writeText(email);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2200);
+  };
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -1523,7 +1674,7 @@ function Contact() {
           type: "success",
           message:
             data.message ||
-            "Thank you! Your project inquiry has been received. Our team will contact you shortly.",
+            "Thank you! Your project inquiry has been received. A lead architect will respond within 24 hours.",
         });
         form.reset();
       } else {
@@ -1536,7 +1687,7 @@ function Contact() {
         type: "error",
         message:
           err.message ||
-          "Could not send via backend API. You can open an email draft directly below.",
+          "Could not reach backend API. You can send directly via your email client below.",
         draftUrl: backupUrl,
       });
     } finally {
@@ -1547,38 +1698,63 @@ function Contact() {
   return (
     <>
       <PageHero
-        label="LET'S TALK"
-        title="Every great project starts with a conversation."
-        text="Tell us a little about your idea. We'll take it from there."
+        theme={theme}
+        label="EXECUTIVE CONSULTATION DESK"
+        title={
+          <>
+            Start with a clear <em>architectural brief.</em>
+          </>
+        }
+        text="Share your goals, product constraints, or system bottlenecks. Every inquiry is reviewed directly by a principal architect—never routed through junior sales queues."
+        highlights={[
+          "< 24h Architect Response",
+          "Fixed-Milestone Scope Proposal",
+          "NDA Ready Before Discovery",
+        ]}
       />
       <section className="contact-layout wrap section">
         <aside>
-          <span className="eyebrow">SAY HELLO</span>
-          <h2>We're all ears.</h2>
+          <span className="eyebrow">DIRECT PRINCIPAL CHANNEL</span>
+          <h2>Speak straight with the builders.</h2>
           <p>
-            A rough idea or a detailed brief — both are a good place to start.
+            Whether you have a full technical RFP or an operational problem to solve,
+            we respond with concrete architecture options and timeline clarity.
           </p>
           <a className="contact-email" href={"mailto:" + email}>
             {email}
             <ArrowUpRight size={18} />
           </a>
-          <div className="contact-info">
-            <span>BASED IN</span>
-            <p>
-              Barabanki, India
-              <br />
-              Working with you, wherever you are.
-            </p>
-          </div>
-          <div className="contact-info">
-            <span>WHAT HAPPENS NEXT</span>
-            <p>
-              We discuss your goals, define the scope and share a proposal with
-              clear next steps.
-            </p>
+          <button
+            type="button"
+            className="atelier-copy-email-btn"
+            onClick={handleCopyEmail}
+          >
+            <Copy size={13} />
+            <span>{copied ? "Copied email address" : "Copy studio email"}</span>
+          </button>
+
+          <div className="atelier-contact-sla-list">
+            <div className="atelier-sla-item">
+              <Clock size={15} />
+              <span>24-hour review with a scoped milestone roadmap</span>
+            </div>
+            <div className="atelier-sla-item">
+              <ShieldCheck size={15} />
+              <span>100% client IP ownership &amp; zero lock-in terms</span>
+            </div>
+            <div className="atelier-sla-item">
+              <MapPin size={15} />
+              <span>Barabanki &amp; Lucknow, India · Serving global teams</span>
+            </div>
           </div>
         </aside>
-        <form onSubmit={submit}>
+        <form className="atelier-contact-card" onSubmit={submit}>
+          {prefilledBrief && (
+            <div className="atelier-brief-prefill-pill">
+              <Sparkles size={13} />
+              <span>Pre-populated from your Deep Research Workbench brief</span>
+            </div>
+          )}
           <div className="form-row">
             <label>
               Your name
@@ -1592,7 +1768,7 @@ function Contact() {
               />
             </label>
             <label>
-              Email address
+              Work email address
               <input
                 type="email"
                 name="email"
@@ -1606,7 +1782,7 @@ function Contact() {
           </div>
           <div className="form-row">
             <label>
-              What do you need?
+              Primary practice track
               <select
                 name="service"
                 defaultValue={query || "Web development"}
@@ -1618,12 +1794,12 @@ function Contact() {
                 {services.map((s) => (
                   <option key={s.title}>{s.title}</option>
                 ))}
-                <option>Product & brand design</option>
+                <option>Product &amp; brand design</option>
                 <option>Something else</option>
               </select>
             </label>
             <label>
-              Estimated budget
+              Target budget range
               <select
                 name="budget"
                 defaultValue="Let's discuss"
@@ -1638,14 +1814,12 @@ function Contact() {
             </label>
           </div>
           <label>
-            Tell us about your project
+            Project goals &amp; technical context
             <textarea
               name="message"
-              defaultValue={
-                new URLSearchParams(location.search).get("brief") || ""
-              }
+              defaultValue={prefilledBrief}
               rows={5}
-              placeholder="What are you looking to build or improve?"
+              placeholder="Describe what you are building, key user workflows, or timeline goals..."
               required
               minLength={10}
               maxLength={5000}
@@ -1653,14 +1827,14 @@ function Contact() {
             />
           </label>
           <p className="form-note">
-            Directly transmitted to the DigentTech team via centralized Brevo HTTP service. We respond within 24 hours.
+            Encrypted submission routed straight to DigentTech engineering leadership. Response guaranteed within 24 hours.
           </p>
           <button className="button" type="submit" disabled={submitting}>
             {submitting ? (
-              <>Sending inquiry...</>
+              <>Transmitting brief...</>
             ) : (
               <>
-                Send project inquiry <ArrowUpRight size={18} />
+                Send architectural inquiry <ArrowUpRight size={18} />
               </>
             )}
           </button>
@@ -1669,12 +1843,12 @@ function Contact() {
               className="form-status"
               role="status"
               style={{
-                borderColor: "rgba(56, 189, 248, 0.4)",
-                background: "rgba(56, 189, 248, 0.08)",
+                borderColor: "rgba(16, 185, 129, 0.4)",
+                background: "rgba(16, 185, 129, 0.08)",
               }}
             >
-              <strong style={{ color: "#38bdf8", display: "block", marginBottom: 4 }}>
-                ✓ Inquiry Transmitted
+              <strong style={{ color: "#10b981", display: "block", marginBottom: 4 }}>
+                ✓ Brief Transmitted
               </strong>
               {feedback.message}
             </div>
@@ -1697,7 +1871,7 @@ function Contact() {
                   href={feedback.draftUrl}
                   style={{ marginTop: 8, display: "inline-block" }}
                 >
-                  Click here to send directly via your email client ↗
+                  Open pre-filled draft in your email client ↗
                 </a>
               )}
             </div>
@@ -1766,8 +1940,9 @@ export default function App() {
     };
   }, []);
   useEffect(() => {
+    if (path === "/") return;
     const elements = document.querySelectorAll(
-      ".section-heading,.service-card,.project-card,.process-grid article,.studio-copy,.studio-heading,.cta,.feature-box,.tech-card,.roadmap-card,.showcase-card",
+      ".section-heading,.service-card,.project-card,.process-grid article,.studio-copy,.studio-heading,.cta,.feature-box,.tech-card,.roadmap-card,.showcase-card,.lux-workbench-shell,.home-tech-card,.why-card,.testimonial-card,.home-faq-item,.atelier-engagement-card,.atelier-course-card",
     );
     const observer = new IntersectionObserver(
       (entries) =>
@@ -1777,7 +1952,7 @@ export default function App() {
             observer.unobserve(entry.target);
           }
         }),
-      { threshold: 0.08 },
+      { threshold: 0.02, rootMargin: "80px 0px" },
     );
     elements.forEach((el) => {
       el.classList.add("reveal-ready");
@@ -1800,11 +1975,78 @@ export default function App() {
     content = (
       <>
         <PageHero
-          label="OUR SERVICES"
-          title="From the first idea to the next big step."
-          text="Strategy, design, technology and growth. A connected approach to your digital journey."
+          theme={theme}
+          label="PRACTICE DIVISIONS · DIGENTTECH ATELIER"
+          title={
+            <>
+              Full-stack engineering, from <em>architecture</em> to scale.
+            </>
+          }
+          text="Four specialized engineering divisions operating under one principal-led roof—delivering sub-300ms web platforms, offline-first mobile apps, private AI workflows, and measurable growth."
+          highlights={[
+            "2-Week Verified Staging Sprints",
+            "Fixed Milestone Budgets",
+            "100% Repository & IP Ownership",
+          ]}
         />
+        <section className="atelier-engagement-section wrap">
+          <div className="section-top">
+            <Heading
+              label="ENGAGEMENT MODELS"
+              title="Structured delivery options built around your stage."
+              text="Choose the cadence that aligns with your roadmap—whether validating a new product or scaling enterprise infrastructure."
+            />
+          </div>
+          <div className="atelier-engagement-grid">
+            <article className="atelier-engagement-card">
+              <div className="atelier-eng-head">
+                <span className="atelier-eng-code">MODEL 01 · VALIDATION</span>
+                <span className="atelier-eng-duration">2 – 4 Weeks</span>
+              </div>
+              <h3>Focused MVP Sprint</h3>
+              <p>
+                Rapid architecture, interactive Figma prototype, and production core built to launch with real users and investor clarity.
+              </p>
+              <ul className="atelier-eng-list">
+                <li><Check size={14} /> Principal Architect + Senior Fullstack</li>
+                <li><Check size={14} /> Clickable prototype &amp; core database</li>
+                <li><Check size={14} /> Continuous staging deployments</li>
+              </ul>
+            </article>
+            <article className="atelier-engagement-card">
+              <div className="atelier-eng-head">
+                <span className="atelier-eng-code">MODEL 02 · FLAGSHIP</span>
+                <span className="atelier-eng-duration">6 – 8 Weeks</span>
+              </div>
+              <h3>Core Production System</h3>
+              <p>
+                Complete multi-theme design system, high-concurrency backend APIs, payments/CRM integrations, and automated Playwright QA.
+              </p>
+              <ul className="atelier-eng-list">
+                <li><Check size={14} /> Dedicated 4-person specialist squad</li>
+                <li><Check size={14} /> &lt;280ms global TTFB edge architecture</li>
+                <li><Check size={14} /> 30-day warranty &amp; team handover</li>
+              </ul>
+            </article>
+            <article className="atelier-engagement-card">
+              <div className="atelier-eng-head">
+                <span className="atelier-eng-code">MODEL 03 · ENTERPRISE</span>
+                <span className="atelier-eng-duration">10 – 14 Weeks+</span>
+              </div>
+              <h3>Embedded Atelier Squad</h3>
+              <p>
+                Multi-region cloud modernization, custom LangGraph AI pipelines, offline mobile ecosystems, and continuous release velocity.
+              </p>
+              <ul className="atelier-eng-list">
+                <li><Check size={14} /> Principal Architect + 24/7 DevOps lead</li>
+                <li><Check size={14} /> Private VPC AI &amp; SOC2-ready posture</li>
+                <li><Check size={14} /> Shared Slack &amp; bi-weekly executive drops</li>
+              </ul>
+            </article>
+          </div>
+        </section>
         <Services full />
+        <CapabilityExplorer />
         <Process />
         <FAQ />
         <CTA />
@@ -1816,19 +2058,30 @@ export default function App() {
   else if (path === "/ai-solutions") content = <AISolutions />;
   else if (s) content = <ServicePage s={s} />;
   else if (path === "/about") content = <About />;
-  else if (path === "/contact") content = <Contact key={search} />;
+  else if (path === "/contact") content = <Contact key={search} theme={theme} />;
   else if (path === "/careers") content = <Careers />;
-  else if (path === "/online-courses") content = <Academy />;
+  else if (path === "/online-courses") content = <Academy theme={theme} />;
   else
     content = (
       <>
         <PageHero
-          label="404 / A DOT OUT OF PLACE"
-          title="Let's get you back on track."
-          text="We couldn't find that page. There's plenty more to explore."
+          theme={theme}
+          label="404 / ROUTE NOT FOUND"
+          title={
+            <>
+              That route isn't part of our <em>atelier.</em>
+            </>
+          }
+          text="The page you requested may have moved or never existed. Navigate directly to one of our core engineering destinations below."
         />
-        <div className="wrap missing-page">
-          <Button href="/">Back to home</Button>
+        <div className="wrap missing-page atelier-missing-actions">
+          <Button href="/">Back to home dashboard</Button>
+          <a className="nav-cta" href="/work">
+            Explore shipped systems <ArrowUpRight size={16} />
+          </a>
+          <a className="nav-cta" href="/services">
+            View practice areas <ArrowUpRight size={16} />
+          </a>
         </div>
       </>
     );
@@ -2018,25 +2271,26 @@ export default function App() {
             <div>
               <BrandLogo />
               <p>
-                Independent thinking.
+                Independent software engineering studio.
                 <br />
-                Considered digital work.
+                Senior architecture, full IP ownership.
               </p>
               <a className="text-link" href={"mailto:" + email}>
-                Say hello <ArrowUpRight size={16} />
+                Direct leadership contact <ArrowUpRight size={16} />
               </a>
             </div>
             <div>
-              <span className="eyebrow">EXPLORE</span>
+              <span className="eyebrow">ATELIER</span>
               <a href="/">Home</a>
-              <a href="/work">Our work</a>
-              <a href="/about">The studio</a>
+              <a href="/work">Shipped work</a>
+              <a href="/services">Practice areas</a>
+              <a href="/about">Leadership &amp; studio</a>
               <a href="/careers">Careers</a>
               <a href="/online-courses">Academy</a>
-              <a href="/contact">Contact</a>
+              <a href="/contact">Consultation</a>
             </div>
             <div>
-              <span className="eyebrow">WHAT WE DO</span>
+              <span className="eyebrow">CAPABILITIES</span>
               {services.map((s) => (
                 <a href={s.path} key={s.path}>
                   {s.title}
@@ -2044,11 +2298,11 @@ export default function App() {
               ))}
             </div>
             <div className="footer-message">
-              <span className="eyebrow">HAVE A GOOD IDEA?</span>
+              <span className="eyebrow">READY TO SCOPE?</span>
               <a href="/contact">
-                Let's build
+                Initiate your
                 <br />
-                something great. <ArrowUpRight />
+                next system. <ArrowUpRight />
               </a>
             </div>
           </div>

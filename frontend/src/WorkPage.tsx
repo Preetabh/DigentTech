@@ -329,9 +329,9 @@ const BENCHMARKS = [
   },
   {
     icon: Cpu,
-    metric: "120 FPS",
-    title: "Native Fluidity Standard",
-    desc: "GPU-accelerated animations, spring gesture physics, and zero dropped frames on all devices.",
+    metric: "60 FPS",
+    title: "Zero-Jank UI & Edge Fluidity",
+    desc: "Hardware-accelerated interface transitions, responsive gesture physics, and zero layout shift across mobile and desktop.",
   },
 ];
 
@@ -814,7 +814,7 @@ export function WorkPage() {
             <h2>Let's build your next flagship product.</h2>
             <p>
               Whether you need a high-frequency trading terminal, enterprise ERP platform,
-              or a buttery 120fps mobile application, we ship production systems within 4 to 8 weeks.
+              or a responsive cross-platform mobile app, we ship production systems within 4 to 8 weeks.
             </p>
             <div className="wrk-cta-actions">
               <a href="/contact?service=Web%20development" className="wrk-btn-glow">

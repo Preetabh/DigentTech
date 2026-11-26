@@ -516,7 +516,7 @@ export function AISolutions() {
               </div>
               <div className="inspector-url">
                 <Globe2 size={12} />
-                <span>dotunicode.studio / agent-pipeline-runtime</span>
+                <span>digenttech.dev / agent-pipeline-runtime</span>
               </div>
               <span className="inspector-badge">AGENT GRAPH ACTIVE</span>
             </div>

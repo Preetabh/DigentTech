@@ -234,37 +234,37 @@ export function StudioNote() {
   return (
     <section className="studio-note section wrap">
       <div className="studio-heading">
-        <span className="eyebrow">A NOTE FROM THE STUDIO</span>
+        <span className="eyebrow">HOW WE ARCHITECT PRODUCTS</span>
         <span className="studio-signature">
-          Every project starts
+          Every system begins
           <br />
-          with a good question.
+          by removing friction.
         </span>
       </div>
       <div className="studio-copy">
         <h2>
-          The details are
+          Engineering clarity
           <br />
-          our <em>day job.</em>
+          is our <em>discipline.</em>
         </h2>
         <p>
-          Before we draw a screen, we ask how your business runs. What do
-          customers need to find? Where does the team lose time? Which part of
-          your current setup gets in the way?
+          Before writing a line of production code, we audit how your team
+          actually operates: where customer journeys stall, where spreadsheets
+          replace software, and which integrations bottleneck revenue.
         </p>
         <p>
-          Those answers shape the work. We sketch the journeys, put prototypes
-          in your hands, and review the details together. The result should feel
-          like your business, from the first click to the everyday workflow.
+          Every decision is validated against real metrics—clickable staging
+          builds every two weeks, strict TypeScript contracts, and complete
+          source repository handover with zero vendor lock-in.
         </p>
         <a href="/about" className="text-link">
-          The people & the thinking <ArrowUpRight size={18} />
+          Meet the leadership &amp; studio model <ArrowUpRight size={18} />
         </a>
       </div>
       <div className="studio-seal" aria-hidden="true">
         <span>DigentTech</span>
         <img src="/assets/logo.png" alt="DigentTech" />
-        <span>DETAILS MAKE THE DIFFERENCE</span>
+        <span>ARCHITECTURE · PRECISION · OWNERSHIP</span>
       </div>
     </section>
   );

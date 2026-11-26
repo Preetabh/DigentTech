@@ -47,7 +47,6 @@ export function ThemeImage({
       width={1536}
       height={1024}
       loading={priority ? "eager" : "lazy"}
-      fetchPriority={priority ? "high" : "auto"}
     />
   );
 }
@@ -58,14 +57,14 @@ const capabilities = [
     icon: Monitor,
     service: "Web development",
     href: "/web-development",
-    heading: "Make the first click count.",
-    text: "A considered website is more than a good-looking homepage. It helps people find what they need, understand your business and take the next step.",
+    heading: "Web platforms built to convert and endure.",
+    text: "A high-performing web platform organizes complex offerings cleanly, loads under 300ms globally, and guides visitors directly to qualified enquiries.",
     items: [
-      "Clear information and navigation",
-      "A responsive, distinctive design",
-      "Connected content and integrations",
+      "Clear information hierarchy and zero-friction navigation",
+      "Responsive design system with accessible contrast",
+      "Headless CMS, payments, and CRM integrations",
     ],
-    label: "WEBSITE / INTERFACE STUDY",
+    label: "WEB PLATFORM / ARCHITECTURE STUDY",
     type: "web",
   },
   {
@@ -73,14 +72,14 @@ const capabilities = [
     icon: Smartphone,
     service: "App development",
     href: "/app-development",
-    heading: "The useful app. The one they keep.",
-    text: "We work through the journey before the screens: the moments your app needs to simplify, the features that matter and how it feels in everyday use.",
+    heading: "Mobile software teams rely on every day.",
+    text: "We design physical thumb-zone ergonomics, offline SQLite synchronization, and biometric authentication before polishing every pixel of the native experience.",
     items: [
-      "User flows and clickable prototypes",
-      "iOS and Android experiences",
-      "Connected accounts and services",
+      "Interactive clickable prototypes tested on device",
+      "Unified iOS and Android builds at 60fps",
+      "Hardware biometrics, push routing, and offline sync",
     ],
-    label: "MOBILE / INTERFACE STUDY",
+    label: "MOBILE PRODUCT / ERGONOMIC STUDY",
     type: "app",
   },
   {
@@ -88,14 +87,14 @@ const capabilities = [
     icon: ChartNoAxesCombined,
     service: "Digital marketing",
     href: "/digital-marketing",
-    heading: "A plan behind every campaign.",
-    text: "Connect audience, message and channel with a deliberate strategy. Keep the creative consistent and the reporting easy to understand.",
+    heading: "Acquisition grounded in server-side attribution.",
+    text: "Align audience targeting, high-converting landing pages, and first-party conversion tracking so every marketing rupee compounds measurable pipeline.",
     items: [
-      "Audience and channel planning",
-      "Campaign creative and landing pages",
-      "Analytics and conversion tracking",
+      "Technical SEO architecture and search intent mapping",
+      "Conversion-tested ad creative and landing flows",
+      "Server-side CAPI tracking and live ROAS reporting",
     ],
-    label: "GROWTH / WORKFLOW STUDY",
+    label: "GROWTH ENGINE / ATTRIBUTION STUDY",
     type: "growth",
   },
   {
@@ -103,14 +102,14 @@ const capabilities = [
     icon: WandSparkles,
     service: "AI & automation",
     href: "/ai-solutions",
-    heading: "Give the routine work a better route.",
-    text: "Connect the tools you already use. Reduce repeated steps, keep people in the loop and make the flow of information easier to manage.",
+    heading: "Eliminate manual bottlenecks with grounded AI.",
+    text: "Connect internal ERPs, documents, and team workflows with deterministic agent pipelines that keep human approval in control and private data inside your VPC.",
     items: [
-      "Workflow mapping and feasibility",
-      "Connected tools and automations",
-      "Review, access and handover",
+      "Operational audit and token-ROI feasibility",
+      "Hybrid vector RAG with verifiable citations",
+      "Human-in-the-loop approvals and access controls",
     ],
-    label: "AUTOMATION / WORKFLOW STUDY",
+    label: "AI ORCHESTRATION / WORKFLOW STUDY",
     type: "flow",
   },
 ];
@@ -120,23 +119,23 @@ function InterfaceStudy({ type }: { type: string }) {
       <div className="study-phone">
         <div className="phone-speaker" />
         <div className="phone-header">
-          <span>Good morning.</span>
-          <span className="phone-avatar">A</span>
+          <span>Site #04 · Synced</span>
+          <span className="phone-avatar">DT</span>
         </div>
         <h4>
-          Your day,
+          Field dispatch,
           <br />
-          at a glance.
+          offline-ready.
         </h4>
         <div className="phone-task">
-          <span className="study-label">TODAY'S FOCUS</span>
-          <strong>Make room for good work.</strong>
+          <span className="study-label">ACTIVE MILESTONE</span>
+          <strong>Biometric &amp; GPS verification</strong>
           <div className="task-progress" />
         </div>
         {[
-          "Plan the next sprint",
-          "Review a new direction",
-          "Share the next milestone",
+          "Approve vendor milestone #12",
+          "Sync blueprint revision v3.4",
+          "Export site compliance audit",
         ].map((t, i) => (
           <div className="phone-list" key={t}>
             <span>0{i + 1}</span>
@@ -154,32 +153,32 @@ function InterfaceStudy({ type }: { type: string }) {
   if (type === "growth")
     return (
       <div className="study-growth">
-        <span className="study-label">A CONNECTED CAMPAIGN</span>
+        <span className="study-label">SERVER-SIDE ATTRIBUTION</span>
         <div className="campaign-core">
           <ChartNoAxesCombined size={26} />
-          <strong>One clear message.</strong>
-          <span>Multiple ways to reach people.</span>
+          <strong>4.8× Blended ROAS</strong>
+          <span>99.2% first-party signal match quality</span>
         </div>
         <div className="campaign-channels">
-          {["Search", "Social", "Content"].map((t) => (
+          {["Search", "Meta CAPI", "Retention"].map((t) => (
             <span key={t}>{t}</span>
           ))}
         </div>
         <div className="campaign-loop">
           <ArrowRight size={16} />
-          <span>Measure. Learn. Refine.</span>
+          <span>Audit · Attribute · Compound Revenue</span>
         </div>
       </div>
     );
   if (type === "flow")
     return (
       <div className="study-flow">
-        <span className="study-label">A SIMPLER WORKFLOW</span>
+        <span className="study-label">DETERMINISTIC AGENT PIPELINE</span>
         {[
-          ["01", "Request arrives"],
-          ["02", "Connect the right tools"],
-          ["03", "Your team reviews"],
-          ["04", "The next step runs"],
+          ["01", "Document / webhook ingested"],
+          ["02", "Hybrid vector RAG retrieval"],
+          ["03", "Staff team review checkpoint"],
+          ["04", "ERP & ledger commit verified"],
         ].map(([n, t], i) => (
           <div className="flow-step" key={n}>
             <span>{n}</span>
@@ -192,18 +191,18 @@ function InterfaceStudy({ type }: { type: string }) {
   return (
     <div className="study-browser">
       <div className="study-browser-bar">
-        <span>◆ &nbsp; YOUR BRAND</span>
-        <span>Studio &nbsp; Work &nbsp; Contact</span>
+        <span>◆ &nbsp; ENTERPRISE PORTAL</span>
+        <span>Platform &nbsp; Telemetry &nbsp; API</span>
       </div>
       <div className="study-web-main">
-        <span className="study-label">A DIFFERENT POINT OF VIEW.</span>
+        <span className="study-label">EDGE SSR · SUB-280MS TTFB</span>
         <h4>
-          A place for
+          Clarity at
           <br />
-          your next <em>idea.</em>
+          enterprise <em>scale.</em>
         </h4>
         <div className="study-web-button">
-          Explore the collection <ArrowUpRight size={12} />
+          Launch interactive dossier <ArrowUpRight size={12} />
         </div>
         <div className="study-web-sculpture">
           <div />
@@ -212,8 +211,8 @@ function InterfaceStudy({ type }: { type: string }) {
         </div>
       </div>
       <div className="study-web-footer">
-        <span>Considered design.</span>
-        <span>01 — 03</span>
+        <span>Core Web Vitals: 100 / 100</span>
+        <span>WCAG AA+</span>
       </div>
     </div>
   );
@@ -315,45 +314,47 @@ export function DesignDetails() {
     <section className="design-details section wrap">
       <div className="section-top">
         <div className="section-heading">
-          <span className="eyebrow">WHAT GOES INTO THE WORK</span>
+          <span className="eyebrow">DESIGN SYSTEMS &amp; ENGINEERING RIGOR</span>
           <h2>
-            Every detail has
-            <br />a <em>reason.</em>
+            Every token has a
+            <br />
+            measurable <em>purpose.</em>
           </h2>
         </div>
         <p className="detail-intro">
-          A clear hierarchy. A familiar interaction. A visual language that
-          holds together. That's how a product starts to feel like yours.
+          Clear typographic hierarchy, accessible contrast ratios, and documented
+          design tokens so your internal engineering team can scale without
+          rewriting UI primitives.
         </p>
       </div>
       <div className="detail-bento">
         <figure className="workspace-card">
           <ThemeImage
             variant="workspace"
-            alt="Illustrative design session with wireframes, blue material samples and a laptop"
+            alt="Design architecture session with wireframes, material tokens, and workstation"
           />
           <figcaption>
-            <span>FROM THE FIRST SKETCH</span>
+            <span>RESEARCH-LED ARCHITECTURE</span>
             <h3>
-              Think it through.
+              Audit the workflow.
               <br />
-              Then bring it to life.
+              Ship the system cleanly.
             </h3>
-            <span className="image-credit">Illustrative studio study</span>
+            <span className="image-credit">DigentTech Atelier · Process &amp; Systems Practice</span>
           </figcaption>
         </figure>
         <div className="detail-side">
           <article className="design-system-card">
             <div className="bento-card-head">
               <Palette size={20} />
-              <span>VISUAL LANGUAGE</span>
+              <span>TYPOGRAPHY &amp; TOKEN PARITY</span>
             </div>
             <div className="design-type">
               Aa
               <span>
-                Considered
+                Precision
                 <br />
-                <em>by design.</em>
+                <em>hierarchy.</em>
               </span>
             </div>
             <div className="color-swatches">
@@ -364,21 +365,21 @@ export function DesignDetails() {
               <i />
             </div>
             <p>
-              Typography, colour and components that feel like one connected
-              brand.
+              Dark-first obsidian and warm ivory light tokens engineered for
+              WCAG AA+ readability across desktop and mobile viewports.
             </p>
           </article>
           <article className="quality-card">
             <div className="bento-card-head">
               <Code2 size={20} />
-              <span>BUILT FOR EVERYDAY USE</span>
+              <span>PRODUCTION DELIVERABLE STANDARDS</span>
             </div>
             <div className="quality-tags">
               {[
-                "Responsive layouts",
-                "Keyboard-friendly",
-                "Clear handover",
-                "Thoughtful motion",
+                "Responsive breakpoints",
+                "Keyboard & ARIA ready",
+                "100% repository handover",
+                "Zero layout shift UI",
               ].map((t) => (
                 <span key={t}>
                   <Check size={13} />
@@ -387,7 +388,7 @@ export function DesignDetails() {
               ))}
             </div>
             <a href="/about" className="text-link">
-              Our approach <ArrowUpRight size={16} />
+              Inspect our engineering standard <ArrowUpRight size={16} />
             </a>
           </article>
         </div>
@@ -400,32 +401,32 @@ export function ProjectStarter() {
   const [kind, setKind] = useState(0);
   const [priorities, setPriorities] = useState<string[]>([]);
   const options = [
-    "A fresh visual identity",
-    "An easier customer journey",
-    "Tools that save team time",
-    "A clearer path to enquiries",
+    "Sub-300ms global web performance",
+    "Unified customer onboarding & checkout",
+    "Automated workflows saving team hours",
+    "Higher qualified lead conversion rate",
   ];
   const item = capabilities[kind];
-  const brief = `I am interested in ${item.service.toLowerCase()}.\nMy priorities: ${priorities.length ? priorities.join(", ") : "I would like to discuss the options."}`;
+  const brief = `Service focus: ${item.service}.\nPrimary objectives: ${priorities.length ? priorities.join(", ") : "Requesting full architecture discovery review."}`;
   return (
     <section className="project-starter wrap">
       <div className="starter-intro">
-        <span className="eyebrow">A QUICK STARTING POINT</span>
+        <span className="eyebrow">DIRECT CONSULTATION INTAKE</span>
         <h2>
-          What would make
+          Align on your
           <br />
-          your business <em>better?</em>
+          next <em>milestone.</em>
         </h2>
         <p>
-          You don't need a finished brief. Pick a direction and the things you'd
-          like to improve.
+          Select your primary engineering track and commercial goals below to
+          pre-populate a structured brief for our lead architect.
         </p>
         <span className="starter-note">
-          Your choices become a starting brief in the contact form.
+          Your selections carry directly into the consultation desk for a 24-hour scoped response.
         </span>
       </div>
       <div className="starter-controls">
-        <span className="starter-label">01 / WHAT ARE YOU THINKING ABOUT?</span>
+        <span className="starter-label">01 / PRIMARY PRACTICE TRACK</span>
         <div className="starter-kinds">
           {capabilities.map((c, i) => (
             <button
@@ -438,7 +439,7 @@ export function ProjectStarter() {
             </button>
           ))}
         </div>
-        <span className="starter-label">02 / WHAT MATTERS MOST?</span>
+        <span className="starter-label">02 / MEASURABLE OUTCOMES TARGETED</span>
         <div className="priority-options">
           {options.map((t) => (
             <button
@@ -468,7 +469,7 @@ export function ProjectStarter() {
             encodeURIComponent(brief)
           }
         >
-          Build my starting brief <ArrowUpRight size={18} />
+          Export brief to consultation desk <ArrowUpRight size={18} />
         </a>
       </div>
     </section>

@@ -27,12 +27,12 @@ export function SwiftKotlinLogo({ size = 32 }: { size?: number }) {
     <svg width={size} height={size} viewBox="0 0 100 100" fill="none">
       <defs>
         <linearGradient id="swiftGrad" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#FA7343" />
-          <stop offset="100%" stop-color="#F05138" />
+          <stop offset="0%" stopColor="#FA7343" />
+          <stop offset="100%" stopColor="#F05138" />
         </linearGradient>
         <linearGradient id="kotlinGrad" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#7F52FF" />
-          <stop offset="100%" stop-color="#C711E1" />
+          <stop offset="0%" stopColor="#7F52FF" />
+          <stop offset="100%" stopColor="#C711E1" />
         </linearGradient>
       </defs>
       {/* Swift Bird */}

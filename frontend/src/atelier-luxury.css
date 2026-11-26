@@ -1,0 +1,930 @@
+/* ==========================================================================
+   DIGENTTECH — UNIFIED LUXURY DEEP RESEARCH ATELIER SYSTEM
+   Harmonizes Header, Footer, Services, Work, About, Careers, Academy & Contact
+   across Dark (Obsidian & Champagne Gold) and Light (Warm Ivory Marble)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. GLOBAL TYPOGRAPHY HARMONIZATION, HEADER, DROPDOWN & FOOTER LUXURY REFINEMENT
+   -------------------------------------------------------------------------- */
+body {
+  font-family: "Urbanist", sans-serif;
+}
+
+.section-top h2,
+.lux-workbench-head h2,
+.studio-quote blockquote,
+.atelier-hero-inner h1,
+.service-hero-copy h1,
+.wrk-hero-title,
+.crx-hero-title {
+  font-family: "Marcellus", Georgia, serif;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.lux-kpi-card strong,
+.atelier-hero-inner h1 em,
+.service-hero-copy h1 em,
+.wrk-hero-title em,
+.crx-hero-title em,
+.home-metrics-ribbon .metric-value,
+.section-top h2 em {
+  font-family: "Urbanist", sans-serif;
+  font-weight: 900;
+  font-style: normal;
+  letter-spacing: 0;
+}
+
+.site-header {
+  background: rgba(8, 10, 14, 0.88);
+  border-bottom: 1px solid var(--lux-hairline);
+}
+
+:root[data-theme="light"] .site-header {
+  background: rgba(248, 247, 243, 0.90);
+}
+
+.navigation .active:after {
+  background: var(--lux-gold);
+}
+
+.nav-cta {
+  border: 1px solid var(--lux-gold-border);
+  background: var(--lux-gold-soft);
+  color: var(--ink);
+  font-weight: 600;
+  border-radius: 8px;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+
+.nav-cta:hover {
+  border-color: var(--lux-gold);
+  background: var(--lux-panel-solid);
+  transform: translateY(-1px);
+}
+
+.nav-services-dropdown {
+  background: var(--lux-panel-solid);
+  border: 1px solid var(--lux-hairline-strong);
+  box-shadow: var(--lux-specular);
+}
+
+.dropdown-counter {
+  background: var(--lux-gold-soft);
+  border-color: var(--lux-gold-border);
+  color: var(--lux-gold);
+}
+
+.services-dropdown-card:hover {
+  background: var(--lux-panel-recessed);
+  border-color: var(--lux-gold-border);
+}
+
+.services-dropdown-card:hover .service-title,
+.dropdown-footer-cta {
+  color: var(--lux-gold) !important;
+}
+
+.footer {
+  background: var(--lux-panel-solid);
+  border-top: 1px solid var(--lux-hairline-strong);
+}
+
+.footer-dot {
+  color: var(--lux-gold);
+}
+
+/* Primary Buttons & Editorial Accents across all pages */
+.button {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  font-weight: 600;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.24), 0 10px 28px rgba(29, 78, 216, 0.28);
+}
+
+.button:hover {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 14px 36px rgba(37, 99, 235, 0.38);
+}
+
+em {
+  color: var(--lux-gold-bright);
+}
+
+:root[data-theme="light"] em {
+  color: var(--lux-gold);
+}
+
+/* --------------------------------------------------------------------------
+   2. LUXURY SUBPAGE HERO STAGE (Services, Academy, Contact, 404)
+   -------------------------------------------------------------------------- */
+.atelier-hero-stage {
+  position: relative;
+  background: var(--hero);
+  border-bottom: 1px solid var(--lux-hairline);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.atelier-hero-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(56% 52% at 82% 20%, rgba(37, 99, 235, 0.14), transparent 72%),
+    radial-gradient(45% 45% at 18% 20%, rgba(214, 182, 118, 0.08), transparent 70%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+:root[data-theme="light"] .atelier-hero-stage::before {
+  background:
+    radial-gradient(56% 52% at 82% 20%, rgba(37, 99, 235, 0.07), transparent 72%),
+    radial-gradient(45% 45% at 18% 20%, rgba(154, 112, 41, 0.07), transparent 70%);
+}
+
+.atelier-hero-inner {
+  position: relative;
+  z-index: 2;
+  padding-block: 80px 68px;
+}
+
+.atelier-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--lux-gold-border);
+  background: var(--lux-gold-soft);
+  color: var(--ink);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+}
+
+.atelier-hero-badge i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--lux-gold);
+  box-shadow: 0 0 10px var(--lux-gold);
+}
+
+.atelier-hero-inner h1 {
+  font-size: clamp(42px, 5.1vw, 72px);
+  line-height: 1.07;
+  letter-spacing: -0.055em;
+  max-width: 940px;
+  margin-top: 24px;
+  color: var(--ink);
+}
+
+.atelier-hero-inner > p {
+  font-size: 15.5px;
+  line-height: 1.75;
+  max-width: 660px;
+  margin-top: 22px;
+  color: var(--muted);
+}
+
+.atelier-hero-highlights {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 30px;
+}
+
+.atelier-hero-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--lux-hairline-strong);
+  background: var(--lux-panel);
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.atelier-hero-chip svg {
+  color: var(--lux-gold);
+}
+
+/* Engagement Architecture Cards on /services */
+.atelier-engagement-section {
+  padding-block: 72px 24px;
+}
+
+.atelier-engagement-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.atelier-engagement-card {
+  border-radius: 18px;
+  border: 1px solid var(--lux-hairline);
+  background: var(--lux-panel);
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: var(--lux-card-shadow);
+  transition: border-color 0.25s ease, transform 0.25s ease;
+}
+
+.atelier-engagement-card:hover {
+  border-color: var(--lux-gold-border);
+  transform: translateY(-4px);
+}
+
+.atelier-eng-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.atelier-eng-code {
+  font-family: ui-monospace, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--lux-gold);
+  letter-spacing: 1px;
+}
+
+.atelier-eng-duration {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.10);
+  border: 1px solid rgba(16, 185, 129, 0.24);
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+
+.atelier-engagement-card h3 {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+
+.atelier-engagement-card p {
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--muted);
+}
+
+.atelier-eng-list {
+  list-style: none;
+  margin: auto 0 0;
+  padding: 14px 0 0;
+  border-top: 1px solid var(--lux-hairline);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.atelier-eng-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--ink);
+}
+
+.atelier-eng-list svg {
+  color: var(--lux-gold);
+}
+
+/* --------------------------------------------------------------------------
+   3. DIGENTTECH ACADEMY (/online-courses) LUXURY UPGRADE
+   -------------------------------------------------------------------------- */
+.atelier-academy-standards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 42px;
+}
+
+.atelier-std-tile {
+  padding: 18px 20px;
+  border-radius: 14px;
+  border: 1px solid var(--lux-hairline);
+  background: var(--lux-panel);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.atelier-std-tile strong {
+  font-family: "Manrope", sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--lux-gold-bright);
+}
+
+:root[data-theme="light"] .atelier-std-tile strong {
+  color: var(--lux-gold);
+}
+
+.atelier-std-tile span {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.atelier-course-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+
+.atelier-course-card {
+  border-radius: 20px;
+  border: 1px solid var(--lux-hairline-strong);
+  background: var(--lux-panel);
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: var(--lux-card-shadow);
+  transition: border-color 0.25s ease, transform 0.25s ease;
+}
+
+.atelier-course-card:hover {
+  border-color: var(--lux-gold-border);
+  transform: translateY(-4px);
+}
+
+.atelier-course-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.atelier-course-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid var(--lux-gold-border);
+  background: var(--lux-gold-soft);
+  color: var(--lux-gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.atelier-course-meta {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--lux-gold);
+  border: 1px solid var(--lux-gold-border);
+  background: var(--lux-gold-soft);
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.atelier-course-card h3 {
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+
+.atelier-course-card > p {
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--muted);
+}
+
+.atelier-syllabus-list {
+  list-style: none;
+  margin: 0;
+  padding: 14px 0;
+  border-block: 1px solid var(--lux-hairline);
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.atelier-syllabus-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  font-size: 12px;
+  color: var(--ink);
+  line-height: 1.45;
+}
+
+.atelier-syllabus-list svg {
+  color: #10b981;
+  margin-top: 2px;
+}
+
+.atelier-course-outcome {
+  font-size: 11.5px;
+  color: var(--muted);
+  margin-top: auto;
+}
+
+.atelier-course-outcome strong {
+  color: var(--ink);
+}
+
+/* --------------------------------------------------------------------------
+   4. CONSULTATION & CONTACT DESK (/contact) LUXURY UPGRADE
+   -------------------------------------------------------------------------- */
+.atelier-contact-card {
+  border-radius: 20px !important;
+  border: 1px solid var(--lux-hairline-strong) !important;
+  background: var(--lux-panel) !important;
+  box-shadow: var(--lux-specular);
+}
+
+.atelier-contact-sla-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 26px;
+}
+
+.atelier-sla-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--lux-hairline);
+  background: var(--lux-panel);
+  font-size: 12px;
+  color: var(--ink);
+}
+
+.atelier-sla-item svg {
+  color: var(--lux-gold);
+}
+
+.atelier-brief-prefill-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--lux-gold-border);
+  background: var(--lux-gold-soft);
+  color: var(--lux-gold);
+  font-size: 10.5px;
+  font-weight: 700;
+  margin-bottom: 18px;
+}
+
+.atelier-copy-email-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 7px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--lux-hairline);
+  background: var(--lux-panel);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.atelier-copy-email-btn:hover {
+  border-color: var(--lux-gold-border);
+  color: var(--ink);
+}
+
+.atelier-missing-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+/* --------------------------------------------------------------------------
+   5. SERVICE PAGES (/web-development, /app-development, /digital-marketing, /ai-solutions)
+   UNIFIED OBSIDIAN & CHAMPAGNE LUXURY OVERRIDES
+   -------------------------------------------------------------------------- */
+.service-hero-stage,
+.service-page-wrapper .service-hero-stage {
+  border-bottom-color: var(--lux-hairline);
+}
+
+.service-hero-copy h1 em {
+  color: var(--lux-gold-bright) !important;
+  font-style: italic;
+}
+
+:root[data-theme="light"] .service-hero-copy h1 em {
+  color: var(--lux-gold) !important;
+}
+
+.clay-card,
+.feature-box,
+.roadmap-card,
+.estimator-box,
+.faq-item {
+  background: var(--lux-panel) !important;
+  border: 1px solid var(--lux-hairline-strong) !important;
+  border-radius: 20px !important;
+  box-shadow: var(--lux-card-shadow) !important;
+}
+
+.clay-card:hover,
+.feature-box:hover,
+.roadmap-card:hover {
+  border-color: var(--lux-gold-border) !important;
+  box-shadow: var(--lux-specular) !important;
+}
+
+.clay-pill {
+  background: var(--lux-panel-recessed) !important;
+  border: 1px solid var(--lux-hairline) !important;
+  box-shadow: none !important;
+  color: var(--ink) !important;
+}
+
+.clay-pill:hover {
+  border-color: var(--lux-gold-border) !important;
+}
+
+.clay-pill.active {
+  background: var(--strong) !important;
+  border-color: var(--strong) !important;
+  color: #ffffff !important;
+}
+
+.inspector-window {
+  background: var(--lux-panel) !important;
+  border: 1px solid var(--lux-hairline-strong) !important;
+  border-radius: 20px !important;
+  box-shadow: var(--lux-specular) !important;
+  backdrop-filter: blur(22px);
+}
+
+.inspector-header,
+.inspector-tabs {
+  background: var(--lux-panel-recessed) !important;
+  border-bottom-color: var(--lux-hairline) !important;
+}
+
+.inspector-url {
+  background: var(--lux-panel-solid) !important;
+  border-color: var(--lux-hairline) !important;
+  box-shadow: none !important;
+}
+
+.inspector-tab-btn {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  border-radius: 8px !important;
+}
+
+.inspector-tab-btn.active {
+  background: var(--lux-panel-solid) !important;
+  border-color: var(--lux-gold-border) !important;
+  color: var(--ink) !important;
+}
+
+.arch-node,
+.vitals-metric-card,
+.vital-card {
+  background: var(--lux-panel-solid) !important;
+  border: 1px solid var(--lux-hairline) !important;
+  border-radius: 14px !important;
+  box-shadow: none !important;
+}
+
+.arch-node:hover,
+.vitals-metric-card:hover {
+  border-color: var(--lux-gold-border) !important;
+  box-shadow: var(--lux-card-shadow) !important;
+}
+
+.metrics-strip {
+  background: var(--lux-panel-recessed) !important;
+  border-top-color: var(--lux-hairline) !important;
+}
+
+.metrics-strip .metric-value {
+  color: var(--lux-gold-bright) !important;
+}
+
+.metrics-strip .metric-value span {
+  color: var(--ink) !important;
+  opacity: 0.78;
+}
+
+:root[data-theme="light"] .metrics-strip .metric-value {
+  color: var(--lux-gold) !important;
+}
+
+.phone-mockup {
+  border-color: #1d2433 !important;
+  box-shadow: var(--lux-specular) !important;
+}
+
+.service-icon-box,
+.feature-icon-badge {
+  background: var(--lux-gold-soft) !important;
+  border-color: var(--lux-gold-border) !important;
+  color: var(--lux-gold) !important;
+  box-shadow: none !important;
+}
+
+.service-card-num,
+.feature-num,
+.stage-badge,
+.specs-role-badge,
+.showcase-sector {
+  color: var(--lux-gold) !important;
+}
+
+.stage-step-pill,
+.benchmark-val-badge {
+  background: var(--lux-gold-soft) !important;
+  border: 1px solid var(--lux-gold-border) !important;
+  color: var(--lux-gold-bright) !important;
+}
+
+:root[data-theme="light"] .stage-step-pill,
+:root[data-theme="light"] .benchmark-val-badge {
+  color: var(--lux-gold) !important;
+}
+
+/* --------------------------------------------------------------------------
+   6. WORK PAGE (/work & /projects) LUXURY ATELIER OVERRIDES
+   -------------------------------------------------------------------------- */
+.wrk-hero {
+  border-bottom-color: var(--lux-hairline) !important;
+}
+
+.wrk-hero-badge {
+  background: var(--lux-gold-soft) !important;
+  border-color: var(--lux-gold-border) !important;
+  color: var(--ink) !important;
+}
+
+.wrk-radio-icon {
+  color: var(--lux-gold) !important;
+}
+
+.wrk-hero-title em {
+  background: none !important;
+  -webkit-text-fill-color: unset !important;
+  color: var(--lux-gold-bright) !important;
+  font-family: "Instrument Serif", Georgia, serif !important;
+}
+
+:root[data-theme="light"] .wrk-hero-title em {
+  color: var(--lux-gold) !important;
+}
+
+.wrk-telemetry-card,
+.wrk-benchmark-card,
+.wrk-testimonial-card,
+.wrk-blueprint-row,
+.wrk-cta-card {
+  background: var(--lux-panel) !important;
+  border-color: var(--lux-hairline-strong) !important;
+  box-shadow: var(--lux-card-shadow) !important;
+}
+
+.wrk-telemetry-card:hover,
+.wrk-benchmark-card:hover,
+.wrk-testimonial-card:hover,
+.wrk-blueprint-row:hover {
+  border-color: var(--lux-gold-border) !important;
+}
+
+.wrk-tele-num,
+.wrk-bench-metric,
+.wrk-eyebrow,
+.wrk-card-category,
+.wrk-bp-category,
+.wrk-modal-category {
+  color: var(--lux-gold) !important;
+}
+
+.wrk-card-inner {
+  background: var(--lux-panel) !important;
+  border-color: var(--lux-hairline-strong) !important;
+  box-shadow: var(--lux-card-shadow) !important;
+}
+
+.wrk-card-interactive:hover .wrk-card-inner {
+  border-color: var(--lux-gold-border) !important;
+}
+
+.wrk-btn-glow {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.24), 0 10px 26px rgba(29, 78, 216, 0.3) !important;
+}
+
+.wrk-modal-dialog {
+  background: var(--lux-panel-solid) !important;
+  border-color: var(--lux-hairline-strong) !important;
+  box-shadow: var(--lux-specular) !important;
+}
+
+/* --------------------------------------------------------------------------
+   7. ABOUT PAGE (/about) LUXURY ATELIER OVERRIDES & CONTRAST FIXES
+   -------------------------------------------------------------------------- */
+.about-hero-stage {
+  background: radial-gradient(circle at 50% 15%, rgba(214, 182, 118, 0.08) 0%, transparent 65%) !important;
+}
+
+.about-view-switcher {
+  background: var(--lux-panel) !important;
+  border-color: var(--lux-hairline-strong) !important;
+}
+
+.about-view-btn.active {
+  border-color: var(--lux-gold-border) !important;
+}
+
+.about-view-btn.active svg {
+  color: var(--lux-gold) !important;
+}
+
+.about-metrics-strip {
+  background: var(--lux-panel-recessed) !important;
+  border-block-color: var(--lux-hairline) !important;
+}
+
+.about-metric-card {
+  border-left-color: var(--lux-gold-border) !important;
+}
+
+.about-metric-card:first-child {
+  border-left-color: var(--lux-gold) !important;
+}
+
+.about-metric-card .stat-num span {
+  color: var(--lux-gold) !important;
+}
+
+.founder-executive-card,
+.principle-bento-card,
+.timeline-card,
+.comparison-box {
+  background: var(--lux-panel) !important;
+  border-color: var(--lux-hairline-strong) !important;
+  box-shadow: var(--lux-card-shadow) !important;
+}
+
+.founder-floating-badge {
+  background: rgba(11, 14, 21, 0.92) !important;
+  border-color: rgba(214, 182, 118, 0.28) !important;
+}
+
+.founder-floating-badge .founder-badge-text strong {
+  color: #ffffff !important;
+}
+
+.founder-floating-badge .founder-badge-text span {
+  color: #cbd5e1 !important;
+}
+
+.founder-quote-banner {
+  border-left-color: var(--lux-gold) !important;
+  background: var(--lux-panel-recessed) !important;
+}
+
+.role-pill {
+  background: var(--lux-gold-soft) !important;
+  border-color: var(--lux-gold-border) !important;
+  color: var(--lux-gold) !important;
+}
+
+.col-studio {
+  color: var(--lux-gold) !important;
+}
+
+/* --------------------------------------------------------------------------
+   8. CAREERS PAGE (/careers) LUXURY ATELIER OVERRIDES
+   -------------------------------------------------------------------------- */
+.crx-badge-pill {
+  background: var(--lux-gold-soft) !important;
+  border-color: var(--lux-gold-border) !important;
+  color: var(--ink) !important;
+}
+
+.crx-sparkle-icon {
+  color: var(--lux-gold) !important;
+}
+
+.crx-hero-title em {
+  background: none !important;
+  -webkit-text-fill-color: unset !important;
+  color: var(--lux-gold-bright) !important;
+  font-family: "Instrument Serif", Georgia, serif !important;
+}
+
+:root[data-theme="light"] .crx-hero-title em {
+  color: var(--lux-gold) !important;
+}
+
+.crx-btn-glow {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.24), 0 10px 26px rgba(29, 78, 216, 0.3) !important;
+}
+
+.crx-terminal-window {
+  background: #0c1018 !important;
+  border-color: var(--lux-hairline-strong) !important;
+  box-shadow: var(--lux-specular) !important;
+}
+
+.crx-pillar-card,
+.crx-radar-banner,
+.crx-nav-card,
+.crx-detail-workbench,
+.crx-step-card {
+  background: var(--lux-panel) !important;
+  border-color: var(--lux-hairline-strong) !important;
+  box-shadow: var(--lux-card-shadow) !important;
+}
+
+.crx-pillar-card:hover,
+.crx-nav-card.active,
+.crx-nav-card:hover,
+.crx-step-card:hover {
+  border-color: var(--lux-gold-border) !important;
+}
+
+.crx-eyebrow,
+.crx-manifesto-lead,
+.crx-pillar-badge,
+.crx-pillar-metric {
+  color: var(--lux-gold) !important;
+}
+
+/* --------------------------------------------------------------------------
+   9. RESPONSIVE SUBPAGE ADJUSTMENTS
+   -------------------------------------------------------------------------- */
+@media (max-width: 1024px) {
+  .atelier-engagement-grid,
+  .atelier-course-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .atelier-academy-standards {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .atelier-hero-inner {
+    padding-block: 54px 46px;
+  }
+  .atelier-engagement-grid,
+  .atelier-course-grid,
+  .atelier-academy-standards {
+    grid-template-columns: 1fr;
+  }
+  .cta h2 {
+    font-size: clamp(36px, 11vw, 58px) !important;
+    overflow-wrap: anywhere;
+  }
+  .service-hero-copy,
+  .inspector-window,
+  .tech-controls-bar {
+    min-width: 0;
+    max-width: 100%;
+  }
+  .inspector-tabs {
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+  .inspector-tab-btn {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 8px 9px;
+    font-size: 10.5px;
+  }
+  .tech-tabs,
+  .tech-category-pills,
+  .tech-format-switcher {
+    flex-wrap: wrap !important;
+    max-width: 100% !important;
+    overflow: visible !important;
+  }
+  .tech-format-switcher button,
+  .tech-format-btn {
+    flex: 1 1 auto;
+    padding: 7px 10px;
+    font-size: 11px;
+  }
+}
+

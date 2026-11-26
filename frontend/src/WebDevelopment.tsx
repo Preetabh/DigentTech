@@ -270,7 +270,7 @@ export function WebDevelopment() {
       adoption: "Discord · GitLab · Canva · Garmin",
       advantage: "Global TTFB under 50ms",
       benchmark: { metric: "Cold Start Latency", val: "0.0ms", target: "250ms Serverless", pct: 99 },
-      specCode: `// wrangler.toml\nname = "dotcode-edge-gateway"\nmain = "src/worker.ts"\ncompatibility_date = "2024-10-01"`,
+      specCode: `// wrangler.toml\nname = "digenttech-edge-gateway"\nmain = "src/worker.ts"\ncompatibility_date = "2026-10-01"`,
     },
     {
       name: "GraphQL & REST APIs",
@@ -540,7 +540,7 @@ export function WebDevelopment() {
               </div>
               <div className="inspector-url">
                 <Globe2 size={12} />
-                <span>dotcode.studio / web-architecture</span>
+                <span>digenttech.dev / web-architecture</span>
               </div>
               <span className="inspector-badge">LIVE 24MS</span>
             </div>

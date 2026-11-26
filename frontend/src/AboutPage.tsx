@@ -187,7 +187,7 @@ export function AboutPage() {
           <div className="about-metrics-grid">
             <div className="about-metric-card">
               <span className="stat-num">
-                45<span>+</span>
+                50<span>+</span>
               </span>
               <span className="stat-label">Production Flagships Shipped</span>
             </div>
@@ -199,15 +199,15 @@ export function AboutPage() {
             </div>
             <div className="about-metric-card">
               <span className="stat-num">
-                120<span> FPS</span>
+                &lt;280<span>ms</span>
               </span>
-              <span className="stat-label">Tactile Claymorphic Standard</span>
+              <span className="stat-label">Global Edge Latency SLA</span>
             </div>
             <div className="about-metric-card">
               <span className="stat-num">
-                7<span>+</span>
+                100<span>%</span>
               </span>
-              <span className="stat-label">Global Partner Geographies</span>
+              <span className="stat-label">Client IP &amp; Code Ownership</span>
             </div>
           </div>
         </div>
@@ -352,7 +352,7 @@ export function AboutPage() {
                 <p className="founder-bio-text">
                   We treat software as physical architecture. Every interface is built
                   with typed contracts, indexed relational schemas, sub-second edge
-                  routing, and GPU-accelerated claymorphic lighting.
+                  routing, and accessible multi-theme design tokens.
                 </p>
                 <p className="founder-bio-text">
                   No quick-and-dirty templates. We engineer systems with zero technical
@@ -397,11 +397,11 @@ export function AboutPage() {
                   <div className="pillar-icon-box">
                     <Sparkles size={16} />
                   </div>
-                  <strong>120 FPS Tactile Craft</strong>
+                  <strong>Precision Interface Craft</strong>
                 </div>
                 <p>
-                  Claymorphic lighting, subtle spring physics, and micro-interactions
-                  tuned for human delight.
+                  WCAG AA+ contrast, tabular typography, and subtle motion curves
+                  engineered for human clarity and speed.
                 </p>
               </div>
 

@@ -436,12 +436,12 @@ export function CareersPage() {
 
   // Skill radar quick filters
   const SKILL_TAGS = [
-    { label: "⚡ High-Throughput APIs", key: "systems" },
-    { label: "🎨 Tactile 120fps UI", key: "claymorphism" },
-    { label: "🤖 Agentic Workflows", key: "agents" },
-    { label: "📱 Offline Mobile", key: "mobile" },
-    { label: "🚀 Technical SEO", key: "seo" },
-    { label: "☁️ Edge Compute", key: "devops" },
+    { label: "High-Throughput APIs", key: "systems" },
+    { label: "Precision Design Systems", key: "claymorphism" },
+    { label: "Agentic AI Workflows", key: "agents" },
+    { label: "Offline-First Mobile", key: "mobile" },
+    { label: "Technical SEO", key: "seo" },
+    { label: "Edge Cloud Compute", key: "devops" },
   ];
 
   // Filter roles based on department, search query, and skill tag

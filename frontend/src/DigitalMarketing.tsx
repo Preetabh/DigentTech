@@ -517,7 +517,7 @@ export function DigitalMarketing() {
               </div>
               <div className="inspector-url">
                 <Globe2 size={12} />
-                <span>dotunicode.studio / growth-telemetry</span>
+                <span>digenttech.dev / growth-telemetry</span>
               </div>
               <span className="inspector-badge">LIVE 4.8X ROAS</span>
             </div>
@@ -630,7 +630,7 @@ export function DigitalMarketing() {
                   </div>
                   <pre className="terminal-code">
 {`{
-  "client_account": "dotunicode_scale_portfolio",
+  "client_account": "digenttech_growth_telemetry",
   "monthly_ad_spend": "$48,500.00",
   "gross_revenue_attributed": "$232,800.00",
   "blended_roas": 4.80,
