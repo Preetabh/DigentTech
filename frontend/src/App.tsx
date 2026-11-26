@@ -43,6 +43,7 @@ import { CareersPage } from "./CareersPage";
 import { WorkPage } from "./WorkPage";
 import { DigitalMarketing } from "./DigitalMarketing";
 import { useHomeGsapChoreography } from "./HomeAnimations";
+import { HomeEditorialSections } from "./HomeSections";
 import { SEO } from "./SEO";
 import { BrandLogo, StudioNote } from "./Studio";
 import {
@@ -1286,10 +1287,10 @@ function Home({ theme = "dark" }: { theme?: "dark" | "light" }) {
               </div>
 
               <a
-                href="#executive-console"
+                href="#what-we-do"
                 className="home-editorial-arrow-box"
-                aria-label="Inspect live systems architecture console"
-                title="Explore Deep Research Console"
+                aria-label="Explore DigentTech capabilities and case studies"
+                title="Explore Capabilities"
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
                   <path d="M8 5v9h11" strokeLinecap="round" strokeLinejoin="round" />
@@ -1331,80 +1332,14 @@ function Home({ theme = "dark" }: { theme?: "dark" | "light" }) {
         </div>
       </section>
 
-      <div className="home-post-reel-bridge">
-        <div className="wrap">
-          <span className="home-bridge-kicker">ENGINEERING DISCIPLINES &amp; ARCHITECTURE</span>
-          <h2 className="home-bridge-title">Engineered Systems &amp; Live Intelligence</h2>
-        </div>
-      </div>
-
-      <div className="capability-strip">
-        <div className="wrap">
-          <span>Web experiences</span>
-          <i>＋</i>
-          <span>Mobile products</span>
-          <i>＋</i>
-          <span>Business platforms</span>
-          <i>＋</i>
-          <span>AI &amp; automation</span>
-        </div>
-      </div>
-
-      <section id="executive-console" className="home-console-showcase">
-        <div className="wrap home-console-showcase-grid">
-          <div className="home-console-intro">
-            <span className="home-lux-badge">
-              <i /> DEEP SYSTEMS CONSOLE · LIVE ARCHITECTURAL TELEMETRY
-            </span>
-            <h2>
-              Designed for clarity.
-              <br />
-              Built with <em>deep intent.</em>
-            </h2>
-            <p>
-              Executive web platforms, tactile mobile apps, and autonomous AI systems.
-              Synthesized from first principles with verifiable production telemetry.
-            </p>
-            <div className="hero-actions home-lux-actions">
-              <a className="home-lux-primary-btn" href="/contact">
-                Initiate Project Brief <ArrowUpRight size={17} />
-              </a>
-              <a className="text-link" href="/work">
-                Explore case dossiers <ArrowUpRight size={18} />
-              </a>
-            </div>
-            <div className="home-lux-provenance">
-              <div className="home-lux-prov-item">
-                <span>Origin</span>
-                <strong>India · Global Clients</strong>
-              </div>
-              <div className="home-lux-prov-item">
-                <span>Execution</span>
-                <strong>Staff Architects</strong>
-              </div>
-              <div className="home-lux-prov-item">
-                <span>Sovereignty</span>
-                <strong>100% IP Ownership</strong>
-              </div>
-            </div>
-          </div>
-          <DeepResearchHeroConsole onInspectDossier={handleInspectDossier} />
-        </div>
-      </section>
-      <HomeMetricsRibbon />
-      <DeepResearchWorkbench />
-      <Services />
-      <Work selectedIdx={selectedWorkIdx} onSelectIdx={setSelectedWorkIdx} />
-      <TechStackShowcase />
-      <WhyUsSection />
-      <StudioNote />
-      <TestimonialsSection />
-      <CapabilityExplorer />
-      <DesignDetails />
-      <Process />
-      <HomeFAQ />
-      <ProjectStarter />
-      <CTA />
+      <HomeEditorialSections
+        theme={theme}
+        onNavigate={(to) => {
+          window.history.pushState({}, "", to);
+          window.dispatchEvent(new PopStateEvent("popstate"));
+          window.scrollTo({ top: 0, behavior: "auto" });
+        }}
+      />
     </div>
   );
 }

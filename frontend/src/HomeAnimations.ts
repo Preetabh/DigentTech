@@ -173,110 +173,72 @@ export function useHomeGsapChoreography(rootRef: RefObject<HTMLDivElement | null
         });
       }
 
-      // 4. Post-reel editorial bridge & capability ribbon wave
-      gsap.fromTo(
-        ".home-post-reel-bridge .wrap > *",
-        { y: 24, opacity: 0.2 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.75,
-          stagger: 0.1,
-          ease: "power3.out",
-          clearProps: "transform",
-          scrollTrigger: {
-            trigger: ".home-post-reel-bridge",
-            start: "top 90%",
-            once: true,
-          },
-        }
-      );
-
-      gsap.fromTo(
-        ".capability-strip > .wrap > *",
-        { y: 18, opacity: 0.25 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.6,
-          stagger: 0.07,
-          ease: "power2.out",
-          clearProps: "transform",
-          scrollTrigger: {
-            trigger: ".capability-strip",
-            start: "top 92%",
-            once: true,
-          },
-        }
-      );
-
-      // 5. Deep Research Console split spotlight reveal
-      const consoleSection = root.querySelector("#executive-console");
-      if (consoleSection) {
-        gsap.fromTo(
-          ".home-console-intro > *",
-          { x: -24, opacity: 0.2 },
-          {
-            x: 0,
-            opacity: 1,
-            duration: 0.75,
-            stagger: 0.08,
-            ease: "power3.out",
-            clearProps: "transform",
-            scrollTrigger: {
-              trigger: consoleSection,
-              start: "top 86%",
-              once: true,
-            },
+      // 4. Sticky header slide-down & editorial About parallax
+      const headerEl = document.querySelector<HTMLElement>(".site-header");
+      if (headerEl) {
+        const onHeaderScroll = () => {
+          if (window.scrollY > 50) {
+            headerEl.classList.add("is-fixed");
+          } else {
+            headerEl.classList.remove("is-fixed");
           }
-        );
+        };
+        onHeaderScroll();
+        window.addEventListener("scroll", onHeaderScroll, { passive: true });
+        cleanups.push(() => {
+          window.removeEventListener("scroll", onHeaderScroll);
+          headerEl.classList.remove("is-fixed");
+        });
+      }
 
+      const aboutFrame = root.querySelector<HTMLElement>(".lb-about-photo-frame");
+      const aboutImg = root.querySelector<HTMLElement>(".lb-about-photo-img");
+      if (aboutFrame && aboutImg) {
         gsap.fromTo(
-          ".lux-console-wrapper",
-          { y: 34, scale: 0.975, opacity: 0.2 },
+          aboutImg,
+          { yPercent: -6, scale: 1.09 },
           {
-            y: 0,
-            scale: 1,
-            opacity: 1,
-            duration: 0.85,
-            ease: "power3.out",
-            clearProps: "transform",
+            yPercent: 6,
+            scale: 1.02,
+            ease: "none",
             scrollTrigger: {
-              trigger: consoleSection,
-              start: "top 84%",
-              once: true,
+              trigger: aboutFrame,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: 1.0,
             },
           }
         );
       }
 
-      // 6. Batched staggered card choreography across lower sections
+      // 5. Batched staggered reveal choreography across all redesigned Home sections
       const batchTargets = [
-        ".home-metrics-ribbon .metric-box",
-        ".lux-workbench-section .lux-dossier-sheet",
-        ".services-grid .service-card",
-        ".projects-grid .project-card",
-        ".home-tech-grid .home-tech-card",
-        ".why-us-grid .why-card",
-        ".testimonials-grid .testimonial-card",
-        ".process-grid article",
-        ".home-faq-list .home-faq-item",
+        ".lb-centered-header",
+        ".lb-about-copy > *",
+        ".lb-services-grid .lb-service-box",
+        ".lb-whatwedo-grid .lb-wire-card",
+        ".lb-projects-grid .lb-project-card",
+        ".lb-testimonials-grid .lb-testimonial-card",
+        ".lb-infra-grid .lb-infra-card",
+        ".lb-packages-stack .lb-package-row",
+        ".lb-faq-photo-frame, .lb-faq-list .lb-faq-item",
+        ".lb-ecosystem-grid .lb-ecosystem-card",
       ];
 
       batchTargets.forEach((selector) => {
         const els = gsap.utils.toArray<HTMLElement>(selector, root);
         if (!els.length) return;
         ScrollTrigger.batch(els, {
-          start: "top 90%",
+          start: "top 91%",
           once: true,
           onEnter: (batch) => {
             gsap.fromTo(
               batch,
-              { y: 26, opacity: 0.25 },
+              { y: 24, opacity: 0.2 },
               {
                 y: 0,
                 opacity: 1,
-                duration: 0.7,
+                duration: 0.68,
                 stagger: 0.08,
                 ease: "power3.out",
                 clearProps: "transform,opacity",
@@ -286,11 +248,11 @@ export function useHomeGsapChoreography(rootRef: RefObject<HTMLDivElement | null
         });
       });
 
-      // 7. Magnetic hover physics for fine-pointer desktop controls
+      // 6. Magnetic hover physics for fine-pointer desktop controls
       const finePointer = window.matchMedia?.("(pointer: fine)").matches;
       if (finePointer) {
         const magnetEls = root.querySelectorAll<HTMLElement>(
-          ".home-editorial-arrow-box, .home-lux-primary-btn"
+          ".home-editorial-arrow-box, .lb-btn-rect, .lb-pkg-est-btn"
         );
         magnetEls.forEach((el) => {
           const xTo = gsap.quickTo(el, "x", { duration: 0.35, ease: "power3.out" });
@@ -298,10 +260,10 @@ export function useHomeGsapChoreography(rootRef: RefObject<HTMLDivElement | null
 
           const onMove = (e: MouseEvent) => {
             const rect = el.getBoundingClientRect();
-            const relX = (e.clientX - rect.left - rect.width / 2) * 0.22;
-            const relY = (e.clientY - rect.top - rect.height / 2) * 0.22;
-            xTo(Math.max(-8, Math.min(8, relX)));
-            yTo(Math.max(-8, Math.min(8, relY)));
+            const relX = (e.clientX - rect.left - rect.width / 2) * 0.2;
+            const relY = (e.clientY - rect.top - rect.height / 2) * 0.2;
+            xTo(Math.max(-7, Math.min(7, relX)));
+            yTo(Math.max(-7, Math.min(7, relY)));
           };
 
           const onLeave = () => {

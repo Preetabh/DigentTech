@@ -1,0 +1,93 @@
+{
+  "stickyHeaderFixedAfterScroll": true,
+  "filterCounts": {
+    "allCount": 8,
+    "mobileCount": 3
+  },
+  "pageErrors": [],
+  "brokenAssets": [],
+  "matrixResults": [
+    {
+      "theme": "light",
+      "vp": "1920x1080",
+      "scrollW": 1920,
+      "innerW": 1920,
+      "overflowX": false,
+      "brokenImgs": []
+    },
+    {
+      "theme": "light",
+      "vp": "1440x900",
+      "scrollW": 1440,
+      "innerW": 1440,
+      "overflowX": false,
+      "brokenImgs": []
+    },
+    {
+      "theme": "light",
+      "vp": "1024x900",
+      "scrollW": 1024,
+      "innerW": 1024,
+      "overflowX": false,
+      "brokenImgs": []
+    },
+    {
+      "theme": "light",
+      "vp": "390x844",
+      "scrollW": 390,
+      "innerW": 390,
+      "overflowX": false,
+      "brokenImgs": []
+    },
+    {
+      "theme": "dark",
+      "vp": "1920x1080",
+      "scrollW": 1920,
+      "innerW": 1920,
+      "overflowX": false,
+      "brokenImgs": []
+    },
+    {
+      "theme": "dark",
+      "vp": "1440x900",
+      "scrollW": 1440,
+      "innerW": 1440,
+      "overflowX": false,
+      "brokenImgs": []
+    },
+    {
+      "theme": "dark",
+      "vp": "1024x900",
+      "scrollW": 1024,
+      "innerW": 1024,
+      "overflowX": false,
+      "brokenImgs": []
+    },
+    {
+      "theme": "dark",
+      "vp": "390x844",
+      "scrollW": 390,
+      "innerW": 390,
+      "overflowX": false,
+      "brokenImgs": []
+    }
+  ],
+  "routeChecks": [
+    {
+      "route": "/services",
+      "h1": "Full-stack engineering, from architecture to scale."
+    },
+    {
+      "route": "/work",
+      "h1": "Architected for scale.\nShipped with uncompromising craft."
+    },
+    {
+      "route": "/about",
+      "h1": "Senior craft. Zero layers.\nDigital flagships built to endure"
+    },
+    {
+      "route": "/contact",
+      "h1": "Start with a clear architectural brief."
+    }
+  ]
+}
