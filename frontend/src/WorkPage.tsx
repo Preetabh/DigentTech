@@ -19,11 +19,11 @@ import {
 import React, { useEffect, useId, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import FlexCarousel, {
-  type FlexCarouselHandle,
-  type FlexCarouselItem,
-  type FlexCarouselPreset,
-} from "./FlexCarousel";
+import CircularCarousel, {
+  type CircularCarouselHandle,
+  type CircularCarouselItem,
+  type CircularCarouselPreset,
+} from "./CircularCarousel";
 import "./work-page.css";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -591,10 +591,27 @@ export function WorkPage() {
   const [heroDeckIdx, setHeroDeckIdx] = useState(0);
   const [activePhase, setActivePhase] = useState(0);
   const [carouselIdx, setCarouselIdx] = useState(0);
-  const [lensPreset, setLensPreset] = useState<FlexCarouselPreset>("liquid");
-  const carouselCtrlRef = useRef<FlexCarouselHandle | null>(null);
+  const [lensPreset, setLensPreset] = useState<CircularCarouselPreset>("cylinder");
+  const [isLight, setIsLight] = useState(
+    () =>
+      typeof document !== "undefined" &&
+      document.documentElement.dataset.theme === "light",
+  );
+  const carouselCtrlRef = useRef<CircularCarouselHandle | null>(null);
   const searchInputId = useId();
   const modalTitleId = useId();
+
+  useEffect(() => {
+    const syncTheme = () =>
+      setIsLight(document.documentElement.dataset.theme === "light");
+    syncTheme();
+    const obs = new MutationObserver(syncTheme);
+    obs.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+    return () => obs.disconnect();
+  }, []);
 
   useWorkDialogSync(dialogRef, !!selectedProject, () => setSelectedProject(null));
 
@@ -648,7 +665,7 @@ export function WorkPage() {
     return matchCategory && matchSearch;
   });
 
-  const carouselItems: FlexCarouselItem[] = filteredProjects.map((p) => ({
+  const carouselItems: CircularCarouselItem[] = filteredProjects.map((p) => ({
     src: p.image,
     alt: `${p.name} — ${p.categoryLabel}`,
     title: p.name,
@@ -1250,16 +1267,16 @@ export function WorkPage() {
             <div className="wrk-carousel-topbar">
               <span className="wrk-carousel-hint">
                 <span className="wrk-pulse-ring" aria-hidden="true" />
-                INTERACTIVE WEBGL LENS · DRAG, WHEEL OR CLICK CARD TO ZOOM
+                3D CIRCULAR STAGE · DRAG, SCROLL OR CLICK CENTER CARD TO INSPECT
               </span>
 
               <div className="wrk-carousel-controls">
                 <div
                   className="wrk-preset-pills"
                   role="radiogroup"
-                  aria-label="Lens optical preset"
+                  aria-label="3D stage geometry preset"
                 >
-                  {(["liquid", "ribbon", "vortex", "arch"] as FlexCarouselPreset[]).map(
+                  {(["cylinder", "orbit", "wheel", "panorama"] as CircularCarouselPreset[]).map(
                     (presetName) => (
                       <button
                         key={presetName}
@@ -1280,7 +1297,7 @@ export function WorkPage() {
                     type="button"
                     className="wrk-carousel-nav-btn"
                     aria-label="Previous showcase project"
-                    onClick={() => carouselCtrlRef.current?.step(-1)}
+                    onClick={() => carouselCtrlRef.current?.stepBy(-1)}
                   >
                     <ChevronLeft size={16} />
                   </button>
@@ -1288,7 +1305,7 @@ export function WorkPage() {
                     type="button"
                     className="wrk-carousel-nav-btn"
                     aria-label="Next showcase project"
-                    onClick={() => carouselCtrlRef.current?.step(1)}
+                    onClick={() => carouselCtrlRef.current?.stepBy(1)}
                   >
                     <ChevronRight size={16} />
                   </button>
@@ -1297,22 +1314,28 @@ export function WorkPage() {
             </div>
 
             <div className="wrk-carousel-viewport">
-              <FlexCarousel
+              <CircularCarousel
                 items={carouselItems}
                 preset={lensPreset}
-                intro="bloom"
-                cardHeight={0.54}
-                gap={16}
-                radius={14}
-                fit="landscape"
-                squeeze={0.2}
-                liquid={0.35}
-                followCursor
-                focusOnClick
+                intro="rise"
+                cardWidth={310}
+                aspectRatio={1.55}
+                gap={28}
+                speed={11}
+                cornerRadius={14}
+                depthFade={0.48}
+                fadeColor={isLight ? "#f1f5ff" : "#070c1b"}
+                innerShade={0.55}
                 captions
-                captureWheel
+                focusOnClick
+                pauseOnHover
                 controlRef={carouselCtrlRef}
                 onChange={(idx) => setCarouselIdx(idx)}
+                onItemClick={(_, idx) => {
+                  if (idx === carouselIdx && filteredProjects[idx]) {
+                    setSelectedProject(filteredProjects[idx]);
+                  }
+                }}
               />
             </div>
 
@@ -1345,7 +1368,7 @@ export function WorkPage() {
                       key={proj.id}
                       type="button"
                       className={`wrk-carousel-idx-pill ${proj.id === activeCarouselProject.id ? "active" : ""}`}
-                      onClick={() => carouselCtrlRef.current?.goTo(idx)}
+                      onClick={() => carouselCtrlRef.current?.focusIndex(idx)}
                       aria-label={`Jump to ${proj.name}`}
                     >
                       {proj.index}
@@ -1667,151 +1690,5 @@ export function WorkPage() {
         )}
       </dialog>
     </div>
-  );
-}
-
-function ProjectCardBento({
-  project,
-  featured,
-  onSelect,
-}: {
-  project: ProjectItem;
-  featured?: boolean;
-  onSelect: () => void;
-}) {
-  const cardRef = useRef<HTMLButtonElement | null>(null);
-  const [coords, setCoords] = useState({ x: 50, y: 50 });
-  const [tilt, setTilt] = useState({ x: 0, y: 0 });
-  const [isHovered, setIsHovered] = useState(false);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    setCoords({ x, y });
-
-    const cx = (x / rect.width - 0.5) * 2;
-    const cy = (y / rect.height - 0.5) * 2;
-    setTilt({ x: -cy * (featured ? 2.5 : 4.2), y: cx * (featured ? 2.5 : 4.2) });
-  };
-
-  return (
-    <button
-      ref={cardRef}
-      type="button"
-      className={`wrk-card-interactive ${featured ? "is-featured" : ""}`}
-      onClick={onSelect}
-      onMouseMove={handleMouseMove}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => {
-        setIsHovered(false);
-        setTilt({ x: 0, y: 0 });
-      }}
-      aria-label={`${project.name} case study details`}
-      style={
-        {
-          "--mouse-x": `${coords.x}px`,
-          "--mouse-y": `${coords.y}px`,
-        } as React.CSSProperties
-      }
-    >
-      <div
-        className="wrk-card-inner"
-        style={{
-          transform: isHovered
-            ? `perspective(1200px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) translateY(-5px)`
-            : "perspective(1200px) rotateX(0deg) rotateY(0deg) translateY(0)",
-        }}
-      >
-        <div className="wrk-card-spotlight" />
-
-        <div className={`wrk-card-media-stage wrk-stage-${project.color}`}>
-          <div className="wrk-card-hud-top">
-            <span className="wrk-card-hud-idx">
-              {project.index} // {project.velocity.toUpperCase()}
-            </span>
-            <span className="wrk-card-live">
-              <span className="wrk-live-dot" />
-              <span>{featured ? project.liveBadge : "Live System"}</span>
-            </span>
-          </div>
-
-          <div className="wrk-card-img-wrap">
-            <img
-              src={project.image}
-              alt={`${project.name} interface`}
-              loading={featured ? "eager" : "lazy"}
-            />
-          </div>
-
-          <div className="wrk-card-corners" aria-hidden="true">
-            <span />
-            <span />
-          </div>
-
-          <div className="wrk-card-hover-overlay">
-            <Layers size={13} />
-            <span>Inspect Architecture</span>
-            <ArrowUpRight size={14} />
-          </div>
-        </div>
-
-        <div className="wrk-card-content">
-          <div className="wrk-card-meta-row">
-            <span className="wrk-card-category">{project.categoryLabel}</span>
-            <span className="wrk-card-metric-pill">
-              <Zap size={11} style={{ color: "var(--accent)" }} />
-              {project.metric}
-            </span>
-          </div>
-
-          <div className="wrk-card-title-row">
-            <h3>{project.name}</h3>
-            <div className="wrk-card-arrow">
-              <ArrowUpRight size={16} />
-            </div>
-          </div>
-
-          <p className="wrk-card-desc">
-            {featured ? project.detail : project.description}
-          </p>
-
-          {featured && (
-            <div className="wrk-featured-pipeline">
-              {project.flowStages.map((st, idx) => (
-                <span key={st} className="wrk-featured-step">
-                  <em>0{idx + 1}</em> {st}
-                </span>
-              ))}
-            </div>
-          )}
-
-          {featured && (
-            <div className="wrk-featured-stats">
-              {project.stats.map((st) => (
-                <div key={st.label} className="wrk-featured-stat">
-                  <span>{st.label}</span>
-                  <strong>{st.val}</strong>
-                </div>
-              ))}
-            </div>
-          )}
-
-          <div className="wrk-card-tags">
-            {project.tags.slice(0, featured ? 4 : 3).map((t) => (
-              <span key={t} className="wrk-card-tag-pill">
-                {t}
-              </span>
-            ))}
-            {project.tags.length > (featured ? 4 : 3) && (
-              <span className="wrk-card-tag-more">
-                +{project.tags.length - (featured ? 4 : 3)}
-              </span>
-            )}
-          </div>
-        </div>
-      </div>
-    </button>
   );
 }

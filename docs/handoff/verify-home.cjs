@@ -180,6 +180,9 @@ function startStaticServer() {
           await page.locator(".lb-packages-section").scrollIntoViewIfNeeded();
           await page.waitForTimeout(450);
           await page.screenshot({ path: path.join(OUT_DIR, "home-dark-1440-packages.png") });
+          await page.locator(".footer").scrollIntoViewIfNeeded();
+          await page.waitForTimeout(450);
+          await page.screenshot({ path: path.join(OUT_DIR, "home-dark-1440-footer.png") });
         }
         if (theme === "light" && vp.width === 390) {
           await page.screenshot({ path: path.join(OUT_DIR, "home-light-390-top.png") });
@@ -222,20 +225,22 @@ function startStaticServer() {
     await page.waitForTimeout(750);
     await page.screenshot({ path: path.join(OUT_DIR, "work-light-1440-top.png") });
     const workFlowSteps = await page.locator(".wrk-flow-card").count();
-    const workCarouselHasCanvas = (await page.locator(".wrk-carousel-viewport canvas, .flex-carousel__fallback").count()) > 0;
+    await page.locator(".circular-carousel[data-ready]").waitFor({ state: "attached", timeout: 4000 });
+    const workCarouselHasCanvas = (await page.locator(".circular-carousel__card").count()) > 0;
     const workActiveBefore = (await page.locator(".wrk-carousel-dock-title").innerText()).trim();
     const workNextBtn = page.getByRole("button", { name: "Next showcase project" });
     if (await workNextBtn.count()) {
       await workNextBtn.click();
-      await page.waitForTimeout(450);
+      await page.waitForTimeout(800);
     }
     const workActiveAfter = (await page.locator(".wrk-carousel-dock-title").innerText()).trim();
     await page.evaluate(() => localStorage.setItem("dotcode-theme", "dark"));
     await page.reload({ waitUntil: "load" });
+    await page.locator(".circular-carousel[data-ready]").waitFor({ state: "attached", timeout: 4000 });
     await page.waitForTimeout(700);
     await page.screenshot({ path: path.join(OUT_DIR, "work-dark-1440-top.png") });
     await page.locator(".wrk-carousel-shell").scrollIntoViewIfNeeded();
-    await page.waitForTimeout(900);
+    await page.waitForTimeout(800);
     await page.screenshot({ path: path.join(OUT_DIR, "work-dark-1440-grid.png"), animations: "allow" });
     await page.locator(".wrk-carousel-inspect").click();
     await page.locator("dialog.wrk-modal-dialog").waitFor({ state: "visible" });

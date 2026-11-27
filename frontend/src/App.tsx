@@ -2360,6 +2360,80 @@ export default function App() {
       </main>
       <footer className="footer">
         <div className="wrap">
+          <div className="footer-global-banner">
+            <img
+              src="/assets/footer-global-banner.jpg"
+              alt=""
+              className="footer-global-bg"
+              loading="lazy"
+              aria-hidden="true"
+            />
+            <div className="footer-global-scrim" aria-hidden="true" />
+            <div className="footer-global-inner">
+              <div className="footer-global-flags" aria-label="Global delivery hubs">
+                <span className="footer-hub-chip" title="India">
+                  <svg viewBox="0 0 24 16" aria-hidden="true">
+                    <rect width="24" height="5.33" fill="#FF9933" />
+                    <rect y="5.33" width="24" height="5.34" fill="#FFFFFF" />
+                    <rect y="10.67" width="24" height="5.33" fill="#138808" />
+                    <circle cx="12" cy="8" r="1.8" fill="#000080" />
+                  </svg>
+                  <span>IN</span>
+                </span>
+                <span className="footer-hub-chip" title="United States">
+                  <svg viewBox="0 0 24 16" aria-hidden="true">
+                    <rect width="24" height="16" fill="#FFFFFF" />
+                    <rect y="0" width="24" height="2.3" fill="#B22234" />
+                    <rect y="4.6" width="24" height="2.3" fill="#B22234" />
+                    <rect y="9.2" width="24" height="2.3" fill="#B22234" />
+                    <rect y="13.7" width="24" height="2.3" fill="#B22234" />
+                    <rect width="10.5" height="9" fill="#3C3B6E" />
+                  </svg>
+                  <span>US</span>
+                </span>
+                <span className="footer-hub-chip" title="United Kingdom">
+                  <svg viewBox="0 0 24 16" aria-hidden="true">
+                    <rect width="24" height="16" fill="#012169" />
+                    <path d="M0 0L24 16M24 0L0 16" stroke="#FFFFFF" strokeWidth="2.8" />
+                    <path d="M0 0L24 16M24 0L0 16" stroke="#C8102E" strokeWidth="1.2" />
+                    <path d="M12 0V16M0 8H24" stroke="#FFFFFF" strokeWidth="4.2" />
+                    <path d="M12 0V16M0 8H24" stroke="#C8102E" strokeWidth="2.4" />
+                  </svg>
+                  <span>UK</span>
+                </span>
+                <span className="footer-hub-chip" title="United Arab Emirates">
+                  <svg viewBox="0 0 24 16" aria-hidden="true">
+                    <rect width="24" height="5.33" fill="#00732F" />
+                    <rect y="5.33" width="24" height="5.34" fill="#FFFFFF" />
+                    <rect y="10.67" width="24" height="5.33" fill="#000000" />
+                    <rect width="6.5" height="16" fill="#FF0000" />
+                  </svg>
+                  <span>UAE</span>
+                </span>
+                <span className="footer-hub-chip" title="Canada">
+                  <svg viewBox="0 0 24 16" aria-hidden="true">
+                    <rect width="24" height="16" fill="#FF0000" />
+                    <rect x="6" width="12" height="16" fill="#FFFFFF" />
+                    <path d="M12 3.5L13.4 7H15.5L13.8 8.6L14.4 11.2L12 9.8L9.6 11.2L10.2 8.6L8.5 7H10.6Z" fill="#FF0000" />
+                  </svg>
+                  <span>CA</span>
+                </span>
+              </div>
+
+              <div className="footer-global-content">
+                <h2>What’s Stopping Your Product from Scaling?</h2>
+                <p>
+                  Nothing. Partner with our global systems architects and ship production AI, web,
+                  or mobile platforms with full IP ownership.
+                </p>
+                <a href="/contact" className="footer-global-btn">
+                  <span>Book My Strategy Call</span>
+                  <ArrowRight size={15} />
+                </a>
+              </div>
+            </div>
+          </div>
+
           <div className="footer-main">
             <div>
               <BrandLogo />
