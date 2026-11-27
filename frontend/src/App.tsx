@@ -49,8 +49,7 @@ import { BrandLogo, StudioNote } from "./Studio";
 import {
     CapabilityExplorer,
     DesignDetails,
-    ProjectStarter,
-    ThemeImage
+    ProjectStarter
 } from "./VisualExperience";
 import { WebDevelopment } from "./WebDevelopment";
 import GhostFibers from "./GhostFibers";
@@ -536,59 +535,6 @@ function ProjectInteractiveCard({
         </div>
       </div>
     </button>
-  );
-}
-
-function WorkHero() {
-  
-  return (
-    <section className="work-hero-section wrap">
-      <div className="work-hero-content">
-        <div className="work-hero-badge">
-          <span className="pulse-dot" />
-          <span>OUR WORK & PRODUCTION ECOSYSTEM</span>
-        </div>
-        <h1 className="work-hero-title">
-          Ideas turned into <em>everyday experiences.</em>
-        </h1>
-        <p className="work-hero-text">
-          Explore our production business platforms, fintech mobile products and high-impact digital experiences. Real systems engineered for performance, reliability and scale.
-        </p>
-
-        <div className="work-hero-stats">
-          <div className="hero-stat-chip">
-            <span className="hero-stat-num">7</span>
-            <span className="hero-stat-desc">Production Systems</span>
-          </div>
-          <div className="hero-stat-chip">
-            <span className="hero-stat-num">99.98%</span>
-            <span className="hero-stat-desc">SLA Reliability</span>
-          </div>
-          <div className="hero-stat-chip">
-            <span className="hero-stat-num">&lt; 0.3s</span>
-            <span className="hero-stat-desc">Edge Latency</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="work-hero-visual-stage">
-        <div className="work-hero-image-card">
-          <ThemeImage
-            variant="work-showcase"
-            alt="DigentTech 3D Digital Product Architecture and Engineering Showcase"
-            className="work-hero-art"
-            priority={true}
-          />
-          <div className="work-hero-glass-overlay">
-            <div className="glass-indicator">
-              <span className="indicator-dot" />
-              <span>LIVE CLOUD ARCHITECTURE</span>
-            </div>
-            <span className="glass-tag">NEXT.JS 15 · EDGE RUNTIME</span>
-          </div>
-        </div>
-      </div>
-    </section>
   );
 }
 

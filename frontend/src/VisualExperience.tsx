@@ -19,7 +19,7 @@ export function ThemeImage({
   className = "",
   priority = false,
 }: {
-  variant?: "sculpture" | "workspace" | "work-showcase";
+  variant?: "sculpture" | "workspace";
   alt: string;
   className?: string;
   priority?: boolean;
