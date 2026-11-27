@@ -95,32 +95,52 @@ function startStaticServer() {
     await page.waitForTimeout(450);
     await page.screenshot({ path: path.join(OUT_DIR, "home-light-1440-project-hover.png") });
 
+    // Test delivery flow & interactive Work Spotlight before filter grid
+    const flowCount = await page.locator(".lb-work-flow-step").count();
+    let spotlightTitleBefore = "";
+    let spotlightTitleAfter = "";
+    if (await page.locator(".lb-work-spotlight").count()) {
+      await page.locator(".lb-work-spotlight").scrollIntoViewIfNeeded();
+      await page.waitForTimeout(350);
+      await page.screenshot({ path: path.join(OUT_DIR, "home-light-1440-spotlight.png") });
+      spotlightTitleBefore = (await page.locator(".lb-work-spotlight-title").innerText()).trim();
+      const nextBtn = page.getByRole("button", { name: "Next spotlight project" });
+      if (await nextBtn.count()) {
+        await nextBtn.click();
+        await page.waitForTimeout(300);
+        spotlightTitleAfter = (await page.locator(".lb-work-spotlight-title").innerText()).trim();
+      }
+    }
+
     // 2. Test interactive filter bar, case modal, proposal & estimate modals, FAQ accordion
     await page.locator(".lb-filter-bar").scrollIntoViewIfNeeded();
-    await page.getByRole("tab", { name: "MOBILE APPS" }).click();
+    await page.getByRole("tab", { name: /MOBILE APPS/i }).click();
     await page.waitForTimeout(250);
     const mobileCount = await page.locator(".lb-project-card").count();
-    await page.getByRole("tab", { name: "ALL" }).click();
-    await page.waitForTimeout(200);
+    await page.getByRole("tab", { name: /ALL/i }).click();
+    await page.waitForTimeout(250);
     const allCount = await page.locator(".lb-project-card").count();
 
     await page.locator(".lb-project-card").first().click();
-    await page.getByRole("dialog").waitFor();
-    await page.waitForTimeout(200);
+    await page.waitForFunction(() => Boolean(document.querySelector("dialog.lb-dialog[open]")));
+    await page.waitForTimeout(250);
     await page.screenshot({ path: path.join(OUT_DIR, "modal-project-dossier.png") });
     await page.keyboard.press("Escape");
+    await page.waitForFunction(() => !document.querySelector("dialog[open]"));
 
     await page.locator(".lb-pkg-scope-link").nth(1).click();
-    await page.getByRole("dialog").waitFor();
-    await page.waitForTimeout(200);
+    await page.waitForFunction(() => Boolean(document.querySelector("dialog.lb-dialog[open]")));
+    await page.waitForTimeout(250);
     await page.screenshot({ path: path.join(OUT_DIR, "modal-proposal.png") });
     await page.keyboard.press("Escape");
+    await page.waitForFunction(() => !document.querySelector("dialog[open]"));
 
     await page.locator(".lb-pkg-est-btn").nth(1).click();
-    await page.getByRole("dialog").waitFor();
-    await page.waitForTimeout(200);
+    await page.waitForFunction(() => Boolean(document.querySelector("dialog.lb-dialog[open]")));
+    await page.waitForTimeout(250);
     await page.screenshot({ path: path.join(OUT_DIR, "modal-estimate.png") });
     await page.keyboard.press("Escape");
+    await page.waitForFunction(() => !document.querySelector("dialog[open]"));
 
     // 3. Check metrics across viewports + themes
     const matrixResults = [];
@@ -154,6 +174,9 @@ function startStaticServer() {
           await page.locator(".lb-whatwedo-band").scrollIntoViewIfNeeded();
           await page.waitForTimeout(450);
           await page.screenshot({ path: path.join(OUT_DIR, "home-dark-1440-whatwedo.png") });
+          await page.locator(".lb-projects-section").scrollIntoViewIfNeeded();
+          await page.waitForTimeout(450);
+          await page.screenshot({ path: path.join(OUT_DIR, "home-dark-1440-projects.png") });
           await page.locator(".lb-packages-section").scrollIntoViewIfNeeded();
           await page.waitForTimeout(450);
           await page.screenshot({ path: path.join(OUT_DIR, "home-dark-1440-packages.png") });
@@ -164,37 +187,102 @@ function startStaticServer() {
           await page.waitForTimeout(400);
           await page.screenshot({ path: path.join(OUT_DIR, "home-light-390-packages.png") });
         }
+        if (theme === "dark" && vp.width === 390) {
+          await page.screenshot({ path: path.join(OUT_DIR, "home-dark-390-top.png") });
+        }
       }
     }
 
-    // 4. Verify non-Home subroutes render cleanly
+    // 4. Verify non-Home subroutes render cleanly + WorkPage interactive check
     await page.setViewportSize({ width: 1440, height: 900 });
+    await page.evaluate(() => localStorage.setItem("dotcode-theme", "light"));
     const subRoutes = ["/services", "/work", "/about", "/contact"];
     const routeChecks = [];
     for (const r of subRoutes) {
       await page.goto(baseUrl + r, { waitUntil: "load" });
-      await page.waitForTimeout(250);
+      await page.waitForTimeout(300);
       const h1 = await page.locator("h1").first().innerText();
-      routeChecks.push({ route: r, h1: h1.slice(0, 60) });
+      const overflowX = await page.evaluate(
+        () => document.documentElement.scrollWidth > window.innerWidth
+      );
+      routeChecks.push({ route: r, h1: h1.slice(0, 60), overflowX });
     }
 
-    console.log(
-      JSON.stringify(
-        {
-          stickyHeaderFixedAfterScroll: stickyCheck,
-          filterCounts: { allCount, mobileCount },
-          pageErrors,
-          brokenAssets,
-          matrixResults,
-          routeChecks,
-        },
-        null,
-        2
-      )
+    // Detailed /work page checks & route-switch loader test
+    await page.goto(baseUrl + "/", { waitUntil: "load" });
+    await page.waitForTimeout(300);
+    await page.locator('header nav a[href="/work"]').first().click();
+    await page.locator(".dt-route-loader").waitFor({ state: "visible", timeout: 2500 });
+    await page.waitForTimeout(40);
+    await page.screenshot({
+      path: path.join(OUT_DIR, "route-switch-loader.png"),
+      animations: "allow",
+    });
+    await page.waitForFunction(() => !document.querySelector(".dt-route-loader"), { timeout: 3000 });
+    await page.waitForTimeout(750);
+    await page.screenshot({ path: path.join(OUT_DIR, "work-light-1440-top.png") });
+    const workFlowSteps = await page.locator(".wrk-flow-card").count();
+    const workCarouselHasCanvas = (await page.locator(".wrk-carousel-viewport canvas, .flex-carousel__fallback").count()) > 0;
+    const workActiveBefore = (await page.locator(".wrk-carousel-dock-title").innerText()).trim();
+    const workNextBtn = page.getByRole("button", { name: "Next showcase project" });
+    if (await workNextBtn.count()) {
+      await workNextBtn.click();
+      await page.waitForTimeout(450);
+    }
+    const workActiveAfter = (await page.locator(".wrk-carousel-dock-title").innerText()).trim();
+    await page.evaluate(() => localStorage.setItem("dotcode-theme", "dark"));
+    await page.reload({ waitUntil: "load" });
+    await page.waitForTimeout(700);
+    await page.screenshot({ path: path.join(OUT_DIR, "work-dark-1440-top.png") });
+    await page.locator(".wrk-carousel-shell").scrollIntoViewIfNeeded();
+    await page.waitForTimeout(900);
+    await page.screenshot({ path: path.join(OUT_DIR, "work-dark-1440-grid.png"), animations: "allow" });
+    await page.locator(".wrk-carousel-inspect").click();
+    await page.locator("dialog.wrk-modal-dialog").waitFor({ state: "visible" });
+    await page.waitForTimeout(250);
+    await page.screenshot({ path: path.join(OUT_DIR, "work-dark-1440-modal.png") });
+    await page.keyboard.press("Escape");
+    await page.waitForFunction(() => !document.querySelector("dialog[open]"));
+    await page.getByRole("button", { name: "Blueprint view" }).click();
+    await page.waitForTimeout(450);
+    const workCardCount = await page.locator(".wrk-blueprint-row").count();
+    await page.screenshot({ path: path.join(OUT_DIR, "work-dark-1440-blueprint.png") });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.waitForTimeout(300);
+    const workMobileOverflow = await page.evaluate(
+      () => document.documentElement.scrollWidth > window.innerWidth
     );
+    await page.screenshot({ path: path.join(OUT_DIR, "work-dark-390-top.png") });
+
+    const report = {
+      stickyHeaderFixedAfterScroll: stickyCheck,
+      flowCount,
+      spotlightCheck: { spotlightTitleBefore, spotlightTitleAfter },
+      filterCounts: { allCount, mobileCount },
+      workCheck: {
+        workFlowSteps,
+        workCarouselHasCanvas,
+        workActiveBefore,
+        workActiveAfter,
+        workCardCount,
+        workMobileOverflow,
+      },
+      pageErrors,
+      brokenAssets,
+      matrixResults,
+      routeChecks,
+    };
+    const jsonOut = JSON.stringify(report, null, 2);
+    fs.writeFileSync(path.join(__dirname, "verification-results.json"), jsonOut + "\n", "utf8");
+    console.log(jsonOut);
+  } catch (err) {
+    console.error("VERIFY SUITE ERROR:", err);
+    pageErrors.push(err && err.message ? err.message : String(err));
   } finally {
     await browser.close();
     server.close();
-    process.exit(pageErrors.length || brokenAssets.length ? 1 : 0);
+    if (pageErrors.length || brokenAssets.length) {
+      process.exitCode = 1;
+    }
   }
 })();

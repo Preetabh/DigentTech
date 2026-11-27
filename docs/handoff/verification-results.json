@@ -1,8 +1,18 @@
 {
   "stickyHeaderFixedAfterScroll": true,
+  "flowCount": 4,
+  "spotlightCheck": {
+    "spotlightTitleBefore": "PulseMesh Neural Ops",
+    "spotlightTitleAfter": "AetherCore Treasury OS"
+  },
   "filterCounts": {
-    "allCount": 8,
-    "mobileCount": 3
+    "allCount": 9,
+    "mobileCount": 2
+  },
+  "workCheck": {
+    "workFlowSteps": 4,
+    "workCardCount": 9,
+    "workMobileOverflow": false
   },
   "pageErrors": [],
   "brokenAssets": [],
@@ -75,20 +85,23 @@
   "routeChecks": [
     {
       "route": "/services",
-      "h1": "Full-stack engineering, from architecture to scale."
+      "h1": "Full-stack engineering, from architecture to scale.",
+      "overflowX": false
     },
     {
       "route": "/work",
-      "h1": "Architected for scale.\nShipped with uncompromising craft."
+      "h1": "Architected for scale.\nShipped with uncompromising craft.",
+      "overflowX": false
     },
     {
       "route": "/about",
-      "h1": "Senior craft. Zero layers.\nDigital flagships built to endure"
+      "h1": "Senior craft. Zero layers.\nDigital flagships built to endure",
+      "overflowX": false
     },
     {
       "route": "/contact",
-      "h1": "Start with a clear architectural brief."
+      "h1": "Start with a clear architectural brief.",
+      "overflowX": false
     }
   ]
 }
-

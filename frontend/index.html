@@ -3,30 +3,31 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#080a0e" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#060812" />
     <title>DigentTech — Software Development, Web &amp; Mobile App Company in India</title>
     <meta
       name="description"
       content="DigentTech is a premier software development studio based in India (serving Lucknow, Barabanki &amp; global clients). We engineer high-performance web platforms, mobile apps, and AI solutions."
     />
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
-    <link rel="canonical" href="https://www.digenttech.workers.dev/" />
+    <link rel="canonical" href="https://digenttech.pages.dev/" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://www.digenttech.workers.dev/" />
+    <meta property="og:url" content="https://digenttech.pages.dev/" />
     <meta property="og:title" content="DigentTech — Software Development, Web &amp; Mobile App Company in India" />
     <meta property="og:description" content="DigentTech is a premier software development studio based in India. We engineer high-performance web platforms, mobile apps, and AI solutions." />
-    <meta property="og:image" content="https://www.digenttech.workers.dev/assets/og-image.jpg" />
+    <meta property="og:image" content="https://digenttech.pages.dev/assets/og-image.jpg" />
     <meta property="og:site_name" content="DigentTech" />
     <meta property="og:locale" content="en_US" />
 
     <!-- Twitter Cards -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:url" content="https://www.digenttech.workers.dev/" />
+    <meta name="twitter:url" content="https://digenttech.pages.dev/" />
     <meta name="twitter:title" content="DigentTech — Software Development, Web &amp; Mobile App Company in India" />
     <meta name="twitter:description" content="DigentTech is a premier software development studio based in India. We engineer high-performance web platforms, mobile apps, and AI solutions." />
-    <meta name="twitter:image" content="https://www.digenttech.workers.dev/assets/og-image.jpg" />
+    <meta name="twitter:image" content="https://digenttech.pages.dev/assets/og-image.jpg" />
 
     <!-- Favicons -->
     <link rel="icon" type="image/png" href="/assets/logo.png" />
@@ -36,19 +37,32 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700;800;900&family=Marcellus&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@500;600&display=swap"
       rel="stylesheet"
     />
 
     <!-- Theme Initialization Script (prevents theme flash) -->
     <script>
-      try {
-        var saved = localStorage.getItem("dotcode-theme");
-        document.documentElement.dataset.theme =
-          saved === "light" ? "light" : "dark";
-      } catch (e) {}
-      document.documentElement.style.colorScheme =
-        document.documentElement.dataset.theme;
+      (function () {
+        var resolved = "dark";
+        var csMeta = document.querySelector('meta[name="color-scheme"]');
+        var tcMeta = document.querySelector('meta[name="theme-color"]');
+        try {
+          var saved = localStorage.getItem("dotcode-theme");
+          if (saved === "light" || saved === "dark") {
+            resolved = saved;
+            if (csMeta) csMeta.content = saved;
+          } else {
+            var sysLight =
+              window.matchMedia &&
+              window.matchMedia("(prefers-color-scheme: light)").matches;
+            resolved = sysLight ? "light" : "dark";
+            if (csMeta) csMeta.content = "light dark";
+          }
+        } catch (e) {}
+        document.documentElement.dataset.theme = resolved;
+        if (tcMeta) tcMeta.content = resolved === "light" ? "#f5f8ff" : "#060812";
+      })();
     </script>
 
     <!-- Foundational Structured Data Schema (JSON-LD) -->
@@ -57,19 +71,19 @@
         {
           "@context": "https://schema.org",
           "@type": "Organization",
-          "@id": "https://www.digenttech.workers.dev/#organization",
+          "@id": "https://digenttech.pages.dev/#organization",
           "name": "DigentTech",
           "alternateName": "DigentTech Design & Development",
-          "url": "https://www.digenttech.workers.dev",
-          "logo": "https://www.digenttech.workers.dev/assets/logo.png",
-          "image": "https://www.digenttech.workers.dev/assets/og-image.jpg",
+          "url": "https://digenttech.pages.dev",
+          "logo": "https://digenttech.pages.dev/assets/logo.png",
+          "image": "https://digenttech.pages.dev/assets/og-image.jpg",
           "email": "hr.digenttech@gmail.com",
           "description": "DigentTech is an independent software development, web engineering, mobile apps, and AI solutions studio founded by Vishu Awasthi in India.",
           "founder": {
             "@type": "Person",
             "name": "Vishu Awasthi",
             "jobTitle": "Founder & Principal Strategist",
-            "image": "https://www.digenttech.workers.dev/assets/founder.png"
+            "image": "https://digenttech.pages.dev/assets/founder.png"
           },
           "foundingDate": "2022",
           "address": {
@@ -98,20 +112,20 @@
         {
           "@context": "https://schema.org",
           "@type": "WebSite",
-          "@id": "https://www.digenttech.workers.dev/#website",
-          "url": "https://www.digenttech.workers.dev",
+          "@id": "https://digenttech.pages.dev/#website",
+          "url": "https://digenttech.pages.dev",
           "name": "DigentTech",
           "description": "Software development, web applications, mobile apps, and enterprise AI engineering studio.",
-          "publisher": { "@id": "https://www.digenttech.workers.dev/#organization" },
+          "publisher": { "@id": "https://digenttech.pages.dev/#organization" },
           "inLanguage": "en-US"
         },
         {
           "@context": "https://schema.org",
           "@type": "ProfessionalService",
-          "@id": "https://www.digenttech.workers.dev/#localbusiness",
+          "@id": "https://digenttech.pages.dev/#localbusiness",
           "name": "DigentTech Software & Design Studio",
-          "url": "https://www.digenttech.workers.dev",
-          "image": "https://www.digenttech.workers.dev/assets/og-image.jpg",
+          "url": "https://digenttech.pages.dev",
+          "image": "https://digenttech.pages.dev/assets/og-image.jpg",
           "email": "hr.digenttech@gmail.com",
           "priceRange": "$$",
           "address": {
@@ -126,7 +140,7 @@
             "longitude": 81.1834
           },
           "areaServed": ["Barabanki", "Lucknow", "Uttar Pradesh", "India", "Worldwide"],
-          "parentOrganization": { "@id": "https://www.digenttech.workers.dev/#organization" }
+          "parentOrganization": { "@id": "https://digenttech.pages.dev/#organization" }
         }
       ]
     </script>

@@ -336,9 +336,9 @@ function PageHero({
     <header className="atelier-hero-stage">
       <div className="home-hero-ghost-bg" aria-hidden="true">
         <GhostFibers
-          lineColor={theme === "light" ? "#264796" : "#16223f"}
-          glowColor={theme === "light" ? "#9a7029" : "#c8a45d"}
-          speed={0.16}
+          lineColor={theme === "light" ? "#1d4ed8" : "#11224d"}
+          glowColor={theme === "light" ? "#0284c7" : "#38bdf8"}
+          speed={0.18}
           scale={1.9}
           layers={3}
           brightness={theme === "light" ? 1.08 : 1.25}
@@ -1197,6 +1197,7 @@ function Home({ theme = "dark" }: { theme?: "dark" | "light" }) {
   return (
     <div ref={homeRootRef} className="home-page" data-theme-mode={theme}>
       <section className="home-editorial-masthead">
+        <div className="home-aurora-mesh" aria-hidden="true" />
         <aside className="home-social-rail" aria-label="Quick Studio Navigation">
           <div className="home-rail-links">
             <a href="/work" title="Client Dossiers">WK</a>
@@ -1335,9 +1336,7 @@ function Home({ theme = "dark" }: { theme?: "dark" | "light" }) {
       <HomeEditorialSections
         theme={theme}
         onNavigate={(to) => {
-          window.history.pushState({}, "", to);
-          window.dispatchEvent(new PopStateEvent("popstate"));
-          window.scrollTo({ top: 0, behavior: "auto" });
+          window.dispatchEvent(new CustomEvent("dt:navigate", { detail: { to } }));
         }}
       />
     </div>
@@ -1822,26 +1821,146 @@ export default function App() {
   const [menu, setMenu] = useState(false);
   const [servicesOpen, setServicesOpen] = useState(false);
   const [search, setSearch] = useState(location.search);
-  const [theme, setTheme] = useState<"dark" | "light">(() =>
-    document.documentElement.dataset.theme === "light" ? "light" : "dark",
-  );
+  const mainRef = useRef<HTMLElement>(null);
+  const scrollProgressRef = useRef<HTMLDivElement>(null);
+  const [theme, setTheme] = useState<"dark" | "light">(() => {
+    try {
+      const saved = localStorage.getItem("dotcode-theme");
+      if (saved === "light" || saved === "dark") return saved;
+    } catch {}
+    if (document.documentElement.dataset.theme === "light") return "light";
+    return typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-color-scheme: light)").matches
+      ? "light"
+      : "dark";
+  });
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
-    document.documentElement.style.colorScheme = theme;
-    const meta = document.querySelector<HTMLMetaElement>(
-      "meta[name=theme-color]",
-    );
-    if (meta) meta.content = theme === "dark" ? "#080a0e" : "#f8f9fc";
+    const tcMeta = document.querySelector<HTMLMetaElement>("meta[name=theme-color]");
+    if (tcMeta) tcMeta.content = theme === "light" ? "#f5f8ff" : "#060812";
+    const csMeta = document.querySelector<HTMLMetaElement>('meta[name="color-scheme"]');
+    let hasSaved = false;
     try {
-      localStorage.setItem("dotcode-theme", theme);
+      const saved = localStorage.getItem("dotcode-theme");
+      hasSaved = saved === "light" || saved === "dark";
     } catch {}
+    if (csMeta) csMeta.content = hasSaved ? theme : "light dark";
   }, [theme]);
+  useEffect(() => {
+    const mq = window.matchMedia?.("(prefers-color-scheme: light)");
+    const onMq = (e: MediaQueryListEvent) => {
+      try {
+        const saved = localStorage.getItem("dotcode-theme");
+        if (saved === "light" || saved === "dark") return;
+      } catch {}
+      setTheme(e.matches ? "light" : "dark");
+    };
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === "dotcode-theme") {
+        if (e.newValue === "light" || e.newValue === "dark") setTheme(e.newValue);
+        else setTheme(mq?.matches ? "light" : "dark");
+      }
+    };
+    mq?.addEventListener?.("change", onMq);
+    window.addEventListener("storage", onStorage);
+    return () => {
+      mq?.removeEventListener?.("change", onMq);
+      window.removeEventListener("storage", onStorage);
+    };
+  }, []);
+  const toggleTheme = () => {
+    const next = theme === "dark" ? "light" : "dark";
+    const sys = window.matchMedia?.("(prefers-color-scheme: light)").matches ? "light" : "dark";
+    try {
+      if (next !== sys) localStorage.setItem("dotcode-theme", next);
+      else localStorage.removeItem("dotcode-theme");
+    } catch {}
+    setTheme(next);
+  };
+  useEffect(() => {
+    const bar = scrollProgressRef.current;
+    if (
+      !bar ||
+      typeof window === "undefined" ||
+      window.CSS?.supports?.("animation-timeline", "scroll()") ||
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
+    )
+      return;
+    const onScroll = () => {
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = maxScroll > 0 ? Math.min(1, Math.max(0, window.scrollY / maxScroll)) : 0;
+      bar.style.transform = `scaleX(${pct})`;
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  const [routeSwitch, setRouteSwitch] = useState<{
+    phase: "idle" | "active" | "leaving";
+    label: string;
+    top: number;
+  }>({ phase: "idle", label: "", top: 76 });
+  const switchTimersRef = useRef<number[]>([]);
   const s = services.find((s) => s.path === path);
   useEffect(() => {
+    const clearSwitchTimers = () => {
+      switchTimersRef.current.forEach((id) => window.clearTimeout(id));
+      switchTimersRef.current = [];
+    };
+    const formatRouteLabel = (pathname: string) => {
+      const clean = pathname.replace(/\/$/, "") || "/";
+      if (clean === "/") return "Home";
+      if (clean === "/work") return "Work Archive";
+      if (clean === "/services") return "Practice Areas";
+      if (clean === "/about") return "Studio & Leadership";
+      if (clean === "/careers") return "Careers";
+      if (clean === "/online-courses") return "Academy";
+      if (clean === "/contact") return "Consultation";
+      const matched = services.find((svc) => svc.path === clean);
+      return matched ? matched.title : clean.slice(1).replace(/[-/]+/g, " ");
+    };
     const sync = () => {
       setPath(location.pathname.replace(/\/$/, "") || "/");
       setSearch(location.search);
       setMenu(false);
+    };
+    const runSwitch = (targetRaw: string) => {
+      const u = new URL(targetRaw, location.origin);
+      if (u.origin !== location.origin || !["http:", "https:"].includes(u.protocol)) return;
+      const targetPath = u.pathname.replace(/\/$/, "") || "/";
+      const currentPath = location.pathname.replace(/\/$/, "") || "/";
+      const targetNorm = targetPath + u.search;
+      const currentNorm = currentPath + location.search;
+      setMenu(false);
+      setServicesOpen(false);
+      if (targetNorm === currentNorm) {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      }
+      clearSwitchTimers();
+      const headerEl = document.querySelector<HTMLElement>(".site-header");
+      const top = Math.max(0, Math.round(headerEl?.getBoundingClientRect().bottom ?? 76));
+      const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+      setRouteSwitch({ phase: "active", label: formatRouteLabel(targetPath), top });
+      const swapDelay = reduced ? 40 : 280;
+      const leaveDelay = reduced ? 90 : 540;
+      const doneDelay = reduced ? 150 : 740;
+      switchTimersRef.current.push(
+        window.setTimeout(() => {
+          history.pushState({}, "", u.pathname + u.search);
+          sync();
+          window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
+        }, swapDelay),
+        window.setTimeout(() => {
+          setRouteSwitch((prev) =>
+            prev.phase === "idle" ? prev : { ...prev, phase: "leaving" },
+          );
+        }, leaveDelay),
+        window.setTimeout(() => {
+          setRouteSwitch({ phase: "idle", label: "", top });
+          mainRef.current?.focus({ preventScroll: true });
+        }, doneDelay),
+      );
     };
     const click = (e: MouseEvent) => {
       if (
@@ -1863,19 +1982,29 @@ export default function App() {
       )
         return;
       e.preventDefault();
-      history.pushState({}, "", u.pathname + u.search);
-      sync();
-      window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
+      runSwitch(u.href);
+    };
+    const onCustomNav = (e: Event) => {
+      const to = (e as CustomEvent<{ to?: string }>).detail?.to;
+      if (to) runSwitch(to);
     };
     window.addEventListener("popstate", sync);
+    window.addEventListener("dt:navigate", onCustomNav);
     document.addEventListener("click", click);
     return () => {
+      clearSwitchTimers();
       window.removeEventListener("popstate", sync);
+      window.removeEventListener("dt:navigate", onCustomNav);
       document.removeEventListener("click", click);
     };
   }, []);
   useEffect(() => {
-    if (path === "/") return;
+    if (
+      path === "/" ||
+      (window.CSS?.supports?.("(animation-timeline: view()) and (animation-range: entry)") &&
+        window.matchMedia?.("(prefers-reduced-motion: no-preference)").matches)
+    )
+      return;
     const elements = document.querySelectorAll(
       ".section-heading,.service-card,.project-card,.process-grid article,.studio-copy,.studio-heading,.cta,.feature-box,.tech-card,.roadmap-card,.showcase-card,.lux-workbench-shell,.home-tech-card,.why-card,.testimonial-card,.home-faq-item,.atelier-engagement-card,.atelier-course-card",
     );
@@ -2023,6 +2152,12 @@ export default function App() {
   return (
     <>
       <SEO pathname={path} />
+      <div
+        ref={scrollProgressRef}
+        id="scroll-progress"
+        className="dt-scroll-progress"
+        aria-hidden="true"
+      />
       <a className="skip-link" href="#main">
         Skip to content
       </a>
@@ -2177,7 +2312,7 @@ export default function App() {
           </nav>
           <button
             className="theme-toggle icon-button"
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            onClick={toggleTheme}
             aria-label={
               theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
             }
@@ -2199,7 +2334,30 @@ export default function App() {
           </button>
         </div>
       </header>
-      <main id="main">{content}</main>
+      {routeSwitch.phase !== "idle" && (
+        <div
+          className={`dt-route-loader${routeSwitch.phase === "leaving" ? " is-leaving" : ""}`}
+          style={{ ["--dt-loader-top" as string]: `${routeSwitch.top}px` }}
+          role="status"
+          aria-live="polite"
+          aria-label={`Switching to ${routeSwitch.label}`}
+        >
+          <div className="dt-loader-beam" aria-hidden="true" />
+          <div className="dt-loader-stage">
+            <div className="dt-loader-emblem" aria-hidden="true">
+              <div className="dt-loader-brackets">
+                <span className="dt-loader-bracket dt-loader-bracket-tl" />
+                <span className="dt-loader-bracket dt-loader-bracket-br" />
+              </div>
+              <span className="dt-loader-core" />
+            </div>
+            <span className="dt-loader-label">{routeSwitch.label}</span>
+          </div>
+        </div>
+      )}
+      <main id="main" ref={mainRef} tabIndex={-1}>
+        {content}
+      </main>
       <footer className="footer">
         <div className="wrap">
           <div className="footer-main">

@@ -4,35 +4,124 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
+function prefersReducedMotion(): boolean {
+  return (
+    typeof window !== "undefined" &&
+    !!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
+  );
+}
+
 /**
- * Orchestrates GPU-accelerated GSAP timelines, ScrollTrigger parallax,
- * staggered architectural reveals, rotary seal kinetics, and magnetic controls
- * across the Home page while respecting `prefers-reduced-motion`.
+ * Staggers project cards smoothly whenever the user filters the homepage grid.
  */
+export function animateProjectFilterGrid(container: HTMLElement | null) {
+  if (!container) return;
+  if (prefersReducedMotion()) {
+    ScrollTrigger.refresh();
+    return;
+  }
+
+  const cards = gsap.utils.toArray<HTMLElement>(".lb-project-card", container);
+  if (!cards.length) return;
+
+  gsap.killTweensOf(cards);
+  gsap.fromTo(
+    cards,
+    { y: 26, scale: 0.96, opacity: 0 },
+    {
+      y: 0,
+      scale: 1,
+      opacity: 1,
+      duration: 0.54,
+      stagger: { amount: 0.32, from: "start" },
+      ease: "power3.out",
+      clearProps: "transform,opacity",
+      onComplete: () => {
+        ScrollTrigger.refresh();
+      },
+    }
+  );
+}
+
+/**
+ * Transitions the spotlight preview media and text stagger when cycling projects.
+ */
+export function animateWorkSpotlight(container: HTMLElement | null) {
+  if (!container || prefersReducedMotion()) return;
+
+  const media = container.querySelector<HTMLElement>(".lb-work-spotlight-media");
+  const img = container.querySelector<HTMLElement>(".lb-work-spotlight-media img");
+  const items = gsap.utils.toArray<HTMLElement>(".lb-work-spotlight-stagger", container);
+
+  if (media) {
+    gsap.killTweensOf(media);
+    gsap.fromTo(
+      media,
+      { clipPath: "inset(0 8% 0 0 round 16px)", opacity: 0.45 },
+      {
+        clipPath: "inset(0 0% 0 0 round 16px)",
+        opacity: 1,
+        duration: 0.62,
+        ease: "power3.out",
+        clearProps: "clipPath,opacity",
+      }
+    );
+  }
+
+  if (img) {
+    gsap.killTweensOf(img);
+    gsap.fromTo(
+      img,
+      { scale: 1.07 },
+      { scale: 1, duration: 0.72, ease: "power3.out", clearProps: "scale" }
+    );
+  }
+
+  if (items.length) {
+    gsap.killTweensOf(items);
+    gsap.fromTo(
+      items,
+      { x: 18, opacity: 0.15 },
+      {
+        x: 0,
+        opacity: 1,
+        duration: 0.48,
+        stagger: 0.045,
+        ease: "power2.out",
+        clearProps: "transform,opacity",
+      }
+    );
+  }
+}
+
 export function useHomeGsapChoreography(rootRef: RefObject<HTMLDivElement | null>) {
   useEffect(() => {
     const root = rootRef.current;
-    if (!root || typeof window === "undefined") return;
-
-    const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    if (reduceMotion) return;
+    if (!root || typeof window === "undefined" || prefersReducedMotion()) return;
 
     const cleanups: Array<() => void> = [];
 
     const ctx = gsap.context(() => {
-      // 1. Continuous kinetic studio seal with interactive hover overdrive
-      const sealSvg = root.querySelector<SVGSVGElement>(".home-seal-svg");
+      // 1. Rotating seal & hover speed acceleration
+      const sealSvg = root.querySelector<HTMLElement>(".home-seal-svg");
       const sealWrap = root.querySelector<HTMLElement>(".home-editorial-seal");
       if (sealSvg) {
-        const sealTween = gsap.to(sealSvg, {
+        const spinTween = gsap.to(sealSvg, {
           rotation: 360,
           duration: 24,
           repeat: -1,
           ease: "none",
         });
+
         if (sealWrap) {
-          const onEnter = () => gsap.to(sealTween, { timeScale: 3.2, duration: 0.45, ease: "power2.out" });
-          const onLeave = () => gsap.to(sealTween, { timeScale: 1, duration: 0.65, ease: "power2.out" });
+          const onEnter = () => {
+            gsap.to(spinTween, { timeScale: 3.6, duration: 0.45, ease: "power2.out" });
+            gsap.to(".home-seal-core", { scale: 1.08, duration: 0.35, ease: "power2.out" });
+          };
+          const onLeave = () => {
+            gsap.to(spinTween, { timeScale: 1, duration: 0.65, ease: "power2.out" });
+            gsap.to(".home-seal-core", { scale: 1, duration: 0.45, ease: "power2.out" });
+          };
           sealWrap.addEventListener("mouseenter", onEnter);
           sealWrap.addEventListener("mouseleave", onLeave);
           cleanups.push(() => {
@@ -42,50 +131,43 @@ export function useHomeGsapChoreography(rootRef: RefObject<HTMLDivElement | null
         }
       }
 
-      // 1b. Interactive Split-Ribbon Hover Reveal on "DIGENT TECH"
+      // 2. Hero kicker split curtain reveal
       const kickerEl = root.querySelector<HTMLElement>(".home-editorial-kicker");
       if (kickerEl) {
         const topHalf = kickerEl.querySelector<HTMLElement>(".kicker-half-top");
-        const bottomHalf = kickerEl.querySelector<HTMLElement>(".kicker-half-bottom");
+        const botHalf = kickerEl.querySelector<HTMLElement>(".kicker-half-bottom");
         const midBar = kickerEl.querySelector<HTMLElement>(".kicker-mid-bar");
 
-        if (topHalf && bottomHalf && midBar) {
-          const hoverTl = gsap.timeline({
+        if (topHalf && botHalf && midBar) {
+          const splitTl = gsap.timeline({
             paused: true,
             defaults: { duration: 0.36, ease: "power3.out" },
           });
-
-          hoverTl
+          splitTl
             .to(topHalf, { y: -10 }, 0)
-            .to(bottomHalf, { y: 10 }, 0)
+            .to(botHalf, { y: 10 }, 0)
             .to(midBar, { scaleX: 1, opacity: 1, duration: 0.34, ease: "expo.out" }, 0.03);
 
-          const onHoverIn = () => hoverTl.play();
-          const onHoverOut = () => hoverTl.reverse();
+          const play = () => splitTl.play();
+          const reverse = () => splitTl.reverse();
 
-          kickerEl.addEventListener("mouseenter", onHoverIn);
-          kickerEl.addEventListener("mouseleave", onHoverOut);
-          kickerEl.addEventListener("focus", onHoverIn);
-          kickerEl.addEventListener("blur", onHoverOut);
+          kickerEl.addEventListener("mouseenter", play);
+          kickerEl.addEventListener("mouseleave", reverse);
+          kickerEl.addEventListener("focus", play);
+          kickerEl.addEventListener("blur", reverse);
           cleanups.push(() => {
-            kickerEl.removeEventListener("mouseenter", onHoverIn);
-            kickerEl.removeEventListener("mouseleave", onHoverOut);
-            kickerEl.removeEventListener("focus", onHoverIn);
-            kickerEl.removeEventListener("blur", onHoverOut);
+            kickerEl.removeEventListener("mouseenter", play);
+            kickerEl.removeEventListener("mouseleave", reverse);
+            kickerEl.removeEventListener("focus", play);
+            kickerEl.removeEventListener("blur", reverse);
           });
         }
       }
 
-      // 2. Opening architectural masthead timeline
-      const introTl = gsap.timeline({ defaults: { ease: "power4.out" } });
-
-      introTl
-        .fromTo(
-          ".home-social-rail",
-          { x: -30, opacity: 0 },
-          { x: 0, opacity: 1, duration: 0.75, clearProps: "transform" },
-          0
-        )
+      // 3. Initial Hero & Showreel entrance choreography
+      gsap
+        .timeline({ defaults: { ease: "power4.out" } })
+        .fromTo(".home-social-rail", { x: -30, opacity: 0 }, { x: 0, opacity: 1, duration: 0.75, clearProps: "transform" }, 0)
         .fromTo(
           ".home-rail-links a",
           { y: -12, opacity: 0 },
@@ -95,13 +177,7 @@ export function useHomeGsapChoreography(rootRef: RefObject<HTMLDivElement | null
         .fromTo(
           ".home-editorial-kicker",
           { y: 42, clipPath: "inset(0 0 100% 0)", opacity: 0.15 },
-          {
-            y: 0,
-            clipPath: "inset(0 0 0% 0)",
-            opacity: 1,
-            duration: 0.9,
-            clearProps: "clipPath,transform",
-          },
+          { y: 0, clipPath: "inset(0 0 0% 0)", opacity: 1, duration: 0.9, clearProps: "clipPath,transform" },
           0.05
         )
         .fromTo(
@@ -130,18 +206,18 @@ export function useHomeGsapChoreography(rootRef: RefObject<HTMLDivElement | null
         )
         .fromTo(
           ".home-avatar-stack > *",
-          { scale: 0.72, opacity: 0.2 },
-          { scale: 1, opacity: 1, duration: 0.5, stagger: 0.06, ease: "back.out(1.6)", clearProps: "transform" },
-          0.38
+          { scale: 0.78, opacity: 0.3 },
+          { scale: 1, opacity: 1, duration: 0.4, stagger: 0.04, ease: "back.out(1.6)", clearProps: "transform,opacity" },
+          0.2
         )
         .fromTo(
           "#showreel .home-cinema-video",
           { scale: 1.07 },
-          { scale: 1.0, duration: 1.25, ease: "power3.out" },
+          { scale: 1, duration: 1.25, ease: "power3.out" },
           0.1
         );
 
-      // 3. Scroll-linked full-bleed video parallax & controls float
+      // 4. Scroll-linked Cinema Showreel parallax
       const showreelEl = root.querySelector<HTMLElement>("#showreel");
       const cinemaVideo = root.querySelector<HTMLElement>("#showreel .home-cinema-video");
       if (showreelEl && cinemaVideo) {
@@ -150,7 +226,7 @@ export function useHomeGsapChoreography(rootRef: RefObject<HTMLDivElement | null
           { yPercent: -5, scale: 1.08 },
           {
             yPercent: 5,
-            scale: 1.0,
+            scale: 1,
             ease: "none",
             scrollTrigger: {
               trigger: showreelEl,
@@ -173,7 +249,7 @@ export function useHomeGsapChoreography(rootRef: RefObject<HTMLDivElement | null
         });
       }
 
-      // 4. Sticky header slide-down & editorial About parallax
+      // 5. Sticky header scroll class elevation
       const headerEl = document.querySelector<HTMLElement>(".site-header");
       if (headerEl) {
         const onHeaderScroll = () => {
@@ -191,6 +267,7 @@ export function useHomeGsapChoreography(rootRef: RefObject<HTMLDivElement | null
         });
       }
 
+      // 6. About & FAQ frame image parallax
       const aboutFrame = root.querySelector<HTMLElement>(".lb-about-photo-frame");
       const aboutImg = root.querySelector<HTMLElement>(".lb-about-photo-img");
       if (aboutFrame && aboutImg) {
@@ -205,13 +282,120 @@ export function useHomeGsapChoreography(rootRef: RefObject<HTMLDivElement | null
               trigger: aboutFrame,
               start: "top bottom",
               end: "bottom top",
-              scrub: 1.0,
+              scrub: 1,
             },
           }
         );
       }
 
-      // 5. Batched staggered reveal choreography across all redesigned Home sections
+      const faqFrame = root.querySelector<HTMLElement>(".lb-faq-photo-frame");
+      const faqImg = root.querySelector<HTMLElement>(".lb-faq-photo-frame img");
+      if (faqFrame && faqImg) {
+        gsap.fromTo(
+          faqImg,
+          { yPercent: -4, scale: 1.08 },
+          {
+            yPercent: 4,
+            scale: 1.01,
+            ease: "none",
+            scrollTrigger: {
+              trigger: faqFrame,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: 1,
+            },
+          }
+        );
+      }
+
+      // 7. Engineering delivery flow strip timeline
+      const flowStrip = root.querySelector<HTMLElement>(".lb-work-flow-strip");
+      if (flowStrip) {
+        const lineFill = flowStrip.querySelector<HTMLElement>(".lb-work-flow-line-fill");
+        const steps = gsap.utils.toArray<HTMLElement>(".lb-work-flow-step", flowStrip);
+        const indices = gsap.utils.toArray<HTMLElement>(".lb-work-flow-index", flowStrip);
+        const flowTl = gsap.timeline({
+          scrollTrigger: {
+            trigger: flowStrip,
+            start: "top 88%",
+            once: true,
+          },
+        });
+        if (lineFill) {
+          flowTl.fromTo(
+            lineFill,
+            { scaleX: 0 },
+            { scaleX: 1, duration: 1, ease: "power3.inOut", clearProps: "transform" },
+            0
+          );
+        }
+        if (steps.length) {
+          flowTl.fromTo(
+            steps,
+            { y: 26, scale: 0.96, opacity: 0.1 },
+            { y: 0, scale: 1, opacity: 1, duration: 0.65, stagger: 0.1, ease: "power3.out", clearProps: "transform,opacity" },
+            0.08
+          );
+        }
+        if (indices.length) {
+          flowTl.fromTo(
+            indices,
+            { scale: 0.7 },
+            { scale: 1, duration: 0.5, stagger: 0.1, ease: "back.out(1.8)", clearProps: "transform" },
+            0.12
+          );
+        }
+      }
+
+      // 8. Work spotlight clip reveal + subtle image scrub
+      const spotlightEl = root.querySelector<HTMLElement>(".lb-work-spotlight");
+      if (spotlightEl) {
+        const spotMedia = spotlightEl.querySelector<HTMLElement>(".lb-work-spotlight-media");
+        const spotImg = spotlightEl.querySelector<HTMLElement>(".lb-work-spotlight-media img");
+        const spotItems = gsap.utils.toArray<HTMLElement>(".lb-work-spotlight-stagger", spotlightEl);
+        const spotTl = gsap.timeline({
+          scrollTrigger: {
+            trigger: spotlightEl,
+            start: "top 87%",
+            once: true,
+          },
+        });
+        if (spotMedia) {
+          spotTl.fromTo(
+            spotMedia,
+            { clipPath: "inset(0 8% 0 0 round 16px)", opacity: 0.45 },
+            { clipPath: "inset(0 0% 0 0 round 16px)", opacity: 1, duration: 0.65, ease: "power4.out", clearProps: "clipPath,opacity" },
+            0
+          );
+        }
+        if (spotItems.length) {
+          spotTl.fromTo(
+            spotItems,
+            { x: 18, opacity: 0.3 },
+            { x: 0, opacity: 1, duration: 0.46, stagger: 0.04, ease: "power3.out", clearProps: "transform,opacity" },
+            0.08
+          );
+        }
+        if (spotImg) {
+          gsap.fromTo(
+            spotImg,
+            { yPercent: -4, scale: 1.07 },
+            {
+              yPercent: 4,
+              scale: 1,
+              ease: "none",
+              scrollTrigger: {
+                trigger: spotlightEl,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: 1.05,
+              },
+            }
+          );
+        }
+      }
+
+      // 9. Batched scroll reveal choreography across Home sections
       const batchTargets = [
         ".lb-centered-header",
         ".lb-about-copy > *",
@@ -234,11 +418,12 @@ export function useHomeGsapChoreography(rootRef: RefObject<HTMLDivElement | null
           onEnter: (batch) => {
             gsap.fromTo(
               batch,
-              { y: 24, opacity: 0.2 },
+              { y: 28, scale: 0.98, opacity: 0.12 },
               {
                 y: 0,
+                scale: 1,
                 opacity: 1,
-                duration: 0.68,
+                duration: 0.72,
                 stagger: 0.08,
                 ease: "power3.out",
                 clearProps: "transform,opacity",
@@ -248,11 +433,11 @@ export function useHomeGsapChoreography(rootRef: RefObject<HTMLDivElement | null
         });
       });
 
-      // 6. Magnetic hover physics for fine-pointer desktop controls
+      // 10. Fine-pointer magnetic controls, radial surface glows, and 3D card tilt
       const finePointer = window.matchMedia?.("(pointer: fine)").matches;
       if (finePointer) {
         const magnetEls = root.querySelectorAll<HTMLElement>(
-          ".home-editorial-arrow-box, .lb-btn-rect, .lb-pkg-est-btn"
+          ".home-editorial-arrow-box, .lb-btn-rect, .lb-btn-outline-rect, .lb-pkg-est-btn, .lb-fab-inquiry"
         );
         magnetEls.forEach((el) => {
           const xTo = gsap.quickTo(el, "x", { duration: 0.35, ease: "power3.out" });
@@ -277,6 +462,83 @@ export function useHomeGsapChoreography(rootRef: RefObject<HTMLDivElement | null
             el.removeEventListener("mouseleave", onLeave);
           });
         });
+
+        const glowTargets = root.querySelectorAll<HTMLElement>(
+          ".lb-service-box, .lb-wire-card-inner, .lb-package-row, .lb-infra-card, .lb-ecosystem-card, .lb-work-flow-step, .lb-work-spotlight"
+        );
+        glowTargets.forEach((el) => {
+          const onPointerMove = (e: PointerEvent) => {
+            const rect = el.getBoundingClientRect();
+            const mx = ((e.clientX - rect.left) / rect.width) * 100;
+            const my = ((e.clientY - rect.top) / rect.height) * 100;
+            el.style.setProperty("--mx", `${mx.toFixed(1)}%`);
+            el.style.setProperty("--my", `${my.toFixed(1)}%`);
+          };
+          el.addEventListener("pointermove", onPointerMove, { passive: true });
+          cleanups.push(() => {
+            el.removeEventListener("pointermove", onPointerMove);
+          });
+        });
+
+        const projectsSection = root.querySelector<HTMLElement>(".lb-projects-section");
+        if (projectsSection) {
+          let activeCard: HTMLElement | null = null;
+
+          const onSectionMove = (e: PointerEvent) => {
+            const target = (e.target as Element | null)?.closest<HTMLElement>(".lb-project-card");
+            if (activeCard && activeCard !== target) {
+              gsap.to(activeCard, {
+                rotateX: 0,
+                rotateY: 0,
+                y: 0,
+                duration: 0.45,
+                ease: "power3.out",
+                clearProps: "transform",
+              });
+            }
+            activeCard = target ?? null;
+            if (!target) return;
+
+            const rect = target.getBoundingClientRect();
+            const px = (e.clientX - rect.left) / rect.width;
+            const py = (e.clientY - rect.top) / rect.height;
+            target.style.setProperty("--mx", `${(px * 100).toFixed(1)}%`);
+            target.style.setProperty("--my", `${(py * 100).toFixed(1)}%`);
+
+            const rotY = (px - 0.5) * 6.5;
+            const rotX = -(py - 0.5) * 5.5;
+            gsap.to(target, {
+              rotateX: rotX,
+              rotateY: rotY,
+              y: -4,
+              transformPerspective: 1000,
+              duration: 0.35,
+              ease: "power2.out",
+              overwrite: "auto",
+            });
+          };
+
+          const onSectionLeave = () => {
+            if (activeCard) {
+              gsap.to(activeCard, {
+                rotateX: 0,
+                rotateY: 0,
+                y: 0,
+                duration: 0.5,
+                ease: "power3.out",
+                clearProps: "transform",
+              });
+              activeCard = null;
+            }
+          };
+
+          projectsSection.addEventListener("pointermove", onSectionMove, { passive: true });
+          projectsSection.addEventListener("pointerleave", onSectionLeave);
+          cleanups.push(() => {
+            projectsSection.removeEventListener("pointermove", onSectionMove);
+            projectsSection.removeEventListener("pointerleave", onSectionLeave);
+          });
+        }
       }
     }, root);
 

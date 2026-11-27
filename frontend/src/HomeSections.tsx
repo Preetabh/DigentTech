@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useId, useRef, useState } from "react";
 import {
   ArrowRight,
   ArrowUp,
@@ -9,6 +9,7 @@ import {
   ChevronRight,
   Cpu,
   Globe,
+  Layers,
   MessageSquare,
   Minus,
   Plus,
@@ -18,7 +19,9 @@ import {
   Sparkles,
   TrendingUp,
   X,
+  Zap,
 } from "lucide-react";
+import { animateProjectFilterGrid, animateWorkSpotlight } from "./HomeAnimations";
 import {
   CloudflareAwsLogo,
   DockerKubernetesLogo,
@@ -49,7 +52,71 @@ export interface HomeSectionsProps {
 }
 
 // ============================================================================
-// Data Collections (100% DigentTech Authentic Content & Assets)
+// Native <dialog> Top-Layer Synchronizer
+// ============================================================================
+
+function useDialogSync(
+  dialogRef: React.RefObject<HTMLDialogElement | null>,
+  open: boolean,
+  onClose: () => void
+) {
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    if (open && !dialog.open) {
+      dialog.showModal();
+    } else if (!open && dialog.open) {
+      dialog.close();
+    }
+  }, [dialogRef, open]);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog || "closedBy" in HTMLDialogElement.prototype) return;
+
+    const isOutside = (e: PointerEvent) => {
+      const r = dialog.getBoundingClientRect();
+      return (
+        e.clientX < r.left ||
+        e.clientX > r.right ||
+        e.clientY < r.top ||
+        e.clientY > r.bottom
+      );
+    };
+
+    let startedOutside = false;
+    const onDown = (e: PointerEvent) => {
+      startedOutside = isOutside(e);
+    };
+    const onUp = (e: PointerEvent) => {
+      if (startedOutside && isOutside(e)) {
+        dialog.close();
+      }
+      startedOutside = false;
+    };
+
+    dialog.addEventListener("pointerdown", onDown);
+    dialog.addEventListener("pointerup", onUp);
+    return () => {
+      dialog.removeEventListener("pointerdown", onDown);
+      dialog.removeEventListener("pointerup", onUp);
+    };
+  }, [dialogRef]);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    const handleClose = () => {
+      dialog.returnValue = "";
+      onClose();
+    };
+    dialog.addEventListener("close", handleClose);
+    return () => dialog.removeEventListener("close", handleClose);
+  }, [dialogRef, onClose]);
+}
+
+// ============================================================================
+// Data Collections
 // ============================================================================
 
 const MARQUEE_PARTNERS = [
@@ -170,19 +237,6 @@ const WHAT_WE_DO_ITEMS = [
   },
 ];
 
-interface PortfolioProject {
-  id: string;
-  title: string;
-  category: "WEB PLATFORMS" | "MOBILE APPS" | "AI & AUTOMATION" | "DESIGN SYSTEMS";
-  metric: string;
-  stack: string[];
-  client: string;
-  summary: string;
-  architecture: string[];
-  image: string;
-  route: string;
-}
-
 const PORTFOLIO_FILTERS = [
   "ALL",
   "WEB PLATFORMS",
@@ -191,142 +245,229 @@ const PORTFOLIO_FILTERS = [
   "DESIGN SYSTEMS",
 ] as const;
 
+const DELIVERY_FLOW_STEPS = [
+  {
+    step: "01",
+    phase: "DISCOVER & TRACE",
+    title: "System Audit",
+    detail: "Latency budgets, domain schemas, and threat boundary specs.",
+  },
+  {
+    step: "02",
+    phase: "ARCHITECT",
+    title: "Edge & Tokens",
+    detail: "Type-safe API contracts, OKLCH design tokens, and state models.",
+  },
+  {
+    step: "03",
+    phase: "BUILD & HARDEN",
+    title: "Velocity Sprint",
+    detail: "Weekly CI builds, Playwright verification, and load benchmarks.",
+  },
+  {
+    step: "04",
+    phase: "SHIP & OBSERVE",
+    title: "Production SLA",
+    detail: "Zero-downtime rollouts, live telemetry, and 100% repo handover.",
+  },
+];
+
+interface PortfolioProject {
+  id: string;
+  index: string;
+  title: string;
+  category: "WEB PLATFORMS" | "MOBILE APPS" | "AI & AUTOMATION" | "DESIGN SYSTEMS";
+  metric: string;
+  velocity: string;
+  stack: string[];
+  client: string;
+  summary: string;
+  architecture: string[];
+  flowStages: string[];
+  image: string;
+  route: string;
+}
+
 const PORTFOLIO_PROJECTS: PortfolioProject[] = [
   {
-    id: "infrapilot",
-    title: "InfraPilot Field Suite",
-    category: "MOBILE APPS",
-    metric: "140ms Cold Start · Offline Sync",
-    stack: ["React Native", "SQLite Sync", "Node.js", "Postgres"],
-    client: "Infrastructure Operations Group",
-    summary:
-      "Multi-site field telemetry, defect photography, and executive CRM portal engineered with background conflict-free SQLite synchronization.",
-    architecture: [
-      "Deterministic delta-sync engine sustaining offline operation across zero-connectivity sites",
-      "Unified mobile dispatch + executive browser console with role-based approval trails",
-      "Automated PDF compliance reports cutting site sign-off turnaround by 64%",
-    ],
-    image: "/assets/projects/infrapilot-crm-portal.png",
-    route: "/app-development",
-  },
-  {
-    id: "hrmitra",
-    title: "HRMitra Command Portal",
-    category: "WEB PLATFORMS",
-    metric: "12k+ Active Staff · 99.98% Uptime",
-    stack: ["Next.js", "TypeScript", "PostgreSQL", "Redis"],
-    client: "Enterprise People Operations",
-    summary:
-      "High-volume attendance, payroll ledger, and multi-branch workforce management suite replacing fragmented legacy spreadsheets.",
-    architecture: [
-      "Sub-200ms payroll calculation engine with immutable audit event logs",
-      "Real-time branch attendance dashboards + companion mobile check-in app",
-      "Zero-downtime blue/green schema migrations across distributed tenants",
-    ],
-    image: "/assets/projects/hrmitra-hrm-portal.png",
-    route: "/web-development",
-  },
-  {
-    id: "novacommerce",
-    title: "NovaCommerce Flagship",
-    category: "WEB PLATFORMS",
-    metric: "210ms Edge TTFB · +38% CVR",
-    stack: ["Next.js", "Cloudflare Workers", "Shopify", "Stripe"],
-    client: "Direct-to-Consumer Flagship",
-    summary:
-      "Headless luxury commerce storefront with edge-cached catalog pages, instant bundle builder, and sub-second checkout.",
-    architecture: [
-      "Edge-revalidated ISR pages delivering consistent <210ms TTFB across Tier-1 & Tier-2 networks",
-      "Custom cart drawer + server-side attribution pipeline with zero layout shift",
-      "Automated Playwright visual regression coverage before every release",
-    ],
-    image: "/assets/projects/novacommerce-web-portal.png",
-    route: "/web-development",
-  },
-  {
-    id: "quantos",
-    title: "QuantOS Autonomous Desk",
+    id: "pulse-mesh",
+    index: "01",
+    title: "PulseMesh Neural Ops",
     category: "AI & AUTOMATION",
-    metric: "94% Ticket Auto-Triage",
-    stack: ["LangGraph", "Python FastAPI", "Qdrant", "OpenAI"],
-    client: "B2B Research & Ops",
+    metric: "1.4M Daily Events · 34ms Inference",
+    velocity: "6 Weeks to Production",
+    stack: ["LangGraph", "Python FastAPI", "Qdrant", "Next.js"],
+    client: "Meridian Logistics Cloud",
     summary:
-      "Private VPC research and multi-agent operational desk grounded on internal SOPs with citation verification and human approval gates.",
+      "Autonomous multi-agent freight dispatch and predictive route solver coordinating live fleet corridors across 42 hubs with deterministic citation guardrails.",
     architecture: [
-      "Hybrid dense + keyword vector retrieval with strict per-role document ACLs",
-      "Deterministic JSON schema outputs feeding CRM and ERP webhooks safely",
-      "Full trace observability showing token cost, latency, and citation score",
+      "Streaming spatial graph ingestion sustaining sub-35ms route policy inference",
+      "Human-in-the-loop override rails with immutable replay audit trails",
+      "99.8% ETA compliance accuracy lifting cross-hub corridor throughput by 37%",
     ],
-    image: "/assets/projects/quantos-web-terminal.png",
+    flowStages: ["Telemetry Mesh", "Vector Router", "Policy Solver", "Edge Dispatch"],
+    image: "/assets/projects/work-pulsemesh-ai.webp",
     route: "/ai-solutions",
   },
   {
-    id: "aurapay",
-    title: "AuraPay Wallet & Ledger",
-    category: "MOBILE APPS",
-    metric: "60fps Biometric Flow",
-    stack: ["Flutter", "Go", "PostgreSQL", "Sentry"],
-    client: "Fintech Consumer App",
+    id: "aether-core",
+    index: "02",
+    title: "AetherCore Treasury OS",
+    category: "WEB PLATFORMS",
+    metric: "$4.91T Cleared · 99.99% SLA",
+    velocity: "8 Weeks Architecture",
+    stack: ["React 19", "TypeScript", "Go Ledger", "PostgreSQL"],
+    client: "Nordik Clearing Systems",
     summary:
-      "Cross-platform digital wallet and instant expense ledger crafted with hardware-backed biometrics and idempotent transaction APIs.",
+      "Institutional multi-currency settlement cockpit uniting real-time liquidity flow graphs, idempotent sweeping, and cryptographic ledger inspection.",
     architecture: [
-      "Double-entry Go microservice core enforcing strict idempotency keys",
-      "Hardware enclave pin/biometric signing with zero plain-text token storage",
-      "Sub-second statement search and categorized spend analytics",
+      "Double-entry Go ledger core enforcing strict idempotency & serializable locks",
+      "Real-time WebSocket liquidity graph streaming Fedwire, CHIPS & TARGET2 lanes",
+      "Zero-layout-shift workstation interface supporting 120Hz market snapshots",
     ],
-    image: "/assets/projects/aurapay-mobile-app.png",
+    flowStages: ["Ledger Core", "Risk Mesh", "Liquidity UI", "SOC-2 Audit"],
+    image: "/assets/projects/work-aethercore-web.webp",
+    route: "/web-development",
+  },
+  {
+    id: "veloce-pay",
+    index: "03",
+    title: "VelocePay Instant Wallet",
+    category: "MOBILE APPS",
+    metric: "60fps Enclave · 99.98% Crash-Free",
+    velocity: "5 Weeks MVP + Apps",
+    stack: ["React Native", "Swift Enclave", "Go", "Stripe Rails"],
+    client: "Veloce Consumer Financial",
+    summary:
+      "Hardware-biometric digital wallet and virtual card vault engineered for instant QR settlement, multi-currency balance curves, and offline queue resilience.",
+    architecture: [
+      "Device Secure Enclave cryptographic request signing with zero plaintext secrets",
+      "Sub-140ms cold start & 60fps spring-driven card vault gestures",
+      "Idempotent payment retries surviving flaky subway & cellular handoffs",
+    ],
+    flowStages: ["Biometric Key", "Vault Card", "Instant Rail", "Ledger Sync"],
+    image: "/assets/projects/work-velocepay-mobile.webp",
     route: "/app-development",
   },
   {
-    id: "pulsefit",
-    title: "PulseFit Coaching Companion",
-    category: "MOBILE APPS",
-    metric: "4.9★ Store Rating",
-    stack: ["React Native", "Supabase", "TanStack", "Fastlane"],
-    client: "Connected Wellness Brand",
+    id: "kinetix-twin",
+    index: "04",
+    title: "Kinetix Spatial Twin",
+    category: "AI & AUTOMATION",
+    metric: "-44% Faults · 18ms Telemetry",
+    velocity: "7 Weeks Full Rollout",
+    stack: ["Python FastAPI", "WebGL", "TimescaleDB", "Redis"],
+    client: "VoltGrid Energy Partners",
     summary:
-      "Daily coaching companion featuring adaptive workout timers, offline media caching, and streak telemetry.",
+      "Predictive 3D substation digital twin and harmonic anomaly triage workspace monitoring 280 solar & battery storage nodes in real time.",
     architecture: [
-      "Optimistic UI updates synced cleanly to Supabase real-time channels",
-      "Automated Fastlane & GitHub Actions pipelines shipping iOS/Android betas weekly",
-      "Custom chart animations running smoothly at 60fps on mid-range devices",
+      "Sub-20ms harmonic spectrum stream detecting thermal drift hours ahead of failure",
+      "Interactive 3D wireframe node map isolating phase imbalance across sectors",
+      "Autonomous escalation engine eliminating manual operator ticket triage",
     ],
-    image: "/assets/projects/pulsefit-mobile-app.png",
-    route: "/app-development",
+    flowStages: ["Sensor Ingest", "3D Mesh", "Fault Triage", "Auto Dispatch"],
+    image: "/assets/projects/work-kinetix-twin.webp",
+    route: "/ai-solutions",
   },
   {
-    id: "clay-tokens",
-    title: "Digent Design System",
+    id: "lumina-commerce",
+    index: "05",
+    title: "Lumina Headless Store",
+    category: "WEB PLATFORMS",
+    metric: "190ms Edge TTFB · 2.4x CVR",
+    velocity: "4 Weeks Migration",
+    stack: ["Next.js 15", "Cloudflare Workers", "Shopify", "Stripe"],
+    client: "Lumina Nordic Retail",
+    summary:
+      "Edge-rendered composable flagship commerce experience featuring interactive 3D SKU inspection, instant variant switching, and 0.00 CLS checkout.",
+    architecture: [
+      "Cloudflare Edge ISR storefront hitting 190ms global TTFB at 18,400 req/sec",
+      "Predictive prefetch slide-over drawer driving 2.4x checkout conversion lift",
+      "Multi-currency localized pricing & server-side attribution pipeline",
+    ],
+    flowStages: ["Edge Cache", "3D Viewer", "Instant Cart", "Global Pay"],
+    image: "/assets/projects/work-lumina-commerce.webp",
+    route: "/web-development",
+  },
+  {
+    id: "stratum-system",
+    index: "06",
+    title: "Stratum Token Engine",
     category: "DESIGN SYSTEMS",
-    metric: "64 Accessible Primitives",
-    stack: ["Figma Tokens", "React", "TypeScript", "Tailwind"],
-    client: "DigentTech Atelier Standards",
+    metric: "12.4:1 AAA · 14 Product Squads",
+    velocity: "3 Weeks Token Core",
+    stack: ["W3C Tokens", "React", "TypeScript", "Figma API"],
+    client: "Cross-Platform Design Ops",
     summary:
-      "Unified design token architecture synchronizing Obsidian Dark and Editorial Ivory light themes across multi-product engineering squads.",
+      "Zero-runtime OKLCH design token pipeline and 64-component primitive suite synchronizing Midnight Dark and Porcelain Light surfaces across teams.",
     architecture: [
-      "Semantic surface, elevation, and contrast-verified color token pipeline",
-      "Accessible keyboard-first dialogs, drawers, tables, and form primitives",
-      "Zero-runtime CSS variables ensuring instant zero-flash theme switching",
+      "Semantic contrast-checked surface & elevation ramps with zero theme flicker",
+      "Automated Figma-to-React token diffs & Playwright screenshot CI gates",
+      "Keyboard-first ARIA primitives built on native popover & dialog standards",
     ],
-    image: "/assets/projects/claymorphism-design-tokens.png",
+    flowStages: ["OKLCH Ramps", "Figma Sync", "Primitives", "CI Diff Gate"],
+    image: "/assets/projects/work-stratum-system.webp",
     route: "/services",
   },
   {
-    id: "infrapilot-mob",
-    title: "FieldSync Mobile Terminal",
-    category: "AI & AUTOMATION",
-    metric: "3.4x Faster Dispatch",
-    stack: ["Python FastAPI", "React Native", "OCR + Vision", "AWS"],
-    client: "Logistics & Field Teams",
+    id: "medisync-care",
+    index: "07",
+    title: "MediSync Ward Companion",
+    category: "MOBILE APPS",
+    metric: "99.99% Uptime · BLE Vitals",
+    velocity: "6 Weeks Clinical Pilot",
+    stack: ["Flutter", "Supabase", "Bluetooth LE", "Go"],
+    client: "Helios Health Network",
     summary:
-      "Vision-assisted invoice and site inspection capture converting mobile photos into structured ERP entries in under two seconds.",
+      "HIPAA-aligned ward companion streaming wearable ECG/SpO2 waveforms to clinician rounds with encrypted 1.2s voice shift handoffs.",
     architecture: [
-      "On-device image compression + structured LLM vision extraction pipeline",
-      "Confidence scoring automatically flagging anomalies for supervisor sign-off",
-      "Encrypted S3 archival with lifecycle retention policies",
+      "Continuous BLE wearable ingestion sustaining sub-second waveform plotting",
+      "Zero-knowledge encrypted voice handoff notes parsed directly into ward charts",
+      "Offline-safe SQLite shift cache with automatic cryptographic reconciliation",
     ],
-    image: "/assets/projects/infrapilot-mobile-app.png",
-    route: "/ai-solutions",
+    flowStages: ["BLE Stream", "ECG Engine", "Voice Notes", "Ward Lock"],
+    image: "/assets/projects/work-medisync-mobile.webp",
+    route: "/app-development",
+  },
+  {
+    id: "orbit-crm",
+    index: "08",
+    title: "Orbit Revenue Pipeline",
+    category: "WEB PLATFORMS",
+    metric: "18k+ Seats · +31% Velocity",
+    velocity: "7 Weeks Enterprise",
+    stack: ["Next.js", "Postgres", "Node.js", "Redis"],
+    client: "Stride B2B Enterprise",
+    summary:
+      "Multi-tenant B2B revenue intelligence cockpit automating 140ms SLA lead routing, security review gates, and executive pipeline forecasting.",
+    architecture: [
+      "Tenant-isolated PostgreSQL row-level security verified across 18,000+ seats",
+      "Sub-140ms territory assignment & forecasting spline updates under heavy load",
+      "Audit-ready approval gates integrating CRM, legal redlines & billing webhooks",
+    ],
+    flowStages: ["SLA Router", "Kanban Core", "RBAC Guard", "Forecasting"],
+    image: "/assets/projects/work-orbit-crm.webp",
+    route: "/web-development",
+  },
+  {
+    id: "foundry-kit",
+    index: "09",
+    title: "Foundry Motion SDK",
+    category: "DESIGN SYSTEMS",
+    metric: "120fps Motion · 0 Layout Shift",
+    velocity: "4 Weeks Studio SDK",
+    stack: ["GSAP 3.15", "View Transitions", "CSS Anchor", "TypeScript"],
+    client: "Digent Partner Architecture",
+    summary:
+      "Production UI motion & native layout kit combining GSAP ScrollTrigger timelines, top-layer dialogs with @starting-style, and View Transitions.",
+    architecture: [
+      "Hardware-composited animation primitives honoring prefers-reduced-motion",
+      "Native <dialog> and CSS Anchor Positioning patterns with Progressive Fallbacks",
+      "Zero external scroll-hijacking bloat keeping LCP fast across mobile devices",
+    ],
+    flowStages: ["GSAP Core", "Top Layer", "View Morph", "A11y Motion"],
+    image: "/assets/projects/work-foundry-kit.webp",
+    route: "/services",
   },
 ];
 
@@ -530,7 +671,6 @@ function CountUpStat({ item, active }: { item: HighlightStat; active: boolean })
 
     const step = (now: number) => {
       const progress = Math.min(1, (now - start) / duration);
-      // Ease out cubic
       const eased = 1 - Math.pow(1 - progress, 3);
       setDisplay(item.target * eased);
       if (progress < 1) {
@@ -561,7 +701,7 @@ function CountUpStat({ item, active }: { item: HighlightStat; active: boolean })
 }
 
 // ============================================================================
-// Modals: Engineering Proposal + Free Estimate + Project Dossier
+// Native <dialog> Modals: Proposal, Estimate & Project Dossier
 // ============================================================================
 
 function ProposalModal({
@@ -573,88 +713,89 @@ function ProposalModal({
   onClose: () => void;
   onRequestEstimate: (packageName: string) => void;
 }) {
-  useEffect(() => {
-    if (!pkg) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [pkg, onClose]);
-
-  if (!pkg) return null;
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const titleId = useId();
+  useDialogSync(dialogRef, !!pkg, onClose);
 
   return (
-    <div
-      className="lb-modal-backdrop"
-      role="dialog"
-      aria-modal="true"
-      aria-label={`${pkg.title} Proposal Breakdown`}
-      onClick={onClose}
+    <dialog
+      ref={dialogRef}
+      className="lb-dialog lb-proposal-modal"
+      aria-labelledby={titleId}
+      {...({ closedby: "any" } as Record<string, string>)}
     >
-      <div className="lb-proposal-modal" onClick={(e) => e.stopPropagation()}>
-        <div className="lb-modal-head">
-          <div>
-            <span className="lb-modal-kicker">
-              TIER {pkg.tierNumber} · {pkg.badge}
-            </span>
-            <h3>{pkg.title} — Architecture Proposal</h3>
-          </div>
-          <button
-            type="button"
-            className="lb-modal-close"
-            onClick={onClose}
-            aria-label="Close proposal modal"
-          >
-            <X size={18} />
-          </button>
-        </div>
-
-        <div className="lb-proposal-meta">
-          <div>
-            <span>TYPICAL TIMELINE</span>
-            <strong>{pkg.timeline}</strong>
-          </div>
-          <div>
-            <span>INVESTMENT RANGE</span>
-            <strong>{pkg.price}</strong>
-          </div>
-          <div>
-            <span>DELIVERY MODEL</span>
-            <strong>Fixed Milestone · Full IP</strong>
-          </div>
-        </div>
-
-        <div className="lb-proposal-stages">
-          {pkg.proposalStages.map((s) => (
-            <div key={s.step} className="lb-proposal-stage">
-              <div className="lb-stage-num">{s.step}</div>
-              <div>
-                <h4>{s.title}</h4>
-                <p>{s.detail}</p>
-              </div>
+      {pkg && (
+        <>
+          <div className="lb-modal-head">
+            <div>
+              <span className="lb-modal-kicker">
+                TIER {pkg.tierNumber} · {pkg.badge}
+              </span>
+              <h1 id={titleId} className="lb-modal-title">
+                {pkg.title} — Architecture Proposal
+              </h1>
             </div>
-          ))}
-        </div>
+            <button
+              type="button"
+              className="lb-modal-close"
+              onClick={() => dialogRef.current?.close()}
+              aria-label="Close proposal modal"
+            >
+              <X size={18} />
+            </button>
+          </div>
 
-        <div className="lb-modal-footer">
-          <button type="button" className="lb-btn-ghost" onClick={onClose}>
-            Close Overview
-          </button>
-          <button
-            type="button"
-            className="lb-btn-solid"
-            onClick={() => {
-              const title = pkg.title;
-              onClose();
-              onRequestEstimate(title);
-            }}
-          >
-            Configure Free Estimate <ArrowRight size={15} />
-          </button>
-        </div>
-      </div>
-    </div>
+          <div className="lb-proposal-meta">
+            <div>
+              <span>TYPICAL TIMELINE</span>
+              <strong>{pkg.timeline}</strong>
+            </div>
+            <div>
+              <span>INVESTMENT RANGE</span>
+              <strong>{pkg.price}</strong>
+            </div>
+            <div>
+              <span>DELIVERY MODEL</span>
+              <strong>Fixed Milestone · Full IP</strong>
+            </div>
+          </div>
+
+          <div className="lb-proposal-stages">
+            {pkg.proposalStages.map((s) => (
+              <div key={s.step} className="lb-proposal-stage">
+                <div className="lb-stage-num">{s.step}</div>
+                <div>
+                  <h4>{s.title}</h4>
+                  <p>{s.detail}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="lb-modal-footer">
+            <button
+              type="button"
+              className="lb-btn-ghost"
+              onClick={() => dialogRef.current?.close()}
+            >
+              Close Overview
+            </button>
+            <button
+              type="button"
+              className="lb-btn-solid"
+              autoFocus
+              onClick={() => {
+                const title = pkg.title;
+                dialogRef.current?.close();
+                onRequestEstimate(title);
+              }}
+            >
+              Configure Free Estimate <ArrowRight size={15} />
+            </button>
+          </div>
+        </>
+      )}
+    </dialog>
   );
 }
 
@@ -676,6 +817,8 @@ function EstimateModal({
   initialPackage: string;
   onClose: () => void;
 }) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const titleId = useId();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -687,16 +830,10 @@ function EstimateModal({
   const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
-    if (!open) return;
-    setSubmitted(false);
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [open, onClose]);
+    if (open) setSubmitted(false);
+  }, [open]);
 
-  if (!open) return null;
+  useDialogSync(dialogRef, open, onClose);
 
   const toggleScope = (scope: string) => {
     setSelectedScopes((prev) =>
@@ -711,132 +848,143 @@ function EstimateModal({
   };
 
   return (
-    <div
-      className="lb-modal-backdrop dark-glass"
-      role="dialog"
-      aria-modal="true"
-      aria-label="Get Free Engineering Estimate"
-      onClick={onClose}
+    <dialog
+      ref={dialogRef}
+      className="lb-dialog dark-glass lb-estimate-modal"
+      aria-labelledby={titleId}
+      {...({ closedby: "any" } as Record<string, string>)}
     >
-      <div className="lb-estimate-modal" onClick={(e) => e.stopPropagation()}>
-        <div className="lb-modal-head">
-          <div>
-            <span className="lb-modal-kicker">
-              PROJECT SCOPING · {initialPackage.toUpperCase()}
-            </span>
-            <h3>Get a Tailored Engineering Estimate</h3>
+      <div className="lb-modal-head">
+        <div>
+          <span className="lb-modal-kicker">
+            PROJECT SCOPING · {initialPackage.toUpperCase()}
+          </span>
+          <h1 id={titleId} className="lb-modal-title">
+            Get a Tailored Engineering Estimate
+          </h1>
+        </div>
+        <button
+          type="button"
+          className="lb-modal-close"
+          onClick={() => dialogRef.current?.close()}
+          aria-label="Close estimate modal"
+        >
+          <X size={18} />
+        </button>
+      </div>
+
+      {submitted ? (
+        <div className="lb-estimate-success">
+          <div className="lb-success-icon">
+            <ShieldCheck size={28} />
           </div>
+          <h4>Specification Request Prepared</h4>
+          <p>
+            Thank you, <strong>{name}</strong>. Our principal engineering desk has captured your{" "}
+            <strong>{initialPackage}</strong> brief across{" "}
+            <strong>{selectedScopes.join(", ") || "Custom Scope"}</strong>. Send directly to{" "}
+            <a
+              href={`mailto:hr.digenttech@gmail.com?subject=${encodeURIComponent(
+                `Project Estimate — ${initialPackage} (${name})`
+              )}&body=${encodeURIComponent(
+                `Name: ${name}\nEmail: ${email}\nPhone: ${phone || "N/A"}\nPackage: ${initialPackage}\nScopes: ${selectedScopes.join(", ")}\n\nNotes:\n${notes}`
+              )}`}
+            >
+              hr.digenttech@gmail.com
+            </a>{" "}
+            or expect a response within 24 business hours.
+          </p>
           <button
             type="button"
-            className="lb-modal-close"
-            onClick={onClose}
-            aria-label="Close estimate modal"
+            className="lb-btn-gold"
+            autoFocus
+            onClick={() => dialogRef.current?.close()}
           >
-            <X size={18} />
+            Done
           </button>
         </div>
+      ) : (
+        <form className="lb-estimate-form" onSubmit={handleSubmit}>
+          <div className="lb-form-row">
+            <label>
+              <span>Full Name *</span>
+              <input
+                type="text"
+                required
+                autoFocus
+                placeholder="e.g. Aarav Sharma"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </label>
+            <label>
+              <span>Work Email *</span>
+              <input
+                type="email"
+                required
+                placeholder="you@company.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </label>
+          </div>
 
-        {submitted ? (
-          <div className="lb-estimate-success">
-            <div className="lb-success-icon">
-              <ShieldCheck size={28} />
+          <div className="lb-form-row single">
+            <label>
+              <span>Phone / WhatsApp (Optional)</span>
+              <input
+                type="tel"
+                placeholder="+91 ..."
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+              />
+            </label>
+          </div>
+
+          <div className="lb-scope-picker">
+            <span className="lb-scope-label">Select Engineering Modules</span>
+            <div className="lb-scope-grid">
+              {ESTIMATE_SCOPES.map((scope) => {
+                const active = selectedScopes.includes(scope);
+                return (
+                  <button
+                    key={scope}
+                    type="button"
+                    className={`lb-scope-chip ${active ? "active" : ""}`}
+                    onClick={() => toggleScope(scope)}
+                    aria-pressed={active}
+                  >
+                    <span className="lb-scope-box">{active && <Check size={12} />}</span>
+                    <span>{scope}</span>
+                  </button>
+                );
+              })}
             </div>
-            <h4>Specification Request Prepared</h4>
-            <p>
-              Thank you, <strong>{name}</strong>. Our principal engineering desk has captured your{" "}
-              <strong>{initialPackage}</strong> brief across{" "}
-              <strong>{selectedScopes.join(", ") || "Custom Scope"}</strong>. Send directly to{" "}
-              <a href={`mailto:hr.digenttech@gmail.com?subject=${encodeURIComponent(`Project Estimate — ${initialPackage} (${name})`)}&body=${encodeURIComponent(`Name: ${name}\nEmail: ${email}\nPhone: ${phone || "N/A"}\nPackage: ${initialPackage}\nScopes: ${selectedScopes.join(", ")}\n\nNotes:\n${notes}`)}`}>
-                hr.digenttech@gmail.com
-              </a>{" "}
-              or expect a response within 24 business hours.
-            </p>
-            <button type="button" className="lb-btn-gold" onClick={onClose}>
-              Done
+          </div>
+
+          <div className="lb-form-row single">
+            <label>
+              <span>Brief Goals &amp; Target Timeline</span>
+              <textarea
+                rows={3}
+                placeholder="Share core workflows, existing stack, or desired launch window..."
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+              />
+            </label>
+          </div>
+
+          <div className="lb-modal-footer">
+            <span className="lb-est-note">
+              Direct reply from Principal Architects within 24 hrs
+            </span>
+            <button type="submit" className="lb-btn-gold">
+              Request Estimate <ArrowUpRight size={15} />
             </button>
           </div>
-        ) : (
-          <form className="lb-estimate-form" onSubmit={handleSubmit}>
-            <div className="lb-form-row">
-              <label>
-                <span>Full Name *</span>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Aarav Sharma"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
-              </label>
-              <label>
-                <span>Work Email *</span>
-                <input
-                  type="email"
-                  required
-                  placeholder="you@company.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </label>
-            </div>
-
-            <div className="lb-form-row single">
-              <label>
-                <span>Phone / WhatsApp (Optional)</span>
-                <input
-                  type="tel"
-                  placeholder="+91 ..."
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                />
-              </label>
-            </div>
-
-            <div className="lb-scope-picker">
-              <span className="lb-scope-label">Select Engineering Modules</span>
-              <div className="lb-scope-grid">
-                {ESTIMATE_SCOPES.map((scope) => {
-                  const active = selectedScopes.includes(scope);
-                  return (
-                    <button
-                      key={scope}
-                      type="button"
-                      className={`lb-scope-chip ${active ? "active" : ""}`}
-                      onClick={() => toggleScope(scope)}
-                      aria-pressed={active}
-                    >
-                      <span className="lb-scope-box">{active && <Check size={12} />}</span>
-                      <span>{scope}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="lb-form-row single">
-              <label>
-                <span>Brief Goals & Target Timeline</span>
-                <textarea
-                  rows={3}
-                  placeholder="Share core workflows, existing stack, or desired launch window..."
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                />
-              </label>
-            </div>
-
-            <div className="lb-modal-footer">
-              <span className="lb-est-note">
-                Direct reply from Principal Architects within 24 hrs
-              </span>
-              <button type="submit" className="lb-btn-gold">
-                Request Estimate <ArrowUpRight size={15} />
-              </button>
-            </div>
-          </form>
-        )}
-      </div>
-    </div>
+        </form>
+      )}
+    </dialog>
   );
 }
 
@@ -851,94 +999,97 @@ function ProjectDossierModal({
   onNavigate: (path: string) => void;
   onOpenEstimate: (pkgTitle: string) => void;
 }) {
-  useEffect(() => {
-    if (!project) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [project, onClose]);
-
-  if (!project) return null;
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const titleId = useId();
+  useDialogSync(dialogRef, !!project, onClose);
 
   return (
-    <div
-      className="lb-modal-backdrop"
-      role="dialog"
-      aria-modal="true"
-      aria-label={`${project.title} Engineering Case Study`}
-      onClick={onClose}
+    <dialog
+      ref={dialogRef}
+      className="lb-dialog lb-project-modal"
+      aria-labelledby={titleId}
+      {...({ closedby: "any" } as Record<string, string>)}
     >
-      <div className="lb-project-modal" onClick={(e) => e.stopPropagation()}>
-        <button
-          type="button"
-          className="lb-modal-close floating"
-          onClick={onClose}
-          aria-label="Close case study modal"
-        >
-          <X size={18} />
-        </button>
+      {project && (
+        <>
+          <button
+            type="button"
+            className="lb-modal-close floating"
+            onClick={() => dialogRef.current?.close()}
+            aria-label="Close case study modal"
+          >
+            <X size={18} />
+          </button>
 
-        <div className="lb-project-modal-grid">
-          <div className="lb-project-modal-visual">
-            <img src={project.image} alt={project.title} />
-            <div className="lb-project-modal-badge">{project.metric}</div>
-          </div>
+          <div className="lb-project-modal-grid">
+            <div className="lb-project-modal-visual">
+              <img
+                src={project.image}
+                alt={project.title}
+                ref={(el) => {
+                  el?.setAttribute("fetchpriority", "low");
+                }}
+              />
+              <div className="lb-project-modal-badge">{project.metric}</div>
+            </div>
 
-          <div className="lb-project-modal-body">
-            <span className="lb-modal-kicker">
-              {project.category} · {project.client}
-            </span>
-            <h3>{project.title}</h3>
-            <p className="lb-project-modal-summary">{project.summary}</p>
+            <div className="lb-project-modal-body">
+              <span className="lb-modal-kicker">
+                {project.category} · {project.client}
+              </span>
+              <h1 id={titleId} className="lb-project-modal-title">
+                {project.title}
+              </h1>
+              <p className="lb-project-modal-summary">{project.summary}</p>
 
-            <div className="lb-project-modal-arch">
-              <h4>Architecture & Delivery Notes</h4>
-              <ul>
-                {project.architecture.map((line) => (
-                  <li key={line}>
-                    <Check size={14} />
-                    <span>{line}</span>
-                  </li>
+              <div className="lb-project-modal-arch">
+                <h4>Architecture &amp; Delivery Notes</h4>
+                <ul>
+                  {project.architecture.map((line) => (
+                    <li key={line}>
+                      <Check size={14} />
+                      <span>{line}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="lb-project-modal-tags">
+                {project.stack.map((tech) => (
+                  <span key={tech}>{tech}</span>
                 ))}
-              </ul>
-            </div>
+              </div>
 
-            <div className="lb-project-modal-tags">
-              {project.stack.map((tech) => (
-                <span key={tech}>{tech}</span>
-              ))}
-            </div>
-
-            <div className="lb-modal-footer">
-              <button
-                type="button"
-                className="lb-btn-ghost"
-                onClick={() => {
-                  const target = project.route;
-                  onClose();
-                  onNavigate(target);
-                }}
-              >
-                Explore Practice <ArrowRight size={14} />
-              </button>
-              <button
-                type="button"
-                className="lb-btn-solid"
-                onClick={() => {
-                  const title = project.title;
-                  onClose();
-                  onOpenEstimate(`Similar to ${title}`);
-                }}
-              >
-                Build Something Similar
-              </button>
+              <div className="lb-modal-footer">
+                <button
+                  type="button"
+                  className="lb-btn-ghost"
+                  onClick={() => {
+                    const target = project.route;
+                    dialogRef.current?.close();
+                    onNavigate(target);
+                  }}
+                >
+                  Explore Practice <ArrowRight size={14} />
+                </button>
+                <button
+                  type="button"
+                  className="lb-btn-solid"
+                  autoFocus
+                  onClick={() => {
+                    const title = project.title;
+                    dialogRef.current?.close();
+                    onOpenEstimate(`Similar to ${title}`);
+                  }}
+                >
+                  Build Something Similar
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
+        </>
+      )}
+    </dialog>
   );
 }
 
@@ -951,10 +1102,20 @@ export function HomeEditorialSections({ theme, onNavigate }: HomeSectionsProps) 
   const [highlightsVisible, setHighlightsVisible] = useState(false);
 
   const [activeFilter, setActiveFilter] = useState<string>("ALL");
+  const [filterInteracted, setFilterInteracted] = useState(false);
+  const [spotlightId, setSpotlightId] = useState<string>(PORTFOLIO_PROJECTS[0].id);
   const [selectedProject, setSelectedProject] = useState<PortfolioProject | null>(null);
 
+  const spotlightRef = useRef<HTMLElement>(null);
+  const projectsGridRef = useRef<HTMLDivElement>(null);
+  const spotlightInteracted = useRef(false);
+
   const [testimonialSlide, setTestimonialSlide] = useState(0);
-  const [testimonialPaused, setTestimonialPaused] = useState(false);
+  const [testimonialSliding, setTestimonialSliding] = useState(false);
+  const [testimonialPaused, setTestimonialPaused] = useState(() =>
+    typeof window !== "undefined" &&
+    !!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
+  );
 
   const [openFaqIdx, setOpenFaqIdx] = useState<number>(0);
 
@@ -964,7 +1125,6 @@ export function HomeEditorialSections({ theme, onNavigate }: HomeSectionsProps) 
 
   const [showScrollTop, setShowScrollTop] = useState(false);
 
-  // Trigger animated counters when Key Highlights section enters viewport
   useEffect(() => {
     const el = highlightsRef.current;
     if (!el) return;
@@ -981,17 +1141,16 @@ export function HomeEditorialSections({ theme, onNavigate }: HomeSectionsProps) 
     return () => observer.disconnect();
   }, []);
 
-  // Auto-advance testimonials carousel smoothly (2 cards per view -> 2 pages on desktop)
   const totalTestimonialSlides = Math.ceil(CLIENT_TESTIMONIALS.length / 2);
   useEffect(() => {
     if (testimonialPaused) return;
     const timer = window.setInterval(() => {
+      setTestimonialSliding(true);
       setTestimonialSlide((prev) => (prev + 1) % totalTestimonialSlides);
     }, 6200);
     return () => window.clearInterval(timer);
   }, [testimonialPaused, totalTestimonialSlides]);
 
-  // Show floating scroll-to-top button past the hero fold
   useEffect(() => {
     const onScroll = () => {
       setShowScrollTop(window.scrollY > 520);
@@ -1005,6 +1164,50 @@ export function HomeEditorialSections({ theme, onNavigate }: HomeSectionsProps) 
     activeFilter === "ALL"
       ? PORTFOLIO_PROJECTS
       : PORTFOLIO_PROJECTS.filter((p) => p.category === activeFilter);
+
+  const spotlightProject =
+    filteredProjects.find((p) => p.id === spotlightId) ??
+    filteredProjects[0] ??
+    PORTFOLIO_PROJECTS[0];
+  const spotlightIdx = filteredProjects.findIndex((p) => p.id === spotlightProject.id);
+
+  useEffect(() => {
+    if (filterInteracted) {
+      animateProjectFilterGrid(projectsGridRef.current);
+    }
+  }, [activeFilter, filterInteracted]);
+
+  useEffect(() => {
+    if (spotlightInteracted.current) {
+      animateWorkSpotlight(spotlightRef.current);
+    }
+  }, [spotlightProject.id]);
+
+  const handleSelectFilter = (cat: string, buttonEl?: HTMLElement | null) => {
+    setFilterInteracted(true);
+    spotlightInteracted.current = true;
+    setActiveFilter(cat);
+    const nextFirst =
+      cat === "ALL"
+        ? PORTFOLIO_PROJECTS[0]
+        : PORTFOLIO_PROJECTS.find((p) => p.category === cat);
+    if (nextFirst) setSpotlightId(nextFirst.id);
+    buttonEl?.scrollIntoView({ block: "nearest", inline: "nearest" });
+  };
+
+  const stepSpotlight = (delta: number) => {
+    if (!filteredProjects.length) return;
+    spotlightInteracted.current = true;
+    const nextIdx = (spotlightIdx + delta + filteredProjects.length) % filteredProjects.length;
+    setSpotlightId(filteredProjects[nextIdx].id);
+  };
+
+  const handlePinSpotlight = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    spotlightInteracted.current = true;
+    setSpotlightId(id);
+    spotlightRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  };
 
   const visibleTestimonials = CLIENT_TESTIMONIALS.slice(
     testimonialSlide * 2,
@@ -1079,8 +1282,8 @@ export function HomeEditorialSections({ theme, onNavigate }: HomeSectionsProps) 
               <p className="lb-about-desc">
                 DigentTech is a principal-led software, mobile, and applied AI studio crafting
                 production infrastructure for ambitious founders and enterprises. We pair disciplined
-                editorial taste with sub-300ms edge engineering—delivering scalable codebases you own
-                100% from day one.
+                editorial taste with sub-300ms edge engineering—delivering scalable codebases you
+                own 100% from day one.
               </p>
 
               <div className="lb-about-actions">
@@ -1106,7 +1309,6 @@ export function HomeEditorialSections({ theme, onNavigate }: HomeSectionsProps) 
           </div>
         </div>
 
-        {/* Continuous Dual-Tone Text Ticker */}
         <div className="lb-keyword-marquee" aria-hidden="true">
           <div className="lb-keyword-track">
             {[...TICKER_DISCIPLINES, ...TICKER_DISCIPLINES, ...TICKER_DISCIPLINES].map(
@@ -1229,65 +1431,227 @@ export function HomeEditorialSections({ theme, onNavigate }: HomeSectionsProps) 
         </div>
       </section>
 
-      {/* 6. Dark Filter Pill Bar + 4-Column Portrait Project Showcase Grid */}
-      <section className="lb-projects-section">
+      {/* 6. Shipped Platforms, Delivery Flow Strip, Interactive Spotlight & 9 Flagship Cards */}
+      <section className="lb-projects-section" aria-label="Shipped Platforms & Engineering Flow">
         <div className="wrap">
           <div className="lb-centered-header">
-            <SlantedBadge label="FLAGSHIP WORK" />
-            <h2 className="lb-section-heading">Shipped Platforms &amp; Case Studies</h2>
+            <SlantedBadge label="FLAGSHIP WORK · 09 SYSTEMS" />
+            <h2 className="lb-section-heading">
+              Shipped Platforms &amp; <em>Engineering Craft</em>
+            </h2>
+            <p className="lb-section-sub">
+              From latency audits and OKLCH token systems to autonomous AI pipelines—inspect the flow, explore live spotlights, or open full architectural dossiers.
+            </p>
           </div>
 
-          <div className="lb-filter-bar-wrap">
-            <div className="lb-filter-bar" role="tablist" aria-label="Filter projects by discipline">
-              <span className="lb-filter-rail" aria-hidden="true" />
-              {PORTFOLIO_FILTERS.map((cat) => (
-                <button
-                  key={cat}
-                  type="button"
-                  role="tab"
-                  aria-selected={activeFilter === cat}
-                  className={`lb-filter-btn ${activeFilter === cat ? "active" : ""}`}
-                  onClick={() => setActiveFilter(cat)}
-                >
-                  {cat}
-                </button>
+          <div className="lb-work-flow-strip" aria-label="Engineering delivery flow">
+            <div className="lb-work-flow-line" aria-hidden="true">
+              <span className="lb-work-flow-line-fill" />
+            </div>
+            <div className="lb-work-flow-grid">
+              {DELIVERY_FLOW_STEPS.map((s) => (
+                <div key={s.step} className="lb-work-flow-step">
+                  <div className="lb-work-flow-head">
+                    <span className="lb-work-flow-index">{s.step}</span>
+                    <span className="lb-work-flow-phase">{s.phase}</span>
+                  </div>
+                  <h3>{s.title}</h3>
+                  <p>{s.detail}</p>
+                </div>
               ))}
             </div>
           </div>
 
-          <div className="lb-projects-grid">
-            {filteredProjects.map((proj) => (
-              <article
-                key={proj.id}
-                className="lb-project-card"
-                onClick={() => setSelectedProject(proj)}
-                tabIndex={0}
-                role="button"
-                aria-label={`Inspect ${proj.title} case study`}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    setSelectedProject(proj);
-                  }
-                }}
-              >
-                <img src={proj.image} alt={proj.title} loading="lazy" />
-
-                <div className="lb-project-top-badge">{proj.category}</div>
-
-                {/* Slide-in Asymmetrical Frosted Glass Caption Overlay */}
-                <div className="lb-project-overlay-banner">
-                  <span className="lb-overlay-notch" aria-hidden="true" />
-                  <div className="lb-overlay-content">
-                    <span className="lb-overlay-metric">{proj.metric}</span>
-                    <h3>{proj.title}</h3>
-                    <span className="lb-overlay-cta">
-                      Inspect Dossier <ArrowUpRight size={14} />
+          <div className="lb-filter-bar-wrap">
+            <div className="lb-filter-bar" role="tablist" aria-label="Filter projects by discipline">
+              {PORTFOLIO_FILTERS.map((cat) => {
+                const count =
+                  cat === "ALL"
+                    ? PORTFOLIO_PROJECTS.length
+                    : PORTFOLIO_PROJECTS.filter((p) => p.category === cat).length;
+                const active = activeFilter === cat;
+                return (
+                  <button
+                    key={cat}
+                    type="button"
+                    role="tab"
+                    aria-selected={active}
+                    className={`lb-filter-btn ${active ? "active" : ""}`}
+                    onClick={(e) => handleSelectFilter(cat, e.currentTarget)}
+                  >
+                    <span>{cat}</span>
+                    <span className="lb-filter-count" aria-hidden="true">
+                      {count}
                     </span>
-                  </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Interactive Flagship Spotlight */}
+          <article
+            ref={spotlightRef}
+            className="lb-work-spotlight"
+            aria-label={`Spotlight case study: ${spotlightProject.title}`}
+          >
+            <div className="lb-work-spotlight-media-col">
+              <div className="lb-work-spotlight-media">
+                <img
+                  src={spotlightProject.image}
+                  alt={`${spotlightProject.title} platform preview`}
+                />
+                <div className="lb-work-spotlight-badges">
+                  <span className="lb-work-spot-badge-live">
+                    <span className="lb-spot-pulse" aria-hidden="true" />
+                    {spotlightProject.metric}
+                  </span>
+                  <span className="lb-work-spot-badge-vel">{spotlightProject.velocity}</span>
                 </div>
-              </article>
-            ))}
+              </div>
+
+              <div className="lb-work-spotlight-controls">
+                <span className="lb-work-spot-counter">
+                  SPOTLIGHT {String(spotlightIdx + 1).padStart(2, "0")} /{" "}
+                  {String(filteredProjects.length).padStart(2, "0")}
+                </span>
+                <div className="lb-work-spot-arrows">
+                  <button
+                    type="button"
+                    className="lb-work-spot-arrow-btn"
+                    aria-label="Previous spotlight project"
+                    onClick={() => stepSpotlight(-1)}
+                  >
+                    <ChevronLeft size={16} />
+                  </button>
+                  <button
+                    type="button"
+                    className="lb-work-spot-arrow-btn"
+                    aria-label="Next spotlight project"
+                    onClick={() => stepSpotlight(1)}
+                  >
+                    <ChevronRight size={16} />
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="lb-work-spotlight-body">
+              <div className="lb-work-spotlight-kicker lb-work-spotlight-stagger">
+                <Layers size={14} aria-hidden="true" />
+                <span>
+                  {spotlightProject.category} · {spotlightProject.client}
+                </span>
+              </div>
+              <h3 className="lb-work-spotlight-title lb-work-spotlight-stagger">
+                {spotlightProject.title}
+              </h3>
+              <p className="lb-work-spotlight-summary lb-work-spotlight-stagger">
+                {spotlightProject.summary}
+              </p>
+
+              <div
+                className="lb-work-spotlight-flow lb-work-spotlight-stagger"
+                aria-label="System build flow stages"
+              >
+                {spotlightProject.flowStages.map((stage, i) => (
+                  <span key={stage} className="lb-work-stage-chip">
+                    <em>0{i + 1}</em>
+                    {stage}
+                  </span>
+                ))}
+              </div>
+
+              <ul className="lb-work-spotlight-arch lb-work-spotlight-stagger">
+                {spotlightProject.architecture.map((line) => (
+                  <li key={line}>
+                    <Check size={14} aria-hidden="true" />
+                    <span>{line}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="lb-work-spotlight-tags lb-work-spotlight-stagger">
+                {spotlightProject.stack.map((tech) => (
+                  <span key={tech}>{tech}</span>
+                ))}
+              </div>
+
+              <div className="lb-work-spotlight-actions lb-work-spotlight-stagger">
+                <button
+                  type="button"
+                  className="lb-btn-rect"
+                  onClick={() => setSelectedProject(spotlightProject)}
+                >
+                  INSPECT FULL DOSSIER <ArrowUpRight size={15} />
+                </button>
+                <a
+                  href="/work"
+                  className="lb-btn-outline-rect"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onNavigate("/work");
+                  }}
+                >
+                  OPEN WORK ARCHIVE <ArrowRight size={15} />
+                </a>
+              </div>
+            </div>
+          </article>
+
+          <div ref={projectsGridRef} className="lb-projects-grid">
+            {filteredProjects.map((proj) => {
+              const isPinned = proj.id === spotlightProject.id;
+              return (
+                <article
+                  key={proj.id}
+                  className={`lb-project-card ${isPinned ? "is-spotlight" : ""}`}
+                  onClick={() => setSelectedProject(proj)}
+                  tabIndex={0}
+                  role="button"
+                  aria-label={`Inspect ${proj.title} case study`}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      setSelectedProject(proj);
+                    }
+                  }}
+                >
+                  <div className="lb-project-media-wrap">
+                    <img src={proj.image} alt={proj.title} loading="lazy" />
+                    <span className="lb-project-index-chip">{proj.index}</span>
+                    <span className="lb-project-top-badge">{proj.category}</span>
+                  </div>
+
+                  <div className="lb-project-card-body">
+                    <div className="lb-project-card-meta">
+                      <Zap size={12} aria-hidden="true" />
+                      <span>{proj.metric}</span>
+                    </div>
+                    <h3>{proj.title}</h3>
+                    <p>{proj.summary}</p>
+                    <div className="lb-project-card-tags">
+                      {proj.stack.slice(0, 3).map((tech) => (
+                        <span key={tech}>{tech}</span>
+                      ))}
+                    </div>
+                    <div className="lb-project-card-foot">
+                      <button
+                        type="button"
+                        className={`lb-project-pin-btn ${isPinned ? "is-pinned" : ""}`}
+                        onClick={(e) => handlePinSpotlight(e, proj.id)}
+                        aria-label={`Preview ${proj.title} in spotlight`}
+                      >
+                        {isPinned ? "In Spotlight" : "Preview Spotlight"}
+                      </button>
+                      <span className="lb-overlay-cta">
+                        Dossier <ArrowUpRight size={14} />
+                      </span>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
           </div>
 
           <div className="lb-projects-more">
@@ -1299,7 +1663,7 @@ export function HomeEditorialSections({ theme, onNavigate }: HomeSectionsProps) 
                 onNavigate("/work");
               }}
             >
-              EXPLORE ALL CASE STUDIES <ArrowRight size={15} />
+              EXPLORE ALL 9 PRODUCTION SYSTEMS <ArrowRight size={15} />
             </a>
           </div>
         </div>
@@ -1323,11 +1687,12 @@ export function HomeEditorialSections({ theme, onNavigate }: HomeSectionsProps) 
                 type="button"
                 className="lb-carousel-arrow"
                 aria-label="Previous testimonials"
-                onClick={() =>
+                onClick={() => {
+                  setTestimonialSliding(true);
                   setTestimonialSlide(
                     (prev) => (prev - 1 + totalTestimonialSlides) % totalTestimonialSlides
-                  )
-                }
+                  );
+                }}
               >
                 <ChevronLeft size={18} />
               </button>
@@ -1338,7 +1703,10 @@ export function HomeEditorialSections({ theme, onNavigate }: HomeSectionsProps) 
                     type="button"
                     aria-label={`Testimonial page ${i + 1}`}
                     className={`lb-carousel-dot ${testimonialSlide === i ? "active" : ""}`}
-                    onClick={() => setTestimonialSlide(i)}
+                    onClick={() => {
+                      setTestimonialSliding(true);
+                      setTestimonialSlide(i);
+                    }}
                   />
                 ))}
               </div>
@@ -1346,16 +1714,20 @@ export function HomeEditorialSections({ theme, onNavigate }: HomeSectionsProps) 
                 type="button"
                 className="lb-carousel-arrow"
                 aria-label="Next testimonials"
-                onClick={() =>
-                  setTestimonialSlide((prev) => (prev + 1) % totalTestimonialSlides)
-                }
+                onClick={() => {
+                  setTestimonialSliding(true);
+                  setTestimonialSlide((prev) => (prev + 1) % totalTestimonialSlides);
+                }}
               >
                 <ChevronRight size={18} />
               </button>
             </div>
           </div>
 
-          <div className="lb-testimonials-grid">
+          <div
+            key={testimonialSliding ? testimonialSlide : "initial"}
+            className={`lb-testimonials-grid ${testimonialSliding ? "is-sliding" : ""}`}
+          >
             {visibleTestimonials.map((item) => (
               <article key={item.name} className="lb-testimonial-card">
                 <div className="lb-testimonial-quote-box">
@@ -1376,7 +1748,6 @@ export function HomeEditorialSections({ theme, onNavigate }: HomeSectionsProps) 
           </div>
         </div>
 
-        {/* Smooth Curved Bottom Wave Divider */}
         <div className="lb-wave-divider" aria-hidden="true">
           <svg viewBox="0 0 1440 76" preserveAspectRatio="none">
             <path d="M0,24 C360,84 1080,84 1440,24 L1440,76 L0,76 Z" />
@@ -1568,7 +1939,7 @@ export function HomeEditorialSections({ theme, onNavigate }: HomeSectionsProps) 
         </button>
       </div>
 
-      {/* Interactive Modals */}
+      {/* Native <dialog> Modals */}
       <ProposalModal
         pkg={proposalPkg}
         onClose={() => setProposalPkg(null)}
@@ -1588,4 +1959,3 @@ export function HomeEditorialSections({ theme, onNavigate }: HomeSectionsProps) 
     </div>
   );
 }
-
