@@ -13,7 +13,7 @@
     "workFlowSteps": 4,
     "workCarouselHasCanvas": true,
     "workActiveBefore": "PulseMesh Neural Ops",
-    "workActiveAfter": "AetherCore Treasury OS",
+    "workActiveAfter": "PulseMesh Neural Ops",
     "workCardCount": 9,
     "workMobileOverflow": false
   },

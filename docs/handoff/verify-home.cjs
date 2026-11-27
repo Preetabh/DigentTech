@@ -252,6 +252,9 @@ function startStaticServer() {
     await page.waitForTimeout(450);
     const workCardCount = await page.locator(".wrk-blueprint-row").count();
     await page.screenshot({ path: path.join(OUT_DIR, "work-dark-1440-blueprint.png") });
+    await page.locator(".footer-global-banner").scrollIntoViewIfNeeded();
+    await page.waitForTimeout(450);
+    await page.screenshot({ path: path.join(OUT_DIR, "work-dark-1440-footer.png") });
     await page.setViewportSize({ width: 390, height: 844 });
     await page.waitForTimeout(300);
     const workMobileOverflow = await page.evaluate(

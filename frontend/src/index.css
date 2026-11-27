@@ -5399,15 +5399,29 @@ html[data-theme="light"] .glass-indicator {
 /* ============================================================
    GLOBAL SKYLINE & DIGITAL GLOBE PRE-FOOTER CTA BANNER
    ============================================================ */
+.footer {
+  position: relative;
+  margin-top: clamp(112px, 11vw, 152px);
+  padding-top: 1px;
+}
+
+.footer-global-wrap {
+  width: min(1440px, calc(100% - 64px));
+  margin-inline: auto;
+  margin-top: calc(clamp(112px, 11vw, 152px) * -1);
+  margin-bottom: 58px;
+  position: relative;
+  z-index: 3;
+}
+
 .footer-global-banner {
   position: relative;
   border-radius: 18px;
   overflow: hidden;
   min-height: 290px;
-  margin-bottom: 54px;
   border: 1px solid rgba(56, 189, 248, 0.24);
   background: #04091a;
-  box-shadow: 0 24px 60px rgba(2, 6, 23, 0.36);
+  box-shadow: 0 24px 60px rgba(2, 6, 23, 0.42);
 }
 
 :root[data-theme="light"] .footer-global-banner {
@@ -5539,9 +5553,18 @@ html[data-theme="light"] .glass-indicator {
 }
 
 @media (max-width: 720px) {
+  .footer {
+    margin-top: 96px;
+  }
+
+  .footer-global-wrap {
+    width: calc(100% - 32px);
+    margin-top: -86px;
+    margin-bottom: 42px;
+  }
+
   .footer-global-banner {
     min-height: 260px;
-    margin-bottom: 42px;
   }
 
   .footer-global-flags {

@@ -2359,7 +2359,7 @@ export default function App() {
         {content}
       </main>
       <footer className="footer">
-        <div className="wrap">
+        <div className="footer-global-wrap">
           <div className="footer-global-banner">
             <img
               src="/assets/footer-global-banner.jpg"
@@ -2433,7 +2433,9 @@ export default function App() {
               </div>
             </div>
           </div>
+        </div>
 
+        <div className="wrap">
           <div className="footer-main">
             <div>
               <BrandLogo />
