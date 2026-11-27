@@ -394,6 +394,35 @@ function startStaticServer() {
     );
     await page.screenshot({ path: path.join(OUT_DIR, "contact-dark-390-top.png") });
 
+    // 6. Verification of redesigned /services page (Light #F5F4EB + Dark + GSAP + Interactive Console)
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.evaluate(() => localStorage.setItem("dotcode-theme", "light"));
+    await page.goto(`${baseUrl}/services`, { waitUntil: "load" });
+    await page.waitForTimeout(900);
+    await page.screenshot({ path: path.join(OUT_DIR, "services-light-1440-top.png") });
+
+    await page.locator(".sv-console-tabs").getByRole("tab", { name: /AI/i }).click();
+    await page.waitForTimeout(350);
+    const servicesConsoleTitle = (await page.locator(".sv-console-head h2").innerText()).trim();
+
+    await page.evaluate(() => localStorage.setItem("dotcode-theme", "dark"));
+    await page.reload({ waitUntil: "load" });
+    await page.waitForTimeout(900);
+    await page.screenshot({ path: path.join(OUT_DIR, "services-dark-1440-top.png") });
+
+    await page.locator("#divisions").scrollIntoViewIfNeeded();
+    await page.waitForTimeout(650);
+    const servicesDivisionCards = await page.locator(".sv-division-card").count();
+    await page.screenshot({ path: path.join(OUT_DIR, "services-dark-1440-divisions.png") });
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.waitForTimeout(450);
+    const servicesMobileOverflow = await page.evaluate(
+      () => document.documentElement.scrollWidth > window.innerWidth
+    );
+    await page.screenshot({ path: path.join(OUT_DIR, "services-dark-390-top.png") });
+
     const report = {
       stickyHeaderFixedAfterScroll: stickyCheck,
       flowCount,
@@ -419,6 +448,11 @@ function startStaticServer() {
         contactReadinessAfter,
         contactConduitCards,
         contactMobileOverflow,
+      },
+      servicesCheck: {
+        servicesConsoleTitle,
+        servicesDivisionCards,
+        servicesMobileOverflow,
       },
       pageErrors,
       brokenAssets,

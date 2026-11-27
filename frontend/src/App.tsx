@@ -41,6 +41,7 @@ import { CareersPage } from "./CareersPage";
 import { ContactPage } from "./ContactPage";
 import { WorkPage } from "./WorkPage";
 import { DigitalMarketing } from "./DigitalMarketing";
+import { ServicesPage } from "./ServicesPage";
 import { useHomeGsapChoreography } from "./HomeAnimations";
 import { HomeEditorialSections } from "./HomeSections";
 import { SEO } from "./SEO";
@@ -1786,87 +1787,7 @@ export default function App() {
     const slug = path.startsWith("/work/") ? path.slice("/work/".length) : undefined;
     content = <WorkPage initialProjectId={slug} />;
   }
-  else if (path === "/services")
-    content = (
-      <>
-        <PageHero
-          theme={theme}
-          label="PRACTICE DIVISIONS · DIGENTTECH ATELIER"
-          title={
-            <>
-              Full-stack engineering, from <em>architecture</em> to scale.
-            </>
-          }
-          text="Four specialized engineering divisions operating under one principal-led roof—delivering sub-300ms web platforms, offline-first mobile apps, private AI workflows, and measurable growth."
-          highlights={[
-            "2-Week Verified Staging Sprints",
-            "Fixed Milestone Budgets",
-            "100% Repository & IP Ownership",
-          ]}
-        />
-        <section className="atelier-engagement-section wrap">
-          <div className="section-top">
-            <Heading
-              label="ENGAGEMENT MODELS"
-              title="Structured delivery options built around your stage."
-              text="Choose the cadence that aligns with your roadmap—whether validating a new product or scaling enterprise infrastructure."
-            />
-          </div>
-          <div className="atelier-engagement-grid">
-            <article className="atelier-engagement-card">
-              <div className="atelier-eng-head">
-                <span className="atelier-eng-code">MODEL 01 · VALIDATION</span>
-                <span className="atelier-eng-duration">2 – 4 Weeks</span>
-              </div>
-              <h3>Focused MVP Sprint</h3>
-              <p>
-                Rapid architecture, interactive Figma prototype, and production core built to launch with real users and investor clarity.
-              </p>
-              <ul className="atelier-eng-list">
-                <li><Check size={14} /> Principal Architect + Senior Fullstack</li>
-                <li><Check size={14} /> Clickable prototype &amp; core database</li>
-                <li><Check size={14} /> Continuous staging deployments</li>
-              </ul>
-            </article>
-            <article className="atelier-engagement-card">
-              <div className="atelier-eng-head">
-                <span className="atelier-eng-code">MODEL 02 · FLAGSHIP</span>
-                <span className="atelier-eng-duration">6 – 8 Weeks</span>
-              </div>
-              <h3>Core Production System</h3>
-              <p>
-                Complete multi-theme design system, high-concurrency backend APIs, payments/CRM integrations, and automated Playwright QA.
-              </p>
-              <ul className="atelier-eng-list">
-                <li><Check size={14} /> Dedicated 4-person specialist squad</li>
-                <li><Check size={14} /> &lt;280ms global TTFB edge architecture</li>
-                <li><Check size={14} /> 30-day warranty &amp; team handover</li>
-              </ul>
-            </article>
-            <article className="atelier-engagement-card">
-              <div className="atelier-eng-head">
-                <span className="atelier-eng-code">MODEL 03 · ENTERPRISE</span>
-                <span className="atelier-eng-duration">10 – 14 Weeks+</span>
-              </div>
-              <h3>Embedded Atelier Squad</h3>
-              <p>
-                Multi-region cloud modernization, custom LangGraph AI pipelines, offline mobile ecosystems, and continuous release velocity.
-              </p>
-              <ul className="atelier-eng-list">
-                <li><Check size={14} /> Principal Architect + 24/7 DevOps lead</li>
-                <li><Check size={14} /> Private VPC AI &amp; SOC2-ready posture</li>
-                <li><Check size={14} /> Shared Slack &amp; bi-weekly executive drops</li>
-              </ul>
-            </article>
-          </div>
-        </section>
-        <Services full />
-        <CapabilityExplorer />
-        <Process />
-        <FAQ />
-        <CTA />
-      </>
-    );
+  else if (path === "/services") content = <ServicesPage services={services} />;
   else if (path === "/web-development") content = <WebDevelopment />;
   else if (path === "/app-development") content = <AppDevelopment />;
   else if (path === "/digital-marketing") content = <DigitalMarketing />;

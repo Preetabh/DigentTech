@@ -36,6 +36,11 @@
     "contactConduitCards": 3,
     "contactMobileOverflow": false
   },
+  "servicesCheck": {
+    "servicesConsoleTitle": "Eliminate manual ops with grounded AI.",
+    "servicesDivisionCards": 4,
+    "servicesMobileOverflow": false
+  },
   "pageErrors": [],
   "brokenAssets": [],
   "matrixResults": [
@@ -107,7 +112,7 @@
   "routeChecks": [
     {
       "route": "/services",
-      "h1": "Full-stack engineering, from architecture to scale.",
+      "h1": "Full-stack engineering,\nfrom architecture to scale.",
       "overflowX": false
     },
     {
