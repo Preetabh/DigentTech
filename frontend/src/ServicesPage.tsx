@@ -21,59 +21,83 @@ interface ServicesPageProps {
   services: ServiceDivisionItem[];
 }
 
+const SLICE_ARTWORKS = [
+  "/assets/projects/work-aethercore-web.webp",
+  "/assets/projects/work-velocepay-mobile.webp",
+  "/assets/projects/work-lumina-commerce.webp",
+  "/assets/projects/work-pulsemesh-ai.webp",
+];
+
 const ENGAGEMENT_MODELS = [
   {
     id: "mvp",
     stageLabel: "Validating an MVP",
-    code: "MODEL 01 · VALIDATION",
-    duration: "2 – 4 Weeks",
+    timeline: "2 – 4 Weeks",
     title: "Focused MVP Sprint",
-    desc: "Rapid architecture, interactive Figma prototype, and production core built to launch cleanly with real users and investor clarity.",
+    desc: "Rapid architecture, interactive Figma prototype, and production core shipped to test real customer workflows.",
     bullets: [
       "Principal Architect + Senior Fullstack",
-      "Clickable prototype & typed data layer",
-      "Continuous preview deployments",
+      "Typed data layer & staging preview",
+      "Fixed milestone budget upfront",
     ],
   },
   {
     id: "flagship",
-    stageLabel: "Launching Core Flagship",
-    code: "MODEL 02 · FLAGSHIP",
-    duration: "6 – 8 Weeks",
+    stageLabel: "Core Production",
+    timeline: "6 – 8 Weeks",
     title: "Core Production System",
-    desc: "Complete multi-theme design system, high-concurrency backend APIs, payments/CRM integrations, and automated Playwright E2E checks.",
+    desc: "Multi-theme design system, resilient API contracts, payments or CRM integrations, and automated Playwright regression suites.",
     bullets: [
       "Dedicated 4-person specialist squad",
-      "< 280ms global TTFB edge architecture",
-      "30-day warranty & full team handover",
+      "< 280ms global edge TTFB target",
+      "30-day warranty & repo transfer",
     ],
   },
   {
     id: "enterprise",
-    stageLabel: "Scaling Enterprise Stack",
-    code: "MODEL 03 · ENTERPRISE",
-    duration: "10 – 14 Weeks+",
+    stageLabel: "Enterprise Squad",
+    timeline: "10 – 14 Weeks+",
     title: "Embedded Atelier Squad",
-    desc: "Multi-region cloud modernization, custom RAG/agent AI pipelines, offline mobile ecosystems, and continuous sprint velocity.",
+    desc: "Multi-region cloud modernization, private VPC AI pipelines, offline mobile ecosystems, and continuous release cadence.",
     bullets: [
-      "Principal Architect + DevOps automation",
-      "Private VPC AI & strict security gates",
-      "Weekly executive releases & Git ownership",
+      "Principal Architect + DevOps lead",
+      "Private VPC AI & OWASP hardening",
+      "Weekly drops & direct Git ownership",
     ],
+  },
+];
+
+const PIPELINE_STEPS = [
+  {
+    title: "Discovery & System Spec",
+    text: "Audit bottlenecks, align business conversion targets, and freeze schema contracts before engineering starts.",
+  },
+  {
+    title: "Design Token Foundation",
+    text: "Build accessible light and dark interfaces with explicit typography scales, focus states, and interactive prototypes.",
+  },
+  {
+    title: "Full-Stack Sprint Drops",
+    text: "Deliver typed React, native mobile, or backend services in verified two-week staging increments.",
+  },
+  {
+    title: "Verification & Full Handover",
+    text: "Pass Playwright cross-browser checks, Core Web Vitals budgets, and transfer 100% clean repository ownership.",
   },
 ];
 
 export function ServicesPage({ services }: ServicesPageProps) {
   const rootRef = useRef<HTMLDivElement>(null);
-  const consoleRef = useRef<HTMLDivElement>(null);
 
-  const [activeDivIdx, setActiveDivIdx] = useState(0);
+  const [activeSliceIdx, setActiveSliceIdx] = useState(0);
   const [selectedStageId, setSelectedStageId] = useState("flagship");
 
-  const activeService = services[activeDivIdx] || services[0];
-  const ActiveIcon = activeService?.icon;
+  const webService = services[0];
+  const appService = services[1];
+  const growthService = services[2];
+  const aiService = services[3];
 
-  // 1. Full-page GSAP + ScrollTrigger Choreography
+  // 1. Authored GSAP + ScrollTrigger Motion Choreography
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
@@ -94,112 +118,44 @@ export function ServicesPage({ services }: ServicesPageProps) {
       const heroTl = gsap.timeline({ defaults: { ease: "power3.out" } });
       heroTl
         .fromTo(
-          ".sv-status-pill",
-          { y: 16, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.42, clearProps: "transform,opacity" }
-        )
-        .fromTo(
-          ".sv-hero-line",
-          { y: 28, opacity: 0 },
+          ".svx-hero-line",
+          { y: 32, opacity: 0 },
           {
             y: 0,
             opacity: 1,
-            duration: 0.56,
-            stagger: 0.09,
+            duration: 0.6,
+            stagger: 0.1,
             clearProps: "transform,opacity",
-          },
-          "-=0.2"
+          }
         )
         .fromTo(
-          ".sv-hero-lead, .sv-hero-actions, .sv-highlight-pill",
-          { y: 18, opacity: 0 },
+          ".svx-hero-subbar",
+          { y: 20, opacity: 0 },
           {
             y: 0,
             opacity: 1,
             duration: 0.48,
-            stagger: 0.06,
             clearProps: "transform,opacity",
           },
-          "-=0.35"
+          "-=0.28"
         )
         .fromTo(
-          ".sv-console",
-          { y: 24, scale: 0.97, opacity: 0 },
+          ".svx-stage-bezel, .svx-slice",
+          { y: 22, opacity: 0 },
           {
             y: 0,
-            scale: 1,
             opacity: 1,
-            duration: 0.6,
+            duration: 0.54,
+            stagger: 0.055,
             clearProps: "transform,opacity",
           },
-          "-=0.48"
+          "-=0.3"
         );
 
-      // Ambient orb drift (GPU-only)
-      gsap.to(".sv-orb.one", {
-        x: -24,
-        y: 18,
-        duration: 8.5,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-      });
-      gsap.to(".sv-orb.two", {
-        x: 20,
-        y: -16,
-        duration: 10,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-      });
-
-      // Scroll-triggered headings
-      gsap.utils.toArray<HTMLElement>(".sv-reveal-head", root).forEach((el) => {
+      // Section headings & closing band reveal (immediateRender: false prevents offscreen jumps)
+      gsap.utils.toArray<HTMLElement>(".svx-reveal", root).forEach((el) => {
         gsap.fromTo(
           el,
-          { y: 24, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.52,
-            ease: "power3.out",
-            immediateRender: false,
-            clearProps: "transform,opacity",
-            scrollTrigger: { trigger: el, start: "top 95%", once: true },
-          }
-        );
-      });
-
-      // Batch card grids cleanly without trapping offscreen content
-      [".sv-division-card", ".sv-eng-card"].forEach((selector) => {
-        const cards = gsap.utils.toArray<HTMLElement>(selector, root);
-        if (!cards.length) return;
-        ScrollTrigger.batch(cards, {
-          start: "top 95%",
-          once: true,
-          onEnter: (batch) => {
-            gsap.fromTo(
-              batch,
-              { y: 26, scale: 0.98, opacity: 0 },
-              {
-                y: 0,
-                scale: 1,
-                opacity: 1,
-                duration: 0.52,
-                stagger: 0.065,
-                ease: "power3.out",
-                clearProps: "transform,opacity",
-              }
-            );
-          },
-        });
-      });
-
-      // CTA Reveal
-      const ctaBox = root.querySelector<HTMLElement>(".sv-cta-box");
-      if (ctaBox) {
-        gsap.fromTo(
-          ctaBox,
           { y: 24, opacity: 0 },
           {
             y: 0,
@@ -208,26 +164,80 @@ export function ServicesPage({ services }: ServicesPageProps) {
             ease: "power3.out",
             immediateRender: false,
             clearProps: "transform,opacity",
-            scrollTrigger: { trigger: ctaBox, start: "top 94%", once: true },
+            scrollTrigger: { trigger: el, start: "top 94%", once: true },
+          }
+        );
+      });
+
+      // Double-Bezel Bento staggered reveal
+      const bentoShells = gsap.utils.toArray<HTMLElement>(".svx-bento-shell", root);
+      if (bentoShells.length) {
+        ScrollTrigger.batch(bentoShells, {
+          start: "top 95%",
+          once: true,
+          onEnter: (batch) => {
+            gsap.fromTo(
+              batch,
+              { y: 26, opacity: 0 },
+              {
+                y: 0,
+                opacity: 1,
+                duration: 0.54,
+                stagger: 0.06,
+                ease: "power3.out",
+                clearProps: "transform,opacity",
+              }
+            );
+          },
+        });
+      }
+
+      // Engagement Ledger rows stagger
+      const ledgerRows = gsap.utils.toArray<HTMLElement>(".svx-ledger-shell", root);
+      if (ledgerRows.length) {
+        ScrollTrigger.batch(ledgerRows, {
+          start: "top 95%",
+          once: true,
+          onEnter: (batch) => {
+            gsap.fromTo(
+              batch,
+              { x: -16, opacity: 0 },
+              {
+                x: 0,
+                opacity: 1,
+                duration: 0.48,
+                stagger: 0.07,
+                ease: "power3.out",
+                clearProps: "transform,opacity",
+              }
+            );
+          },
+        });
+      }
+
+      // Scrubbed Pipeline Progress Rail
+      const pipeWrap = root.querySelector<HTMLElement>(".svx-pipeline-wrap");
+      const pipeFill = root.querySelector<HTMLElement>(".svx-pipeline-fill");
+      if (pipeWrap && pipeFill) {
+        gsap.fromTo(
+          pipeFill,
+          { scaleX: 0 },
+          {
+            scaleX: 1,
+            ease: "none",
+            scrollTrigger: {
+              trigger: pipeWrap,
+              start: "top 86%",
+              end: "bottom 72%",
+              scrub: 0.4,
+            },
           }
         );
       }
 
-      // Desktop fine-pointer spotlight & magnetic buttons + subtle console tilt
+      // Magnetic CTAs & optical subtle tilt on desktop fine-pointer devices
       if (isFinePointer) {
-        gsap.utils.toArray<HTMLElement>(".sv-spotlight", root).forEach((card) => {
-          const onMove = (e: PointerEvent) => {
-            const rect = card.getBoundingClientRect();
-            const px = ((e.clientX - rect.left) / rect.width) * 100;
-            const py = ((e.clientY - rect.top) / rect.height) * 100;
-            card.style.setProperty("--mx", `${px.toFixed(1)}%`);
-            card.style.setProperty("--my", `${py.toFixed(1)}%`);
-          };
-          card.addEventListener("pointermove", onMove);
-          cleanupFns.push(() => card.removeEventListener("pointermove", onMove));
-        });
-
-        gsap.utils.toArray<HTMLElement>(".sv-magnetic", root).forEach((btn) => {
+        gsap.utils.toArray<HTMLElement>(".svx-magnetic", root).forEach((btn) => {
           const xTo = gsap.quickTo(btn, "x", { duration: 0.28, ease: "power3.out" });
           const yTo = gsap.quickTo(btn, "y", { duration: 0.28, ease: "power3.out" });
           const onMove = (e: PointerEvent) => {
@@ -238,7 +248,7 @@ export function ServicesPage({ services }: ServicesPageProps) {
             yTo(Math.max(-8, Math.min(8, dy)));
           };
           const onLeave = () => {
-            gsap.to(btn, { x: 0, y: 0, duration: 0.48, ease: "elastic.out(1, 0.55)" });
+            gsap.to(btn, { x: 0, y: 0, duration: 0.45, ease: "elastic.out(1, 0.55)" });
           };
           btn.addEventListener("pointermove", onMove);
           btn.addEventListener("pointerleave", onLeave);
@@ -247,27 +257,6 @@ export function ServicesPage({ services }: ServicesPageProps) {
             btn.removeEventListener("pointerleave", onLeave);
           });
         });
-
-        const consoleEl = consoleRef.current;
-        if (consoleEl) {
-          const rxTo = gsap.quickTo(consoleEl, "rotationY", { duration: 0.45, ease: "power2.out" });
-          const ryTo = gsap.quickTo(consoleEl, "rotationX", { duration: 0.45, ease: "power2.out" });
-          const onMove = (e: PointerEvent) => {
-            const r = consoleEl.getBoundingClientRect();
-            rxTo((((e.clientX - r.left) / r.width) - 0.5) * 3.8);
-            ryTo(-(((e.clientY - r.top) / r.height) - 0.5) * 3.8);
-          };
-          const onLeave = () => {
-            rxTo(0);
-            ryTo(0);
-          };
-          consoleEl.addEventListener("pointermove", onMove);
-          consoleEl.addEventListener("pointerleave", onLeave);
-          cleanupFns.push(() => {
-            consoleEl.removeEventListener("pointermove", onMove);
-            consoleEl.removeEventListener("pointerleave", onLeave);
-          });
-        }
       }
     }, root);
 
@@ -281,7 +270,7 @@ export function ServicesPage({ services }: ServicesPageProps) {
     };
   }, []);
 
-  // 2. Smooth GSAP transition when Hero Practice Console tab changes
+  // 2. Smooth GSAP animation when active Horizontal Slice changes
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
@@ -289,7 +278,7 @@ export function ServicesPage({ services }: ServicesPageProps) {
 
     const ctx = gsap.context(() => {
       gsap.fromTo(
-        ".sv-console-body > *",
+        ".svx-slice.active .svx-slice-detail > *",
         { y: 12, opacity: 0 },
         {
           y: 0,
@@ -303,9 +292,9 @@ export function ServicesPage({ services }: ServicesPageProps) {
     }, root);
 
     return () => ctx.revert();
-  }, [activeDivIdx]);
+  }, [activeSliceIdx]);
 
-  // 3. Highlight bounce when Engagement Stage selector changes
+  // 3. Tactile highlight motion when Engagement Stage selector switches
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
@@ -313,9 +302,9 @@ export function ServicesPage({ services }: ServicesPageProps) {
 
     const ctx = gsap.context(() => {
       gsap.fromTo(
-        ".sv-eng-card.highlighted",
-        { scale: 0.985 },
-        { scale: 1, duration: 0.35, ease: "back.out(1.6)", clearProps: "transform" }
+        ".svx-ledger-shell.active",
+        { scale: 0.99 },
+        { scale: 1, duration: 0.3, ease: "power2.out", clearProps: "transform" }
       );
     }, root);
 
@@ -323,150 +312,287 @@ export function ServicesPage({ services }: ServicesPageProps) {
   }, [selectedStageId]);
 
   return (
-    <div ref={rootRef} className="sv-page">
-      {/* 1. SPLIT PRACTICE HERO + INTERACTIVE CONSOLE */}
-      <section className="sv-hero-stage" id="top">
-        <div className="sv-hero-grid" aria-hidden="true" />
-        <div className="sv-aurora" aria-hidden="true">
-          <div className="sv-orb one" />
-          <div className="sv-orb two" />
-        </div>
+    <div ref={rootRef} className="svx-page">
+      {/* 1. WIDE EDITORIAL HERO + DOUBLE-BEZEL SLICE STAGE */}
+      <section className="svx-hero" id="top">
+        <div className="wrap svx-hero-top">
+          <h1 className="svx-hero-h1">
+            <span className="svx-hero-line">Full-stack engineering,</span>
+            <span className="svx-hero-line">from architecture to scale.</span>
+          </h1>
 
-        <div className="wrap sv-split">
-          <div className="sv-hero-copy">
-            <span className="sv-status-pill">
-              <span className="sv-live-dot" />
-              PRACTICE DIVISIONS · DIGENTTECH ATELIER
-            </span>
-
-            <h1 className="sv-hero-h1">
-              <span className="sv-hero-line">Full-stack engineering,</span>
-              <span className="sv-hero-line">
-                from <em>architecture</em> to scale.
-              </span>
-            </h1>
-
-            <p className="sv-hero-lead">
-              Four specialized engineering divisions operating under one principal-led roof—delivering
-              sub-300ms web platforms, offline-first mobile apps, private AI workflows, and
-              measurable growth.
-            </p>
-
-            <div className="sv-hero-actions">
-              <div className="sv-magnetic">
-                <a className="button" href="/contact">
-                  Discuss your project <ArrowUpRight size={18} />
+          <div className="svx-hero-subbar">
+            <div>
+              <p className="svx-hero-lead">
+                Four specialized engineering teams under one principal-led roof—shipping edge web
+                platforms, native mobile software, grounded AI pipelines, and measurable acquisition.
+              </p>
+              <div className="svx-hero-actions">
+                <div className="svx-magnetic">
+                  <a className="svx-pill-cta" href="/contact">
+                    <span>Start an architectural brief</span>
+                    <span className="svx-pill-icon">
+                      <ArrowUpRight size={16} />
+                    </span>
+                  </a>
+                </div>
+                <a className="svx-quiet-link svx-magnetic" href="#divisions">
+                  <span>Explore engineering matrix</span>
+                  <ArrowUpRight size={16} />
                 </a>
               </div>
-              <a className="text-link sv-magnetic" href="#divisions">
-                Explore divisions <ArrowUpRight size={18} />
-              </a>
             </div>
 
-            <div className="sv-hero-highlights">
-              <span className="sv-highlight-pill">
-                <Check size={13} /> 2-Week Verified Staging Sprints
-              </span>
-              <span className="sv-highlight-pill">
-                <Check size={13} /> Fixed Milestone Budgets
-              </span>
-              <span className="sv-highlight-pill">
-                <Check size={13} /> 100% Repository &amp; IP Ownership
-              </span>
+            <div className="svx-specs-tray">
+              <div className="svx-specs-ledger">
+                <div className="svx-spec-cell">
+                  <strong>2-Week Cadence</strong>
+                  <span>Verified staging drops</span>
+                </div>
+                <div className="svx-spec-cell">
+                  <strong>Fixed Scope</strong>
+                  <span>Clear milestone pricing</span>
+                </div>
+                <div className="svx-spec-cell">
+                  <strong>100% Ownership</strong>
+                  <span>Clean repo &amp; IP transfer</span>
+                </div>
+              </div>
             </div>
           </div>
 
-          {activeService && (
-            <div className="sv-console" ref={consoleRef}>
-              <div className="sv-console-bar">
-                <div className="sv-console-dots" aria-hidden="true">
-                  <i />
-                  <i />
-                  <i />
-                </div>
-                <span className="sv-console-id">DIVISION // ARCHITECTURE SPEC</span>
-                <span className="sv-console-sla">0{activeDivIdx + 1} / 0{services.length}</span>
-              </div>
-
-              <div className="sv-console-tabs" role="tablist" aria-label="Inspect engineering divisions">
-                {services.map((srv, idx) => {
-                  const shortLabel = srv.title.split(" ")[0];
-                  return (
-                    <button
-                      key={srv.path}
-                      type="button"
-                      role="tab"
-                      aria-selected={activeDivIdx === idx}
-                      className={"sv-console-tab " + (activeDivIdx === idx ? "active" : "")}
-                      onClick={() => setActiveDivIdx(idx)}
-                    >
-                      <span>0{idx + 1}</span>
-                      <span>{shortLabel}</span>
-                    </button>
-                  );
-                })}
-              </div>
-
-              <div className="sv-console-body">
-                <div className="sv-console-head">
-                  <div>
-                    <span className="eyebrow">{activeService.title.toUpperCase()}</span>
-                    <h2>{activeService.headline}</h2>
-                  </div>
-                  {ActiveIcon && (
-                    <div className="sv-console-icon">
-                      <ActiveIcon size={22} strokeWidth={1.6} />
+          {/* Signature Double-Bezel Interactive Slice Matrix */}
+          <div className="svx-stage-bezel">
+            <div className="svx-slices" role="tablist" aria-label="Practice division showcase">
+              {services.map((srv, idx) => {
+                const Icon = srv.icon;
+                const isActive = activeSliceIdx === idx;
+                const artwork = SLICE_ARTWORKS[idx % SLICE_ARTWORKS.length];
+                return (
+                  <div
+                    key={srv.path}
+                    role="tab"
+                    tabIndex={0}
+                    aria-selected={isActive}
+                    className={"svx-slice " + (isActive ? "active" : "")}
+                    onClick={() => setActiveSliceIdx(idx)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        setActiveSliceIdx(idx);
+                      }
+                    }}
+                  >
+                    <div className="svx-slice-bg" aria-hidden="true">
+                      <img src={artwork} alt="" loading={idx === 0 ? "eager" : "lazy"} />
+                      <div className="svx-slice-scrim" />
                     </div>
-                  )}
-                </div>
 
-                <p className="sv-console-desc">{activeService.text}</p>
+                    <div className="svx-slice-top">
+                      <div className="svx-slice-icon">
+                        <Icon size={18} strokeWidth={1.6} />
+                      </div>
+                      <span className="svx-slice-role">
+                        0{idx + 1} · {srv.tags[0]}
+                      </span>
+                    </div>
 
-                <ul className="sv-console-items">
-                  {activeService.items.map((item) => (
-                    <li key={item}>
-                      <Check size={14} />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
+                    <div className="svx-slice-body">
+                      <h2 className="svx-slice-title">{srv.title}</h2>
 
-                <div className="sv-console-footer">
-                  <div className="sv-console-tags">
-                    {activeService.tags.map((tag) => (
-                      <span key={tag}>{tag}</span>
-                    ))}
+                      {isActive && (
+                        <div className="svx-slice-detail">
+                          <p className="svx-slice-desc">{srv.text}</p>
+                          <ul className="svx-slice-points">
+                            {srv.items.map((pt) => (
+                              <li key={pt}>
+                                <Check size={14} />
+                                <span>{pt}</span>
+                              </li>
+                            ))}
+                          </ul>
+                          <div className="svx-slice-foot">
+                            <div className="svx-slice-tags">
+                              {srv.tags.map((t) => (
+                                <span key={t}>{t}</span>
+                              ))}
+                            </div>
+                            <a
+                              className="svx-slice-cta"
+                              href={srv.path}
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <span>Open {srv.title.toLowerCase()}</span>
+                              <span className="svx-slice-cta-dot">
+                                <ArrowUpRight size={14} />
+                              </span>
+                            </a>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <a className="text-link" href={activeService.path}>
-                    Explore {activeService.title.toLowerCase()} <ArrowUpRight size={16} />
-                  </a>
-                </div>
-              </div>
+                );
+              })}
             </div>
-          )}
+          </div>
         </div>
       </section>
 
-      {/* 2. ENGAGEMENT MODELS + STAGE SELECTOR */}
-      <section className="sv-section" id="engagement-models">
+      {/* 2. GAPLESS 12-COLUMN DOUBLE-BEZEL BENTO ARCHITECTURE */}
+      <section className="svx-band" id="divisions">
         <div className="wrap">
-          <div className="sv-section-top sv-reveal-head">
-            <div>
-              <span className="eyebrow">ENGAGEMENT MODELS</span>
-              <h2>Structured delivery built around your stage.</h2>
-            </div>
+          <div className="svx-band-head svx-reveal">
+            <h2>Specialized divisions built as one cohesive stack.</h2>
             <p>
-              Select your current stage to highlight the sprint cadence, squad composition, and
-              deliverable model tailored to your roadmap.
+              Every engagement pairs bespoke product interfaces with resilient backends—so frontend,
+              mobile, growth attribution, and automation share the same data contracts.
             </p>
           </div>
 
-          <div className="sv-stage-filter" role="group" aria-label="Select company stage">
+          <div className="svx-bento">
+            {webService && (
+              <div className="svx-bento-shell svx-span-7">
+                <a className="svx-bento-card" href={webService.path}>
+                  <div className="svx-bento-copy">
+                    <span className="svx-bento-meta">Edge SSR · Headless Commerce · SaaS</span>
+                    <h3>{webService.title}</h3>
+                    <p>{webService.text}</p>
+                    <ul className="svx-bento-list">
+                      {webService.items.slice(0, 3).map((item) => (
+                        <li key={item}>
+                          <Check size={14} />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <span className="svx-bento-link">
+                      Explore web architecture <ArrowUpRight size={16} />
+                    </span>
+                  </div>
+                  <div className="svx-bento-media">
+                    <img
+                      src="/assets/projects/quantos-web-terminal.png"
+                      alt="DigentTech institutional web terminal"
+                      loading="lazy"
+                    />
+                  </div>
+                </a>
+              </div>
+            )}
+
+            {appService && (
+              <div className="svx-bento-shell svx-span-5">
+                <a className="svx-bento-card" href={appService.path}>
+                  <div className="svx-bento-copy">
+                    <span className="svx-bento-meta">iOS &amp; Android · Offline SQLite · Biometrics</span>
+                    <h3>{appService.title}</h3>
+                    <p>{appService.text}</p>
+                  </div>
+                  <div className="svx-bento-media tall">
+                    <img
+                      src="/assets/projects/aurapay-mobile-app.png"
+                      alt="DigentTech native mobile product suite"
+                      loading="lazy"
+                    />
+                  </div>
+                  <span className="svx-bento-link">
+                    Explore mobile engineering <ArrowUpRight size={16} />
+                  </span>
+                </a>
+              </div>
+            )}
+
+            {aiService && (
+              <div className="svx-bento-shell svx-span-4">
+                <a className="svx-bento-card" href={aiService.path}>
+                  <span className="svx-bento-meta">Multi-Agent RAG · Private VPC</span>
+                  <h3>{aiService.title}</h3>
+                  <p>{aiService.text}</p>
+                  <ul className="svx-bento-list">
+                    {aiService.items.slice(0, 3).map((item) => (
+                      <li key={item}>
+                        <Check size={14} />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <span className="svx-bento-link">
+                    Explore AI systems <ArrowUpRight size={16} />
+                  </span>
+                </a>
+              </div>
+            )}
+
+            {growthService && (
+              <div className="svx-bento-shell svx-span-4">
+                <a className="svx-bento-card" href={growthService.path}>
+                  <span className="svx-bento-meta">Technical SEO · Server-Side CAPI</span>
+                  <h3>{growthService.title}</h3>
+                  <p>{growthService.text}</p>
+                  <ul className="svx-bento-list">
+                    {growthService.items.slice(0, 3).map((item) => (
+                      <li key={item}>
+                        <Check size={14} />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <span className="svx-bento-link">
+                    Explore growth systems <ArrowUpRight size={16} />
+                  </span>
+                </a>
+              </div>
+            )}
+
+            <div className="svx-bento-shell svx-span-4">
+              <a className="svx-bento-card" href="/contact">
+                <span className="svx-bento-meta">Handover Standard</span>
+                <h3>Complete code &amp; IP</h3>
+                <p>
+                  Every engagement commits directly into your own GitHub organization with zero vendor
+                  lock-in.
+                </p>
+                <div className="svx-ownership-table">
+                  <div className="svx-own-row">
+                    <span>Source Code</span>
+                    <strong>100% Client Git</strong>
+                  </div>
+                  <div className="svx-own-row">
+                    <span>Design Tokens</span>
+                    <strong>Figma + CSS Variables</strong>
+                  </div>
+                  <div className="svx-own-row">
+                    <span>Post-Launch</span>
+                    <strong>30-Day Warranty SLA</strong>
+                  </div>
+                </div>
+                <span className="svx-bento-link">
+                  Request project scope <ArrowUpRight size={16} />
+                </span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 3. ENGAGEMENT MODELS LEDGER & SCRUBBED DELIVERY PIPELINE */}
+      <section className="svx-band" id="engagement-models">
+        <div className="wrap">
+          <div className="svx-band-head svx-reveal">
+            <h2>Structured delivery models aligned to your stage.</h2>
+            <p>
+              Select where your product stands today to highlight the sprint duration, squad roster,
+              and verification rhythm that fit best.
+            </p>
+          </div>
+
+          <div className="svx-stage-bar" role="group" aria-label="Select product stage">
             {ENGAGEMENT_MODELS.map((m) => (
               <button
                 key={m.id}
                 type="button"
-                className={"sv-stage-btn " + (selectedStageId === m.id ? "active" : "")}
+                className={"svx-stage-pill " + (selectedStageId === m.id ? "active" : "")}
                 onClick={() => setSelectedStageId(m.id)}
               >
                 {m.stageLabel}
@@ -474,113 +600,87 @@ export function ServicesPage({ services }: ServicesPageProps) {
             ))}
           </div>
 
-          <div className="sv-eng-grid">
+          <div className="svx-ledger">
             {ENGAGEMENT_MODELS.map((model) => {
-              const isHighlighted = selectedStageId === model.id;
+              const isActive = selectedStageId === model.id;
               return (
-                <article
+                <div
                   key={model.id}
-                  className={
-                    "sv-eng-card sv-spotlight " + (isHighlighted ? "highlighted" : "")
-                  }
+                  className={"svx-ledger-shell " + (isActive ? "active" : "")}
                 >
-                  <div className="sv-eng-head">
-                    <span className="sv-eng-code">{model.code}</span>
-                    <span className="sv-eng-duration">{model.duration}</span>
-                  </div>
-                  <h3>{model.title}</h3>
-                  <p>{model.desc}</p>
-                  <ul className="sv-eng-list">
-                    {model.bullets.map((b) => (
-                      <li key={b}>
-                        <Check size={14} />
-                        <span>{b}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <a
-                    className="sv-eng-cta"
-                    href={"/contact?brief=" + encodeURIComponent(`Interested in ${model.title} (${model.duration})`)}
-                  >
-                    Scope this model <ArrowUpRight size={15} />
-                  </a>
-                </article>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* 3. CORE ENGINEERING DIVISIONS GRID */}
-      <section className="sv-section" id="divisions">
-        <div className="wrap">
-          <div className="sv-section-top sv-reveal-head">
-            <div>
-              <span className="eyebrow">CORE ENGINEERING PILLARS</span>
-              <h2>Four specialized divisions. One unified standard.</h2>
-            </div>
-            <p>
-              Deep technical execution across full-stack web apps, native mobile software,
-              attribution-first growth, and grounded enterprise AI.
-            </p>
-          </div>
-
-          <div className="sv-divisions-grid">
-            {services.map((s, idx) => {
-              const Icon = s.icon;
-              return (
-                <a className="sv-division-card sv-spotlight" href={s.path} key={s.path}>
-                  <div className="sv-div-top">
-                    <div className="sv-div-icon">
-                      <Icon size={24} strokeWidth={1.5} />
+                  <article className="svx-ledger-row">
+                    <div className="svx-ledger-title">
+                      <small>{model.timeline}</small>
+                      <h3>{model.title}</h3>
                     </div>
-                    <span className="sv-div-num">0{idx + 1}</span>
-                  </div>
-                  <span className="sv-div-kicker">{s.tags.join(" · ")}</span>
-                  <h3>{s.title}</h3>
-                  <p>{s.text}</p>
-                  <ul className="sv-div-list">
-                    {s.items.slice(0, 3).map((it) => (
-                      <li key={it}>
-                        <Check size={14} />
-                        <span>{it}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="sv-div-bottom">
-                    <span>Open {s.title} deep-dive</span>
-                    <ArrowUpRight size={18} />
-                  </div>
-                </a>
+
+                    <p className="svx-ledger-desc">{model.desc}</p>
+
+                    <ul className="svx-ledger-facts">
+                      {model.bullets.map((b) => (
+                        <li key={b}>
+                          <Check size={14} />
+                          <span>{b}</span>
+                        </li>
+                      ))}
+                    </ul>
+
+                    <a
+                      className="svx-ledger-action"
+                      href={
+                        "/contact?brief=" +
+                        encodeURIComponent(`Interested in ${model.title} (${model.timeline})`)
+                      }
+                    >
+                      <span>Scope this model</span>
+                      <ArrowUpRight size={15} />
+                    </a>
+                  </article>
+                </div>
               );
             })}
+          </div>
+
+          <div className="svx-pipeline-wrap">
+            <div className="svx-pipeline-track" aria-hidden="true">
+              <div className="svx-pipeline-fill" />
+            </div>
+            <div className="svx-pipeline-grid">
+              {PIPELINE_STEPS.map((step) => (
+                <div className="svx-pipe-step" key={step.title}>
+                  <h4>{step.title}</h4>
+                  <p>{step.text}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* 4. CONNECTED CAPABILITIES INTERACTIVE EXPLORER */}
+      {/* 4. CONNECTED INTERACTIVE STUDY */}
       <CapabilityExplorer />
 
-      {/* 5. CTA CONVERSION BAND */}
-      <section className="sv-cta-panel">
-        <div className="wrap">
-          <div className="sv-cta-box sv-spotlight">
-            <div className="sv-cta-copy">
-              <span className="eyebrow">READY TO ARCHITECT</span>
-              <h2>Need a multi-disciplinary squad for your next release?</h2>
-              <p>
-                Tell us what you are building and we will map a clear milestone plan, recommended
-                architecture, and fixed sprint budget within 24 hours.
-              </p>
-            </div>
-            <div className="sv-cta-actions">
-              <div className="sv-magnetic">
-                <a className="button" href="/contact">
-                  Start your architectural brief <ArrowUpRight size={18} />
+      {/* 5. ARCHITECTURAL CLOSING BAND */}
+      <section className="svx-closing">
+        <div className="wrap svx-closing-inner svx-reveal">
+          <h2>Bring your technical requirements directly to our principal desk.</h2>
+          <div className="svx-closing-side">
+            <p>
+              Share your target launch window, existing codebase links, or product bottlenecks. We
+              respond within 24 hours with clear architectural options and milestone pricing.
+            </p>
+            <div className="svx-closing-actions">
+              <div className="svx-magnetic">
+                <a className="svx-pill-cta" href="/contact">
+                  <span>Start architectural brief</span>
+                  <span className="svx-pill-icon">
+                    <ArrowUpRight size={16} />
+                  </span>
                 </a>
               </div>
-              <a className="text-link sv-magnetic" href="/work">
-                Inspect shipped work <ArrowUpRight size={18} />
+              <a className="svx-quiet-link svx-magnetic" href="/work">
+                <span>Inspect shipped work</span>
+                <ArrowUpRight size={16} />
               </a>
             </div>
           </div>

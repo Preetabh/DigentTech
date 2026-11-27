@@ -37,9 +37,14 @@
     "contactMobileOverflow": false
   },
   "servicesCheck": {
-    "servicesConsoleTitle": "Eliminate manual ops with grounded AI.",
-    "servicesDivisionCards": 4,
+    "servicesConsoleTitle": "AI & automation",
+    "servicesDivisionCards": 5,
     "servicesMobileOverflow": false
+  },
+  "aboutCheck": {
+    "aboutStorySwitched": true,
+    "aboutJourneyCount": 4,
+    "aboutMobileOverflow": false
   },
   "pageErrors": [],
   "brokenAssets": [],

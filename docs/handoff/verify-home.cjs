@@ -394,26 +394,34 @@ function startStaticServer() {
     );
     await page.screenshot({ path: path.join(OUT_DIR, "contact-dark-390-top.png") });
 
-    // 6. Verification of redesigned /services page (Light #F5F4EB + Dark + GSAP + Interactive Console)
+    // 6. Verification of redesigned /services page (Light #F5F4EB + Dark + GSAP + Horizontal Slices + Bento)
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.evaluate(() => localStorage.setItem("dotcode-theme", "light"));
     await page.goto(`${baseUrl}/services`, { waitUntil: "load" });
     await page.waitForTimeout(900);
     await page.screenshot({ path: path.join(OUT_DIR, "services-light-1440-top.png") });
 
-    await page.locator(".sv-console-tabs").getByRole("tab", { name: /AI/i }).click();
-    await page.waitForTimeout(350);
-    const servicesConsoleTitle = (await page.locator(".sv-console-head h2").innerText()).trim();
+    await page.locator(".svx-slices").getByRole("tab", { name: /AI & automation/i }).click();
+    await page.waitForTimeout(450);
+    const servicesConsoleTitle = (await page.locator(".svx-slice.active .svx-slice-title").innerText()).trim();
 
-    await page.evaluate(() => localStorage.setItem("dotcode-theme", "dark"));
+    await page.evaluate(() => {
+      localStorage.setItem("dotcode-theme", "dark");
+      window.scrollTo(0, 0);
+    });
     await page.reload({ waitUntil: "load" });
+    await page.evaluate(() => window.scrollTo(0, 0));
     await page.waitForTimeout(900);
     await page.screenshot({ path: path.join(OUT_DIR, "services-dark-1440-top.png") });
 
     await page.locator("#divisions").scrollIntoViewIfNeeded();
     await page.waitForTimeout(650);
-    const servicesDivisionCards = await page.locator(".sv-division-card").count();
+    const servicesDivisionCards = await page.locator(".svx-bento-card").count();
     await page.screenshot({ path: path.join(OUT_DIR, "services-dark-1440-divisions.png") });
+
+    await page.locator("#engagement-models").scrollIntoViewIfNeeded();
+    await page.waitForTimeout(650);
+    await page.screenshot({ path: path.join(OUT_DIR, "services-dark-1440-engagement.png") });
 
     await page.setViewportSize({ width: 390, height: 844 });
     await page.evaluate(() => window.scrollTo(0, 0));
@@ -422,6 +430,39 @@ function startStaticServer() {
       () => document.documentElement.scrollWidth > window.innerWidth
     );
     await page.screenshot({ path: path.join(OUT_DIR, "services-dark-390-top.png") });
+
+    // 7. Verification of redesigned /about page (Light #F5F4EB + Dark + GSAP + Double-Bezel)
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.evaluate(() => localStorage.setItem("dotcode-theme", "light"));
+    await page.goto(`${baseUrl}/about`, { waitUntil: "load" });
+    await page.waitForTimeout(900);
+    await page.screenshot({ path: path.join(OUT_DIR, "about-light-1440-top.png") });
+
+    await page.evaluate(() => localStorage.setItem("dotcode-theme", "dark"));
+    await page.reload({ waitUntil: "load" });
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.waitForTimeout(900);
+    await page.screenshot({ path: path.join(OUT_DIR, "about-dark-1440-top.png") });
+
+    await page.locator("#founder").scrollIntoViewIfNeeded();
+    await page.waitForTimeout(600);
+    await page.locator(".abx-story-tabs").getByRole("tab", { name: /Engineering Standard/i }).click();
+    await page.waitForTimeout(350);
+    const aboutStoryText = (await page.locator(".abx-story-panel p").first().innerText()).trim();
+    await page.screenshot({ path: path.join(OUT_DIR, "about-dark-1440-founder.png") });
+
+    await page.locator("#journey").scrollIntoViewIfNeeded();
+    await page.waitForTimeout(650);
+    const aboutJourneyCount = await page.locator(".abx-timeline-grid .abx-time-core").count();
+    await page.screenshot({ path: path.join(OUT_DIR, "about-dark-1440-journey.png") });
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.waitForTimeout(450);
+    const aboutMobileOverflow = await page.evaluate(
+      () => document.documentElement.scrollWidth > window.innerWidth
+    );
+    await page.screenshot({ path: path.join(OUT_DIR, "about-dark-390-top.png") });
 
     const report = {
       stickyHeaderFixedAfterScroll: stickyCheck,
@@ -453,6 +494,11 @@ function startStaticServer() {
         servicesConsoleTitle,
         servicesDivisionCards,
         servicesMobileOverflow,
+      },
+      aboutCheck: {
+        aboutStorySwitched: aboutStoryText.includes("physical architecture"),
+        aboutJourneyCount,
+        aboutMobileOverflow,
       },
       pageErrors,
       brokenAssets,

@@ -1,727 +1,773 @@
+import React, { useEffect, useRef, useState } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
-    ArrowUpRight,
-    Award,
-    Calendar,
-    CheckCircle2,
-    ChevronDown,
-    ChevronUp,
-    Compass,
-    Copy,
-    Cpu,
-    HeartHandshake,
-    Mail,
-    MapPin,
-    Milestone,
-    Scale,
-    ShieldCheck,
-    Sparkles,
-    Target,
-    Terminal,
-    User,
-    XCircle,
-    Zap
+  ArrowUpRight,
+  Calendar,
+  Check,
+  ChevronDown,
+  ChevronUp,
+  Copy,
+  Mail,
+  MapPin,
+  Minus,
 } from "lucide-react";
-import React, { useState } from "react";
-import { AboutStudioCanvas } from "./ServiceCanvases";
 import { ThemeImage } from "./VisualExperience";
 import "./about-page.css";
 
-function SectionHeading({
-  label,
-  title,
-  text,
-}: {
-  label: string;
-  title: string;
-  text?: string;
-}) {
-  return (
-    <div className="section-heading">
-      <span className="eyebrow">{label}</span>
-      <h2>{title}</h2>
-      {text && <p>{text}</p>}
-    </div>
-  );
-}
+gsap.registerPlugin(ScrollTrigger);
+
+const COMPARISON_DATA = [
+  {
+    dimension: "Senior Execution",
+    agency: "Junior developers assigned once the contract closes",
+    studio: "Direct principal architect and founder craftsmanship in every sprint",
+  },
+  {
+    dimension: "Communication Layers",
+    agency: "3–5 layers of account executives and PM ticket relays",
+    studio: "Zero middlemen — direct engineering dialogue in shared channels",
+  },
+  {
+    dimension: "Release Visibility",
+    agency: "Month-long silences before the first clickable preview",
+    studio: "Weekly staging drops and TestFlight builds on physical hardware",
+  },
+  {
+    dimension: "Scope & Billing",
+    agency: "Ambiguous hourly burn with recurring change-order friction",
+    studio: "Fixed-milestone budgets tied to signed acceptance specs",
+  },
+  {
+    dimension: "IP & Ownership",
+    agency: "Vendor lock-in or deferred repository access at launch",
+    studio: "100% clean TypeScript repo, Figma tokens, and cloud ownership on day one",
+  },
+];
+
+const JOURNEY_STEPS = [
+  {
+    year: "2022 · Foundation",
+    title: "The Direct Studio Model",
+    desc: "Vishu Awasthi founded DigentTech to eliminate agency account bloat and put senior builders directly at the product table.",
+  },
+  {
+    year: "2023 · Enterprise Systems",
+    title: "Production CRM & Workforce Portals",
+    desc: "Shipped internal operations software including InfraPilot and HrMitra with multi-tenant security and low-latency SQL backends.",
+  },
+  {
+    year: "2024 · Mobile Architecture",
+    title: "Cross-Platform 60fps Engineering",
+    desc: "Expanded into React Native, Flutter, offline SQLite synchronization, biometric key vaults, and verified App Store shipping.",
+  },
+  {
+    year: "2025+ · Multi-Theme & AI",
+    title: "Private RAG & Tactile Systems",
+    desc: "Engineered multi-agent workflows, grounded VPC RAG pipelines, and dual Light/Dark design token systems globally.",
+  },
+];
+
+const FOUNDER_FAQS = [
+  {
+    q: "Do I work directly with Vishu or an outsourced account team?",
+    a: "You work directly with Vishu and our core senior specialists. There are zero account managers or sales middlemen—every milestone, architecture schema, and design sprint is guided by engineering leadership.",
+  },
+  {
+    q: "What stage companies does DigentTech partner with?",
+    a: "We work with technical founders launching category-defining products, scaling teams modernizing legacy platforms, and operating businesses replacing disconnected tools with custom software.",
+  },
+  {
+    q: "How quickly can a new engagement start?",
+    a: "We cap active engagements at two to three builds per quarter so every project retains senior focus. Discovery and architecture specs typically kick off within 5 to 10 business days.",
+  },
+  {
+    q: "Who owns the code, design assets, and cloud infrastructure?",
+    a: "You retain 100% full ownership from day one. All repositories, Figma components, database schemas, and cloud deployments live directly under your organization's accounts.",
+  },
+];
 
 export function AboutPage() {
-  // View mode switcher: 'profile' | 'advantage' | 'principles' | 'journey'
-  const [activeView, setActiveView] = useState<"profile" | "advantage" | "principles" | "journey">("profile");
+  const rootRef = useRef<HTMLDivElement>(null);
 
-  // Story narrative tabs on the founder card
+  const [activeJump, setActiveJump] = useState<"founder" | "advantage" | "principles" | "journey">("founder");
   const [storyTab, setStoryTab] = useState<"vision" | "standard" | "partnership">("vision");
-
-  // Email copy state
   const [copiedEmail, setCopiedEmail] = useState(false);
-
-  // FAQ accordion state
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
-  const handleCopyEmail = (e: React.MouseEvent) => {
-    e.preventDefault();
+  const handleCopyEmail = () => {
     navigator.clipboard?.writeText("hr.digenttech@gmail.com");
     setCopiedEmail(true);
     setTimeout(() => setCopiedEmail(false), 2400);
   };
 
-  const comparisonData = [
-    {
-      dimension: "Senior Execution",
-      agency: "Junior developers assigned after sales contract is signed",
-      dotcode: "Direct senior architect & founder craftsmanship on every sprint",
-    },
-    {
-      dimension: "Communication Layers",
-      agency: "3–5 layers of account executives, PMs, and ticket coordinators",
-      dotcode: "Zero middlemen. Direct collaboration with the builder in shared Slack",
-    },
-    {
-      dimension: "Feedback Cadence",
-      agency: "Lengthy 3–4 month waterfall reviews before first clickable demo",
-      dotcode: "Weekly device drops on Apple TestFlight & edge preview links",
-    },
-    {
-      dimension: "Scope & Billing",
-      agency: "Hourly estimates with frequent billable scope change orders",
-      dotcode: "Transparent fixed-scope milestones with guaranteed outcomes",
-    },
-    {
-      dimension: "IP & Code Ownership",
-      agency: "Vendor lock-in with proprietary starter kits or deferred handover",
-      dotcode: "100% full source code, Figma vectors, and cloud ownership on day one",
-    },
-  ];
+  const scrollToSection = (sectionId: "founder" | "advantage" | "principles" | "journey") => {
+    setActiveJump(sectionId);
+    const el = document.getElementById(sectionId);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
 
-  const founderFaqs = [
-    {
-      q: "Do I work directly with Vishu or an outsourced account team?",
-      a: "You work directly with Vishu and our core senior specialists. There are zero account managers, sales middlemen, or junior handoffs. Every strategic milestone, system architecture schema, and design sprint is personally guided and reviewed by leadership.",
-    },
-    {
-      q: "What size companies does DigentTech typically partner with?",
-      a: "We partner with ambitious early-stage founders launching category-defining products, venture-backed scaleups modernizing their tech stack, and established businesses seeking bespoke platforms that outperform generic SaaS tools.",
-    },
-    {
-      q: "How quickly can we kick off a new engagement?",
-      a: "We take on only 2 to 3 select engagements per quarter to ensure intense focus and craft. Typically, once scope and milestones are aligned, discovery and prototyping begin within 5 to 10 business days.",
-    },
-    {
-      q: "Who owns the code, design assets, and intellectual property?",
-      a: "You retain 100% full ownership of all source code, Figma design files, database architectures, and cloud deployment pipelines from day one. There is zero vendor lock-in.",
-    },
-  ];
+  // 1. Authored GSAP + ScrollTrigger Choreography
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+
+    const prefersReduced =
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    const isFinePointer =
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(pointer: fine)").matches;
+
+    if (prefersReduced) return;
+
+    const cleanupFns: Array<() => void> = [];
+
+    const ctx = gsap.context(() => {
+      // Hero entrance timeline
+      const heroTl = gsap.timeline({ defaults: { ease: "power3.out" } });
+      heroTl
+        .fromTo(
+          ".abx-hero-line",
+          { y: 30, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.58,
+            stagger: 0.09,
+            clearProps: "transform,opacity",
+          }
+        )
+        .fromTo(
+          ".abx-hero-subbar, .abx-jump-bar",
+          { y: 18, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.46,
+            stagger: 0.08,
+            clearProps: "transform,opacity",
+          },
+          "-=0.25"
+        );
+
+      // Section reveals (immediateRender: false keeps offscreen content safe on hash jumps)
+      gsap.utils.toArray<HTMLElement>(".abx-reveal", root).forEach((el) => {
+        gsap.fromTo(
+          el,
+          { y: 22, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.52,
+            ease: "power3.out",
+            immediateRender: false,
+            clearProps: "transform,opacity",
+            scrollTrigger: { trigger: el, start: "top 94%", once: true },
+          }
+        );
+      });
+
+      // Bento & Timeline stagger batches
+      [".abx-bento-shell", ".abx-timeline-grid .abx-bezel", ".abx-faq-item"].forEach((sel) => {
+        const items = gsap.utils.toArray<HTMLElement>(sel, root);
+        if (!items.length) return;
+        ScrollTrigger.batch(items, {
+          start: "top 95%",
+          once: true,
+          onEnter: (batch) => {
+            gsap.fromTo(
+              batch,
+              { y: 22, opacity: 0 },
+              {
+                y: 0,
+                opacity: 1,
+                duration: 0.48,
+                stagger: 0.06,
+                ease: "power3.out",
+                clearProps: "transform,opacity",
+              }
+            );
+          },
+        });
+      });
+
+      // Scrubbed Studio Journey Spine
+      const timeWrap = root.querySelector<HTMLElement>("#journey");
+      const timeFill = root.querySelector<HTMLElement>(".abx-timeline-fill");
+      if (timeWrap && timeFill) {
+        gsap.fromTo(
+          timeFill,
+          { scaleX: 0 },
+          {
+            scaleX: 1,
+            ease: "none",
+            scrollTrigger: {
+              trigger: timeWrap,
+              start: "top 82%",
+              end: "bottom 75%",
+              scrub: 0.35,
+            },
+          }
+        );
+      }
+
+      // Workspace Image gentle scroll parallax
+      const wsImg = root.querySelector<HTMLElement>(".abx-workspace-frame img");
+      if (wsImg) {
+        gsap.fromTo(
+          wsImg,
+          { yPercent: -5 },
+          {
+            yPercent: 5,
+            ease: "none",
+            scrollTrigger: {
+              trigger: ".abx-workspace-frame",
+              start: "top bottom",
+              end: "bottom top",
+              scrub: 0.5,
+            },
+          }
+        );
+      }
+
+      // Magnetic CTAs (fine pointer only)
+      if (isFinePointer) {
+        gsap.utils.toArray<HTMLElement>(".abx-magnetic", root).forEach((btn) => {
+          const xTo = gsap.quickTo(btn, "x", { duration: 0.28, ease: "power3.out" });
+          const yTo = gsap.quickTo(btn, "y", { duration: 0.28, ease: "power3.out" });
+          const onMove = (e: PointerEvent) => {
+            const rect = btn.getBoundingClientRect();
+            const dx = (e.clientX - (rect.left + rect.width / 2)) * 0.14;
+            const dy = (e.clientY - (rect.top + rect.height / 2)) * 0.14;
+            xTo(Math.max(-8, Math.min(8, dx)));
+            yTo(Math.max(-8, Math.min(8, dy)));
+          };
+          const onLeave = () => {
+            gsap.to(btn, { x: 0, y: 0, duration: 0.45, ease: "elastic.out(1, 0.55)" });
+          };
+          btn.addEventListener("pointermove", onMove);
+          btn.addEventListener("pointerleave", onLeave);
+          cleanupFns.push(() => {
+            btn.removeEventListener("pointermove", onMove);
+            btn.removeEventListener("pointerleave", onLeave);
+          });
+        });
+      }
+    }, root);
+
+    if (document.fonts?.ready) {
+      document.fonts.ready.then(() => ScrollTrigger.refresh());
+    }
+
+    return () => {
+      cleanupFns.forEach((fn) => fn());
+      ctx.revert();
+    };
+  }, []);
+
+  // 2. Smooth GSAP transition when Founder narrative tab switches
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        ".abx-story-panel > *",
+        { y: 10, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.3,
+          stagger: 0.04,
+          ease: "power2.out",
+          clearProps: "transform,opacity",
+        }
+      );
+    }, root);
+
+    return () => ctx.revert();
+  }, [storyTab]);
+
+  // Keep ScrollTrigger geometry accurate when FAQ opens/closes
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => ScrollTrigger.refresh());
+    return () => cancelAnimationFrame(raf);
+  }, [openFaq]);
 
   return (
-    <>
-      {/* 1. HERO STAGE WITH AMBIENT STUDIO CANVAS */}
-      <section className="about-hero-stage">
-        <AboutStudioCanvas />
-        <div className="about-hero-section wrap">
-          <header className="page-hero">
-            <span className="eyebrow">
-              <span
-                style={{
-                  display: "inline-block",
-                  width: "8px",
-                  height: "8px",
-                  borderRadius: "50%",
-                  background: "#10b981",
-                  boxShadow: "0 0 8px #10b981",
-                  marginRight: "6px",
-                }}
-              />
-              THE STUDIO / DIRECT DIGITAL ARCHITECTURE
-            </span>
-            <h1>
-              Senior craft. Zero layers.
-              <br />
-              Digital flagships built to <em>endure.</em>
-            </h1>
-            <p>
-              DigentTech is a boutique design and engineering studio founded to
-              eliminate agency bloat. We partner directly with founders to conceive,
-              architect, and ship digital products with uncompromising taste and
-              production resilience.
-            </p>
-          </header>
+    <div ref={rootRef} className="abx-page">
+      {/* 1. EDITORIAL STUDIO HERO */}
+      <section className="abx-hero" id="top">
+        <div className="wrap abx-hero-top">
+          <h1 className="abx-hero-h1">
+            <span className="abx-hero-line">Senior craft. Zero layers.</span>
+            <span className="abx-hero-line">Digital flagships built to endure</span>
+          </h1>
 
-          {/* Interactive View Mode Switcher */}
-          <div className="about-view-switcher-bar">
-            <nav className="about-view-switcher" aria-label="About section view filter">
-              <button
-                className={"about-view-btn " + (activeView === "profile" ? "active" : "")}
-                onClick={() => setActiveView("profile")}
-              >
-                <User size={14} />
-                <span>Executive Profile</span>
-              </button>
-              <button
-                className={"about-view-btn " + (activeView === "advantage" ? "active" : "")}
-                onClick={() => setActiveView("advantage")}
-              >
-                <Scale size={14} />
-                <span>The Studio Difference</span>
-              </button>
-              <button
-                className={"about-view-btn " + (activeView === "principles" ? "active" : "")}
-                onClick={() => setActiveView("principles")}
-              >
-                <Compass size={14} />
-                <span>Principles &amp; Craft</span>
-              </button>
-              <button
-                className={"about-view-btn " + (activeView === "journey" ? "active" : "")}
-                onClick={() => setActiveView("journey")}
-              >
-                <Milestone size={14} />
-                <span>Studio Journey</span>
-              </button>
-            </nav>
-          </div>
-        </div>
-      </section>
-
-      {/* 2. LIVE STUDIO METRICS STRIP */}
-      <section className="about-metrics-strip">
-        <div className="wrap">
-          <div className="about-metrics-grid">
-            <div className="about-metric-card">
-              <span className="stat-num">
-                50<span>+</span>
-              </span>
-              <span className="stat-label">Production Flagships Shipped</span>
-            </div>
-            <div className="about-metric-card">
-              <span className="stat-num">
-                99.8<span>%</span>
-              </span>
-              <span className="stat-label">Client Partnership Retention</span>
-            </div>
-            <div className="about-metric-card">
-              <span className="stat-num">
-                &lt;280<span>ms</span>
-              </span>
-              <span className="stat-label">Global Edge Latency SLA</span>
-            </div>
-            <div className="about-metric-card">
-              <span className="stat-num">
-                100<span>%</span>
-              </span>
-              <span className="stat-label">Client IP &amp; Code Ownership</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 3. EXECUTIVE FOUNDER SPOTLIGHT (MEET VISHU AWASTHI) */}
-      <section className="founder-spotlight-section wrap" id="founder">
-        <div className="founder-executive-card">
-          {/* Left: Founder Media Column */}
-          <div className="founder-media-col">
-            <div className="founder-portrait-frame">
-              <div className="founder-status-pill">
-                <span className="founder-status-dot" />
-                <span>ACTIVE FOR Q2/Q3 PARTNERSHIPS</span>
-              </div>
-              <img
-                src="/assets/founder.png"
-                alt="Vishu Awasthi, Founder and Principal Strategist of DigentTech"
-                loading="eager"
-              />
-              <div className="founder-floating-badge">
-                <div className="founder-badge-icon">
-                  <Award size={18} />
-                </div>
-                <div className="founder-badge-text">
-                  <strong>Vishu Awasthi</strong>
-                  <span>Founder &amp; Principal Strategist</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Quick Connect Tray */}
-            <div className="founder-connect-tray">
-              <button
-                className="founder-connect-btn"
-                onClick={handleCopyEmail}
-                type="button"
-                aria-label="Copy founder email"
-              >
-                <div className="founder-connect-left">
-                  <Mail size={15} color="var(--accent)" />
-                  <span>hr.digenttech@gmail.com</span>
-                </div>
-                {copiedEmail ? (
-                  <span className="copy-feedback-pill">Copied!</span>
-                ) : (
-                  <Copy size={13} color="var(--muted)" />
-                )}
-              </button>
-
-              <a
-                className="founder-connect-link"
-                href="/contact?service=General%20inquiry"
-              >
-                <div className="founder-connect-left">
-                  <Calendar size={15} color="var(--accent)" />
-                  <span>Schedule 1-on-1 Strategy Call</span>
-                </div>
-                <ArrowUpRight size={14} />
-              </a>
-
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
-                  fontSize: "11px",
-                  color: "var(--muted)",
-                  padding: "4px 8px",
-                }}
-              >
-                <MapPin size={12} color="var(--accent)" />
-                <span>Based in India · Serving Global Partners</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Right: Leadership Philosophy & Commitment */}
-          <div className="founder-content-col">
-            <div className="founder-header-group">
-              <span className="eyebrow">THE PEOPLE BEHIND THE WORK</span>
-              <h2>Meet Vishu Awasthi.</h2>
-              <div className="founder-role-title">
-                <span className="role-pill">FOUNDER &amp; LEAD ARCHITECT</span>
-                <span className="location-pill">DigentTech STUDIO · EST. 2022</span>
-              </div>
-            </div>
-
-            {/* Interactive Story Tabs */}
-            <div className="founder-story-tab-bar" role="tablist" aria-label="Founder narrative">
-              <button
-                className={"founder-story-tab-btn " + (storyTab === "vision" ? "active" : "")}
-                onClick={() => setStoryTab("vision")}
-              >
-                The Vision
-              </button>
-              <button
-                className={"founder-story-tab-btn " + (storyTab === "standard" ? "active" : "")}
-                onClick={() => setStoryTab("standard")}
-              >
-                Engineering Standard
-              </button>
-              <button
-                className={"founder-story-tab-btn " + (storyTab === "partnership" ? "active" : "")}
-                onClick={() => setStoryTab("partnership")}
-              >
-                Direct Partnership
-              </button>
-            </div>
-
-            {/* Strategic Quote Banner */}
-            <div className="founder-quote-banner">
-              <p>
-                “Great software isn't manufactured on corporate agency assembly
-                lines with five layers of account managers. It's built when
-                senior engineering and commercial strategy sit at the exact same
-                desk.”
+          <div className="abx-hero-subbar">
+            <div>
+              <p className="abx-hero-lead">
+                DigentTech is an independent software and interface studio founded to replace
+                bloated agency relay chains with direct principal engineering and lasting product
+                craft.
               </p>
-              <span className="founder-quote-author">
-                — Vishu Awasthi · Founder, DigentTech
-              </span>
-            </div>
-
-            {/* Narrative Content by Tab */}
-            {storyTab === "vision" && (
-              <>
-                <p className="founder-bio-text">
-                  Founder &amp; strategist at DigentTech. Bringing business direction
-                  and digital execution together, with a focus on thoughtful work
-                  and strong partnerships.
-                </p>
-                <p className="founder-bio-text">
-                  DigentTech was founded to provide a refreshing antidote to bloated
-                  agency models: replacing layers of account middlemen with direct
-                  senior execution, tactile aesthetic craft, and ruthless technical rigor.
-                </p>
-              </>
-            )}
-
-            {storyTab === "standard" && (
-              <>
-                <p className="founder-bio-text">
-                  We treat software as physical architecture. Every interface is built
-                  with typed contracts, indexed relational schemas, sub-second edge
-                  routing, and accessible multi-theme design tokens.
-                </p>
-                <p className="founder-bio-text">
-                  No quick-and-dirty templates. We engineer systems with zero technical
-                  debt that continue running cleanly as your company scales from 1,000 to
-                  1,000,000 daily users.
-                </p>
-              </>
-            )}
-
-            {storyTab === "partnership" && (
-              <>
-                <p className="founder-bio-text">
-                  When you partner with DigentTech, you speak directly with Vishu and core
-                  senior architects. No junior handoffs, no telephone games, and no
-                  surprise invoices.
-                </p>
-                <p className="founder-bio-text">
-                  We distribute private weekly builds to your phone via Apple TestFlight
-                  so you can test on real hardware early and often, keeping you 100% in
-                  control of every sprint milestone.
-                </p>
-              </>
-            )}
-
-            {/* 4 Core Pillars Bento Grid */}
-            <div className="founder-pillars-grid">
-              <div className="founder-pillar-item">
-                <div className="pillar-top">
-                  <div className="pillar-icon-box">
-                    <ShieldCheck size={16} />
-                  </div>
-                  <strong>Zero Technical Debt</strong>
+              <div className="abx-hero-actions">
+                <div className="abx-magnetic">
+                  <a className="abx-pill-cta" href="/contact?service=General%20inquiry">
+                    <span>Schedule founder conversation</span>
+                    <span className="abx-pill-icon">
+                      <ArrowUpRight size={16} />
+                    </span>
+                  </a>
                 </div>
-                <p>
-                  Typed contracts, indexed schemas, and architectures engineered
-                  to scale effortlessly without rewrites.
-                </p>
-              </div>
-
-              <div className="founder-pillar-item">
-                <div className="pillar-top">
-                  <div className="pillar-icon-box">
-                    <Sparkles size={16} />
-                  </div>
-                  <strong>Precision Interface Craft</strong>
-                </div>
-                <p>
-                  WCAG AA+ contrast, tabular typography, and subtle motion curves
-                  engineered for human clarity and speed.
-                </p>
-              </div>
-
-              <div className="founder-pillar-item">
-                <div className="pillar-top">
-                  <div className="pillar-icon-box">
-                    <Terminal size={16} />
-                  </div>
-                  <strong>Weekly Device Builds</strong>
-                </div>
-                <p>
-                  Direct TestFlight drops and edge preview links every single week.
-                  Full transparency, zero surprises.
-                </p>
-              </div>
-
-              <div className="founder-pillar-item">
-                <div className="pillar-top">
-                  <div className="pillar-icon-box">
-                    <Cpu size={16} />
-                  </div>
-                  <strong>100% Full IP Ownership</strong>
-                </div>
-                <p>
-                  All source code, design files, and infrastructure credentials
-                  belong to you on day one.
-                </p>
+                <a className="abx-quiet-link abx-magnetic" href="/work">
+                  <span>Inspect shipped systems</span>
+                  <ArrowUpRight size={16} />
+                </a>
               </div>
             </div>
 
-            {/* Direct Actions Row */}
-            <div className="founder-actions-row">
-              <a className="button" href="/contact?service=General%20inquiry">
-                Schedule a 1-on-1 with Vishu
-                <ArrowUpRight size={18} />
-              </a>
-              <a className="text-link" href="/careers">
-                Build with us <ArrowUpRight size={18} />
-              </a>
+            <div className="abx-specs-tray">
+              <div className="abx-specs-grid">
+                <div className="abx-spec-cell">
+                  <strong>Est. 2022</strong>
+                  <span>Principal-led studio</span>
+                </div>
+                <div className="abx-spec-cell">
+                  <strong>2–3 Builds / Qtr</strong>
+                  <span>Capped partner roster</span>
+                </div>
+                <div className="abx-spec-cell">
+                  <strong>100% Ownership</strong>
+                  <span>Client Git &amp; IP rights</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <nav className="abx-jump-bar" aria-label="Jump to About sections">
+            {(
+              [
+                ["founder", "Founder Profile"],
+                ["advantage", "Studio Difference"],
+                ["principles", "Principles & Craft"],
+                ["journey", "Studio Journey"],
+              ] as const
+            ).map(([id, label]) => (
+              <button
+                key={id}
+                type="button"
+                className={"abx-jump-btn " + (activeJump === id ? "active" : "")}
+                onClick={() => scrollToSection(id)}
+              >
+                {label}
+              </button>
+            ))}
+          </nav>
+        </div>
+      </section>
+
+      {/* 2. FOUNDER MONOGRAPH DOUBLE-BEZEL SPOTLIGHT */}
+      <section className="abx-band" id="founder">
+        <div className="wrap">
+          <div className="abx-bezel abx-reveal">
+            <div className="abx-bezel-core abx-founder-core">
+              {/* Left: Portrait & Direct Connect */}
+              <div className="abx-founder-aside">
+                <div className="abx-portrait-wrap">
+                  <img
+                    src="/assets/founder.png"
+                    alt="Vishu Awasthi, Founder and Principal Strategist of DigentTech"
+                    loading="eager"
+                  />
+                </div>
+
+                <div className="abx-founder-meta-card">
+                  <div className="abx-founder-name">
+                    <strong>Vishu Awasthi</strong>
+                    <span>Founder &amp; Architect</span>
+                  </div>
+
+                  <button
+                    type="button"
+                    className="abx-connect-row"
+                    onClick={handleCopyEmail}
+                    aria-label="Copy founder email"
+                  >
+                    <span className="abx-connect-left">
+                      <Mail size={14} />
+                      <span>hr.digenttech@gmail.com</span>
+                    </span>
+                    {copiedEmail ? (
+                      <span className="abx-copied-tag">Copied!</span>
+                    ) : (
+                      <Copy size={13} />
+                    )}
+                  </button>
+
+                  <a className="abx-connect-row" href="/contact?service=General%20inquiry">
+                    <span className="abx-connect-left">
+                      <Calendar size={14} />
+                      <span>Book 1-on-1 Strategy Call</span>
+                    </span>
+                    <ArrowUpRight size={14} />
+                  </a>
+
+                  <div className="abx-loc-note">
+                    <MapPin size={13} />
+                    <span>Barabanki &amp; Lucknow, India · Global remote</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right: Leadership Philosophy & Commitments */}
+              <div className="abx-founder-main">
+                <div className="abx-founder-header">
+                  <h2>Meet Vishu Awasthi.</h2>
+                  <div className="abx-founder-sub">
+                    Founder &amp; Principal Strategist · Direct Architecture &amp; Product Delivery
+                  </div>
+                </div>
+
+                <div className="abx-story-tabs" role="tablist" aria-label="Founder narrative">
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={storyTab === "vision"}
+                    className={"abx-story-tab " + (storyTab === "vision" ? "active" : "")}
+                    onClick={() => setStoryTab("vision")}
+                  >
+                    The Vision
+                  </button>
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={storyTab === "standard"}
+                    className={"abx-story-tab " + (storyTab === "standard" ? "active" : "")}
+                    onClick={() => setStoryTab("standard")}
+                  >
+                    Engineering Standard
+                  </button>
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={storyTab === "partnership"}
+                    className={"abx-story-tab " + (storyTab === "partnership" ? "active" : "")}
+                    onClick={() => setStoryTab("partnership")}
+                  >
+                    Direct Partnership
+                  </button>
+                </div>
+
+                <blockquote className="abx-quote">
+                  <p>
+                    “Great software isn&apos;t manufactured on corporate assembly lines with five
+                    layers of account managers. It is built when senior engineering and commercial
+                    strategy sit at the exact same desk.”
+                  </p>
+                  <cite>— Vishu Awasthi · Founder, DigentTech</cite>
+                </blockquote>
+
+                <div className="abx-story-panel">
+                  {storyTab === "vision" && (
+                    <>
+                      <p>
+                        DigentTech was created as an antidote to bloated software agencies—uniting
+                        commercial direction, systematic interface taste, and hardened engineering
+                        without middleman telephone games.
+                      </p>
+                      <p>
+                        Every product is shaped around measurable customer clarity, fast response
+                        budgets, and codebases your internal team enjoys owning long after launch.
+                      </p>
+                    </>
+                  )}
+                  {storyTab === "standard" && (
+                    <>
+                      <p>
+                        We treat software as durable physical architecture: strict TypeScript
+                        contracts, indexed SQL databases, sub-300ms edge routing, and accessible
+                        Light &amp; Dark design token systems.
+                      </p>
+                      <p>
+                        No disposable starter kits or brittle plugins. Systems ship automated with
+                        Playwright verification and clean module boundaries that scale cleanly.
+                      </p>
+                    </>
+                  )}
+                  {storyTab === "partnership" && (
+                    <>
+                      <p>
+                        You work side-by-side with Vishu and senior engineers inside shared channels.
+                        Decisions happen directly with the builders writing the code.
+                      </p>
+                      <p>
+                        Weekly preview links and iOS TestFlight hardware drops keep your team in
+                        complete control of every sprint milestone before final sign-off.
+                      </p>
+                    </>
+                  )}
+                </div>
+
+                <div className="abx-commitments">
+                  <div className="abx-commit-item">
+                    <Check size={15} />
+                    <div>
+                      <strong>Zero Technical Debt</strong>
+                      <span>Strict TypeScript contracts &amp; documented schemas</span>
+                    </div>
+                  </div>
+                  <div className="abx-commit-item">
+                    <Check size={15} />
+                    <div>
+                      <strong>WCAG AA+ Contrast</strong>
+                      <span>Accessible Light &amp; Dark systems built intentionally</span>
+                    </div>
+                  </div>
+                  <div className="abx-commit-item">
+                    <Check size={15} />
+                    <div>
+                      <strong>Weekly Staging Drops</strong>
+                      <span>Live preview URLs and device builds every sprint</span>
+                    </div>
+                  </div>
+                  <div className="abx-commit-item">
+                    <Check size={15} />
+                    <div>
+                      <strong>100% Client IP Rights</strong>
+                      <span>Direct commits inside your own Git organization</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="abx-founder-actions">
+                  <div className="abx-magnetic">
+                    <a className="abx-pill-cta" href="/contact?service=General%20inquiry">
+                      <span>Schedule 1-on-1 with Vishu</span>
+                      <span className="abx-pill-icon">
+                        <ArrowUpRight size={16} />
+                      </span>
+                    </a>
+                  </div>
+                  <a className="abx-quiet-link abx-magnetic" href="/careers">
+                    <span>Explore studio careers</span>
+                    <ArrowUpRight size={16} />
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 4. THE STUDIO ADVANTAGE (TRADITIONAL AGENCY VS DigentTech) */}
-      <section className="comparison-section wrap" id="advantage">
-        <div className="section-top">
-          <SectionHeading
-            label="THE STUDIO ADVANTAGE"
-            title="Why founders choose DigentTech over traditional agencies."
-            text="We stripped away the agency bloat to deliver faster velocity, higher craft, and direct builder accountability."
-          />
-        </div>
-
-        <div className="comparison-box">
-          <div className="comparison-header-row">
-            <div>Strategic Dimension</div>
-            <div>Traditional Agency</div>
-            <div className="col-studio">
-              <Sparkles size={14} />
-              DigentTech Studio
-            </div>
-          </div>
-
-          {comparisonData.map((item) => (
-            <div className="comparison-item-row" key={item.dimension}>
-              <div className="comparison-dim">{item.dimension}</div>
-              <div className="comparison-bad">
-                <XCircle size={17} className="icon-cross" />
-                <span>{item.agency}</span>
-              </div>
-              <div className="comparison-good">
-                <CheckCircle2 size={17} className="icon-check" />
-                <span>{item.dotcode}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* 5. STUDIO PRINCIPLES (WHAT GUIDES US) */}
-      <section className="section wrap" id="principles">
-        <div className="section-top">
-          <SectionHeading
-            label="WHAT GUIDES US"
-            title="The principles we refuse to compromise."
-            text="Every decision at DigentTech is filtered through these four commitments to ensure our work creates lasting value."
-          />
-        </div>
-
-        <div className="studio-principles-grid">
-          <article className="principle-bento-card">
-            <div className="principle-card-top">
-              <div className="principle-icon-circle">
-                <Target size={22} />
-              </div>
-              <span className="principle-card-num">01</span>
-            </div>
-            <h3>Clarity first, always</h3>
+      {/* 3. STUDIO ADVANTAGE COMPARISON LEDGER */}
+      <section className="abx-band" id="advantage">
+        <div className="wrap">
+          <div className="abx-band-head abx-reveal">
+            <h2>Why founders choose a direct studio over layered agencies.</h2>
             <p>
-              A clear brief, realistic milestones, and straightforward communication.
-              We speak plainly, avoid vanity jargon, and anchor every feature in
-              tangible commercial outcomes.
-            </p>
-            <div className="principle-tag-list">
-              <span>Transparent Scope</span>
-              <span>Direct Roadmaps</span>
-              <span>Zero Jargon</span>
-            </div>
-          </article>
-
-          <article className="principle-bento-card">
-            <div className="principle-card-top">
-              <div className="principle-icon-circle">
-                <Sparkles size={22} />
-              </div>
-              <span className="principle-card-num">02</span>
-            </div>
-            <h3>Care in every micro-detail</h3>
-            <p>
-              Thoughtful design and reliable engineering belong together. From
-              sub-pixel SVG vector alignment to 14ms SQLite queries, we obsess over
-              the subtle nuances that separate great from ordinary.
-            </p>
-            <div className="principle-tag-list">
-              <span>Claymorphic Lighting</span>
-              <span>120Hz Animations</span>
-              <span>Micro-Interactions</span>
-            </div>
-          </article>
-
-          <article className="principle-bento-card">
-            <div className="principle-card-top">
-              <div className="principle-icon-circle">
-                <HeartHandshake size={22} />
-              </div>
-              <span className="principle-card-num">03</span>
-            </div>
-            <h3>People at the center</h3>
-            <p>
-              Build useful experiences around real human ergonomics, not theoretical
-              assumptions. We test on physical phones and collect feedback from
-              actual end-users throughout the journey.
-            </p>
-            <div className="principle-tag-list">
-              <span>Thumb-Zone Ergonomics</span>
-              <span>Accessibility First</span>
-              <span>Real User Feedback</span>
-            </div>
-          </article>
-
-          <article className="principle-bento-card">
-            <div className="principle-card-top">
-              <div className="principle-icon-circle">
-                <Zap size={22} />
-              </div>
-              <span className="principle-card-num">04</span>
-            </div>
-            <h3>Always curious &amp; hungry</h3>
-            <p>
-              Keep learning, question the obvious, and find a better way. We stay on
-              the bleeding edge of WebSockets, edge computing, React Server
-              Components, and spatial tactile design.
-            </p>
-            <div className="principle-tag-list">
-              <span>Edge Computing</span>
-              <span>Next-Gen Frameworks</span>
-              <span>Continuous Velocity</span>
-            </div>
-          </article>
-        </div>
-      </section>
-
-      {/* 6. STUDIO EVOLUTION & MILESTONES */}
-      <section className="section wrap" id="journey">
-        <div className="section-top">
-          <SectionHeading
-            label="THE DigentTech JOURNEY"
-            title="How we built a studio that ships."
-            text="From an independent engineering practice to a trusted digital partner for visionary founders across three continents."
-          />
-        </div>
-
-        <div className="timeline-track">
-          <div className="timeline-card">
-            <div className="timeline-header">
-              <span className="timeline-year">2022</span>
-              <span className="timeline-badge">FOUNDATION</span>
-            </div>
-            <h3>The Direct Studio Model</h3>
-            <p>
-              Vishu Awasthi founded DigentTech to dismantle the traditional agency
-              structure: replacing account overhead with direct senior craftsmanship,
-              modern web standards, and obsessive design execution.
+              We removed the account overhead so every rupee and sprint goes directly into senior
+              design and production code.
             </p>
           </div>
 
-          <div className="timeline-card">
-            <div className="timeline-header">
-              <span className="timeline-year">2023</span>
-              <span className="timeline-badge">ENTERPRISE SCALE</span>
-            </div>
-            <h3>Enterprise Portals &amp; Operations Systems</h3>
-            <p>
-              Engineered mission-critical enterprise systems including InfraPilot CRM
-              and HrMitra workforce management, serving thousands of daily active
-              shifts with offline synchronization and sub-second query latency.
-            </p>
-          </div>
+          <div className="abx-bezel abx-reveal">
+            <div className="abx-bezel-core abx-compare-table">
+              <div className="abx-compare-head">
+                <div>Dimension</div>
+                <div>Typical Outsourcing Agency</div>
+                <div className="studio-col">DigentTech Direct Studio</div>
+              </div>
 
-          <div className="timeline-card">
-            <div className="timeline-header">
-              <span className="timeline-year">2024</span>
-              <span className="timeline-badge">CROSS-PLATFORM VELOCITY</span>
+              {COMPARISON_DATA.map((row) => (
+                <div className="abx-compare-row" key={row.dimension}>
+                  <div className="abx-compare-dim">{row.dimension}</div>
+                  <div className="abx-compare-cell">
+                    <Minus size={15} />
+                    <span>{row.agency}</span>
+                  </div>
+                  <div className="abx-compare-cell studio">
+                    <Check size={15} color="var(--abx-emerald)" />
+                    <span>{row.studio}</span>
+                  </div>
+                </div>
+              ))}
             </div>
-            <h3>High-Performance Mobile Architectures</h3>
-            <p>
-              Expanded into full-cycle mobile engineering with React Native, Flutter,
-              and native Swift/Kotlin bridging — guaranteeing 100% App Store and
-              Google Play approvals with 60fps native feel.
-            </p>
-          </div>
-
-          <div className="timeline-card">
-            <div className="timeline-header">
-              <span className="timeline-year">2025 &amp; BEYOND</span>
-              <span className="timeline-badge">TACTILE DESIGN ERA</span>
-            </div>
-            <h3>Claymorphic Spatial UI &amp; Global Footprint</h3>
-            <p>
-              Pioneered soft-extruded claymorphic design systems with physical light
-              models, partnering with founders worldwide across the United States,
-              Europe, the Middle East, and India.
-            </p>
           </div>
         </div>
       </section>
 
-      {/* 7. STUDIO WORKSPACE & CRAFT STUDY */}
-      <section className="section wrap">
-        <div className="section-top">
-          <SectionHeading
-            label="STUDIO PRACTICE"
-            title="From sketches to systems."
-            text="Every project starts with human listening, paper wireframes, and architectural rigor before a single line of production code is committed."
-          />
-        </div>
+      {/* 4. 12-COLUMN PRINCIPLES & STUDIO WORKSPACE BENTO */}
+      <section className="abx-band" id="principles">
+        <div className="wrap">
+          <div className="abx-band-head abx-reveal">
+            <h2>Principles we refuse to compromise across any sprint.</h2>
+            <p>
+              Every interface and backend commit is reviewed against four engineering standards
+              before reaching staging.
+            </p>
+          </div>
 
-        <div className="studio-workspace-showcase">
-          <figure className="workspace-figure-box">
-            <ThemeImage
-              variant="workspace"
-              alt="Illustrative design workspace with paper wireframes and blue materials"
-              priority={false}
-            />
-            <figcaption className="workspace-caption-bar">
-              <div className="workspace-caption-text">
-                <strong>Intentional Discovery &amp; Tactile Prototyping</strong>
-                <span>
-                  Physical whiteboard mapping, design token systems, and modular
-                  engineering architecture.
-                </span>
+          <div className="abx-bento">
+            <div className="abx-bento-shell abx-span-7">
+              <div className="abx-bento-core">
+                <span className="abx-bento-kicker">Studio Practice · From Sketches to Production</span>
+                <h3>Intentional discovery paired with live architectural execution</h3>
+                <p>
+                  Every engagement begins with paper flow mapping, semantic design tokens, and
+                  documented entity models before writing UI or API code.
+                </p>
+                <div className="abx-workspace-frame">
+                  <ThemeImage
+                    variant="workspace"
+                    alt="DigentTech design systems and architectural workspace"
+                    priority={false}
+                  />
+                </div>
               </div>
-              <a className="button" href="/work">
-                View our shipped work
+            </div>
+
+            <div className="abx-bento-shell abx-span-5">
+              <div className="abx-bento-core">
+                <span className="abx-bento-kicker">Operational Transparency</span>
+                <h3>Clarity first, always</h3>
+                <p>
+                  A sharp brief, fixed sprint deliverables, and plain-spoken weekly demos anchored
+                  strictly in real product progress instead of jargon.
+                </p>
+              </div>
+            </div>
+
+            <div className="abx-bento-shell abx-span-4">
+              <div className="abx-bento-core">
+                <span className="abx-bento-kicker">Interface Rigor</span>
+                <h3>Care in every micro-detail</h3>
+                <p>
+                  From sub-pixel SVG alignment and Light/Dark WCAG contrast to indexed SQL latency,
+                  sweating the details keeps products effortless.
+                </p>
+              </div>
+            </div>
+
+            <div className="abx-bento-shell abx-span-4">
+              <div className="abx-bento-core">
+                <span className="abx-bento-kicker">Human Ergonomics</span>
+                <h3>Real device validation</h3>
+                <p>
+                  We test flows on real iOS, Android, and desktop viewports for keyboard focus,
+                  thumb ergonomics, and reduced-motion accessibility.
+                </p>
+              </div>
+            </div>
+
+            <div className="abx-bento-shell abx-span-4">
+              <div className="abx-bento-core">
+                <span className="abx-bento-kicker">Modern Stack</span>
+                <h3>Always shipping forward</h3>
+                <p>
+                  Continuous mastery across edge rendering, TypeScript contracts, WebSockets, and
+                  private enterprise AI architecture.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 5. STUDIO JOURNEY SCRUBBED TIMELINE */}
+      <section className="abx-band" id="journey">
+        <div className="wrap">
+          <div className="abx-band-head abx-reveal">
+            <h2>How we built an independent studio that ships.</h2>
+            <p>
+              Steadily expanding from web architecture to full-stack mobile software and private
+              enterprise automation.
+            </p>
+          </div>
+
+          <div className="abx-timeline-track" aria-hidden="true">
+            <div className="abx-timeline-fill" />
+          </div>
+
+          <div className="abx-timeline-grid">
+            {JOURNEY_STEPS.map((step) => (
+              <div className="abx-bezel" key={step.year}>
+                <article className="abx-bezel-core abx-time-core">
+                  <span className="abx-time-year">{step.year}</span>
+                  <h3>{step.title}</h3>
+                  <p>{step.desc}</p>
+                </article>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 6. PARTNER FAQ */}
+      <section className="abx-band" id="faq">
+        <div className="wrap">
+          <div className="abx-band-head abx-reveal">
+            <h2>Direct answers about partnering with DigentTech.</h2>
+            <p>Clear policies on principal involvement, kickoff readiness, and codebase ownership.</p>
+          </div>
+
+          <div className="abx-faq-list">
+            {FOUNDER_FAQS.map((faq, idx) => {
+              const isOpen = openFaq === idx;
+              return (
+                <article className={"abx-faq-item " + (isOpen ? "open" : "")} key={faq.q}>
+                  <button
+                    type="button"
+                    className="abx-faq-btn"
+                    aria-expanded={isOpen}
+                    aria-controls={`abx-faq-${idx}`}
+                    onClick={() => setOpenFaq(isOpen ? null : idx)}
+                  >
+                    <span>{faq.q}</span>
+                    {isOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                  </button>
+                  {isOpen && (
+                    <p id={`abx-faq-${idx}`} className="abx-faq-answer">
+                      {faq.a}
+                    </p>
+                  )}
+                </article>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* 7. ARCHITECTURAL CLOSING BAND */}
+      <section className="abx-closing">
+        <div className="wrap abx-closing-inner abx-reveal">
+          <h2>Bring your next flagship directly to Vishu and the engineering desk.</h2>
+          <div className="abx-closing-side">
+            <p>
+              Whether validating an early concept or modernizing an operational platform—start with
+              a clear brief and expect an engineering response within 24 hours.
+            </p>
+            <div className="abx-closing-actions">
+              <div className="abx-magnetic">
+                <a className="abx-pill-cta" href="/contact?service=General%20inquiry">
+                  <span>Schedule strategy session</span>
+                  <span className="abx-pill-icon">
+                    <ArrowUpRight size={16} />
+                  </span>
+                </a>
+              </div>
+              <a className="abx-quiet-link abx-magnetic" href="/services">
+                <span>Explore capabilities</span>
                 <ArrowUpRight size={16} />
               </a>
-            </figcaption>
-          </figure>
+            </div>
+          </div>
         </div>
       </section>
-
-      {/* 8. FREQUENTLY ASKED QUESTIONS */}
-      <section className="section wrap faq" id="faq">
-        <SectionHeading
-          label="FREQUENTLY ASKED QUESTIONS"
-          title="Direct answers about partnering with us."
-          text="Everything you need to know about our engagement model, communication cadence, and code delivery."
-        />
-        <div>
-          {founderFaqs.map((faq, idx) => (
-            <article key={faq.q}>
-              <button
-                aria-expanded={openFaq === idx}
-                aria-controls={`faq-${idx}`}
-                onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
-              >
-                {faq.q}
-                {openFaq === idx ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-              </button>
-              {openFaq === idx && <p id={`faq-${idx}`}>{faq.a}</p>}
-            </article>
-          ))}
-        </div>
-      </section>
-
-      {/* 9. ELEVATED STUDIO CTA */}
-      <section className="cta wrap">
-        <span className="eyebrow">READY TO BUILD SOMETHING EXTRAORDINARY?</span>
-        <div>
-          <h2>
-            Let's start a
-            <br />
-            direct <em>conversation.</em>
-          </h2>
-          <a className="button" href="/contact?service=General%20inquiry">
-            Schedule strategy session
-            <ArrowUpRight size={18} />
-          </a>
-        </div>
-        <p>
-          An idea on a napkin. A web platform you have outgrown. A mobile app that
-          needs senior craft.
-          <br />
-          Reach out directly to Vishu and the studio team — we respond within 24 hours.
-        </p>
-        <span className="cta-coordinate">
-          DigentTech STUDIO / FOUNDER DIRECT ↗
-        </span>
-      </section>
-    </>
+    </div>
   );
 }
