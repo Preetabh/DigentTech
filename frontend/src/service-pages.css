@@ -158,7 +158,6 @@ a.clay-pill {
   background: radial-gradient(ellipse, rgba(37, 99, 235, 0.22), transparent 68%);
   z-index: -1;
   pointer-events: none;
-  animation: pulse-glow 8s ease-in-out infinite;
 }
 
 :root[data-theme="light"] .service-hero-stage:before {
@@ -175,7 +174,6 @@ a.clay-pill {
   background: radial-gradient(circle, rgba(110, 66, 225, 0.18), transparent 65%);
   z-index: -1;
   pointer-events: none;
-  animation: pulse-glow 10s ease-in-out infinite alternate;
 }
 
 :root[data-theme="light"] .service-hero-stage:after {
@@ -2681,7 +2679,6 @@ a.clay-pill {
   background: radial-gradient(circle, rgba(37, 99, 235, 0.16), transparent 70%);
   z-index: 0;
   pointer-events: none;
-  animation: pulse-glow 9s ease-in-out infinite;
 }
 
 .service-cta-inner {

@@ -1,4 +1,5 @@
 import React, { useEffect, useId, useRef } from "react";
+import gsap from "gsap";
 import {
   ArrowLeft,
   ArrowRight,
@@ -82,9 +83,41 @@ export function WorkCaseStudyModal({
   useDialogSync(dialogRef, Boolean(project), onClose);
 
   useEffect(() => {
-    if (project && bodyRef.current) {
-      bodyRef.current.scrollTo({ top: 0, behavior: "smooth" });
-    }
+    const body = bodyRef.current;
+    if (!project || !body) return;
+    body.scrollTo({ top: 0, behavior: "smooth" });
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+
+    const ctx = gsap.context(() => {
+      gsap
+        .timeline({ defaults: { ease: "power3.out" } })
+        .fromTo(
+          ".wk-case-overview-box",
+          { y: 12, opacity: 0.25 },
+          { y: 0, opacity: 1, duration: 0.42, clearProps: "transform,opacity" },
+          0,
+        )
+        .fromTo(
+          ".wk-case-media-frame img",
+          { scale: 1.045 },
+          { scale: 1, duration: 0.68, ease: "power2.out", clearProps: "transform" },
+          0.04,
+        )
+        .fromTo(
+          ".wk-arch-node",
+          { y: 12, opacity: 0.25 },
+          { y: 0, opacity: 1, duration: 0.36, stagger: 0.05, clearProps: "transform,opacity" },
+          0.12,
+        )
+        .fromTo(
+          ".wk-case-outcomes-list li",
+          { x: -10, opacity: 0.3 },
+          { x: 0, opacity: 1, duration: 0.34, stagger: 0.045, clearProps: "transform,opacity" },
+          0.16,
+        );
+    }, body);
+
+    return () => ctx.revert();
   }, [project?.id]);
 
   const currentIdx = project

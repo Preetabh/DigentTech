@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import gsap from "gsap";
 import { ArrowRight, Layers } from "lucide-react";
 import {
   CloudflareAwsLogo,
@@ -217,6 +218,9 @@ export function WorkHeroDisciplineMap({
   onSelectProject: (p: WorkProject) => void;
 }) {
   const [hoveredCat, setHoveredCat] = useState<WorkCategoryId>("ai");
+  const previewRef = useRef<HTMLButtonElement>(null);
+  const connectorsRef = useRef<SVGSVGElement>(null);
+  const isFirstMount = useRef(true);
 
   const nodes: { id: WorkCategoryId; label: string; code: string; desc: string }[] = [
     { id: "web", code: "SYS-01", label: "Web Platforms", desc: "Treasuries, Commerce & B2B SaaS" },
@@ -227,6 +231,37 @@ export function WorkHeroDisciplineMap({
 
   const sampleProject =
     projects.find((p) => p.category === hoveredCat) ?? projects[0];
+
+  useEffect(() => {
+    if (isFirstMount.current) {
+      isFirstMount.current = false;
+      return;
+    }
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+
+    const ctx = gsap.context(() => {
+      if (previewRef.current) {
+        gsap.fromTo(
+          previewRef.current,
+          { y: 6, opacity: 0.65 },
+          { y: 0, opacity: 1, duration: 0.28, ease: "power2.out", clearProps: "transform,opacity" },
+        );
+      }
+      const activePath = connectorsRef.current?.querySelector<SVGPathElement>(
+        ".wk-bp-connector.is-active",
+      );
+      if (activePath && typeof activePath.getTotalLength === "function") {
+        const len = activePath.getTotalLength() || 80;
+        gsap.fromTo(
+          activePath,
+          { strokeDasharray: len, strokeDashoffset: len },
+          { strokeDashoffset: 0, duration: 0.45, ease: "power2.out", clearProps: "strokeDasharray,strokeDashoffset" },
+        );
+      }
+    });
+
+    return () => ctx.revert();
+  }, [hoveredCat]);
 
   return (
     <div className="wk-hero-blueprint" aria-label="Systems index by engineering discipline">
@@ -259,19 +294,33 @@ export function WorkHeroDisciplineMap({
       </div>
 
       <svg
+        ref={connectorsRef}
         className="wk-bp-connectors"
         viewBox="0 0 400 32"
         preserveAspectRatio="none"
         aria-hidden="true"
       >
-        <path d="M50 0 C50 20, 200 12, 200 32" />
-        <path d="M150 0 C150 20, 200 12, 200 32" />
-        <path d="M250 0 C250 20, 200 12, 200 32" />
-        <path d="M350 0 C350 20, 200 12, 200 32" />
+        <path
+          d="M50 0 C50 20, 200 12, 200 32"
+          className={`wk-bp-connector ${hoveredCat === "web" ? "is-active" : ""}`}
+        />
+        <path
+          d="M150 0 C150 20, 200 12, 200 32"
+          className={`wk-bp-connector ${hoveredCat === "mobile" ? "is-active" : ""}`}
+        />
+        <path
+          d="M250 0 C250 20, 200 12, 200 32"
+          className={`wk-bp-connector ${hoveredCat === "ai" ? "is-active" : ""}`}
+        />
+        <path
+          d="M350 0 C350 20, 200 12, 200 32"
+          className={`wk-bp-connector ${hoveredCat === "design" ? "is-active" : ""}`}
+        />
       </svg>
 
       {sampleProject && (
         <button
+          ref={previewRef}
           type="button"
           className="wk-bp-preview"
           onClick={() => onSelectProject(sampleProject)}
@@ -360,6 +409,7 @@ export function CapabilityTopologySvg({
   activeId: string;
   onSelect: (id: string) => void;
 }) {
+  const svgRef = useRef<SVGSVGElement>(null);
   const positions: Record<string, { x: number; y: number }> = {
     frontend: { x: 86, y: 54 },
     api: { x: 240, y: 54 },
@@ -386,8 +436,39 @@ export function CapabilityTopologySvg({
     }
   }
 
+  useEffect(() => {
+    const svg = svgRef.current;
+    if (!svg || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+    const ctx = gsap.context(() => {
+      const signals = svg.querySelectorAll<SVGLineElement>(".wk-topo-signal");
+      if (signals.length) {
+        gsap.fromTo(
+          signals,
+          { strokeDashoffset: 0 },
+          { strokeDashoffset: -36, duration: 1.5, ease: "none", repeat: -1 },
+        );
+      }
+      const selectedRect = svg.querySelector<SVGRectElement>(".wk-topo-node.is-selected rect");
+      if (selectedRect) {
+        gsap.fromTo(
+          selectedRect,
+          { scale: 0.94 },
+          {
+            scale: 1,
+            transformOrigin: "center center",
+            duration: 0.36,
+            ease: "back.out(1.7)",
+            clearProps: "transform",
+          },
+        );
+      }
+    }, svg);
+    return () => ctx.revert();
+  }, [activeId]);
+
   return (
     <svg
+      ref={svgRef}
       className="wk-topology-svg"
       viewBox="0 0 480 292"
       role="img"
@@ -399,14 +480,24 @@ export function CapabilityTopologySvg({
         if (!p1 || !p2) return null;
         const isLit = a === activeId || b === activeId;
         return (
-          <line
-            key={`${a}-${b}`}
-            x1={p1.x}
-            y1={p1.y}
-            x2={p2.x}
-            y2={p2.y}
-            className={`wk-topo-edge ${isLit ? "is-lit" : ""}`}
-          />
+          <React.Fragment key={`${a}-${b}`}>
+            <line
+              x1={p1.x}
+              y1={p1.y}
+              x2={p2.x}
+              y2={p2.y}
+              className={`wk-topo-edge ${isLit ? "is-lit" : ""}`}
+            />
+            {isLit && (
+              <line
+                x1={p1.x}
+                y1={p1.y}
+                x2={p2.x}
+                y2={p2.y}
+                className="wk-topo-signal"
+              />
+            )}
+          </React.Fragment>
         );
       })}
 

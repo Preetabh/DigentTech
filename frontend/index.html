@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="color-scheme" content="light dark" />
-    <meta name="theme-color" content="#060812" />
+    <meta name="color-scheme" content="light" />
+    <meta name="theme-color" content="#f5f4eb" />
     <title>DigentTech — Software Development, Web &amp; Mobile App Company in India</title>
     <meta
       name="description"
@@ -41,27 +41,13 @@
       rel="stylesheet"
     />
 
-    <!-- Theme Initialization Script (prevents theme flash) -->
+    <!-- Light Mode Initialization Script -->
     <script>
       (function () {
-        var resolved = "dark";
-        var csMeta = document.querySelector('meta[name="color-scheme"]');
-        var tcMeta = document.querySelector('meta[name="theme-color"]');
+        document.documentElement.dataset.theme = "light";
         try {
-          var saved = localStorage.getItem("dotcode-theme");
-          if (saved === "light" || saved === "dark") {
-            resolved = saved;
-            if (csMeta) csMeta.content = saved;
-          } else {
-            var sysLight =
-              window.matchMedia &&
-              window.matchMedia("(prefers-color-scheme: light)").matches;
-            resolved = sysLight ? "light" : "dark";
-            if (csMeta) csMeta.content = "light dark";
-          }
+          localStorage.removeItem("dotcode-theme");
         } catch (e) {}
-        document.documentElement.dataset.theme = resolved;
-        if (tcMeta) tcMeta.content = resolved === "light" ? "#f5f4eb" : "#060812";
       })();
     </script>
 

@@ -1,8 +1,5 @@
 import { useEffect, type RefObject } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
+import { gsap, ScrollTrigger, isLowPowerDevice } from "./utils/gsapConfig";
 
 function prefersReducedMotion(): boolean {
   return (
@@ -57,13 +54,15 @@ export function animateWorkSpotlight(container: HTMLElement | null) {
     gsap.killTweensOf(media);
     gsap.fromTo(
       media,
-      { clipPath: "inset(0 8% 0 0 round 16px)", opacity: 0.45 },
+      { y: 12, scale: 0.985, opacity: 0.45 },
       {
-        clipPath: "inset(0 0% 0 0 round 16px)",
+        y: 0,
+        scale: 1,
         opacity: 1,
-        duration: 0.62,
+        duration: 0.5,
         ease: "power3.out",
-        clearProps: "clipPath,opacity",
+        force3D: true,
+        clearProps: "transform,opacity",
       }
     );
   }
@@ -72,8 +71,8 @@ export function animateWorkSpotlight(container: HTMLElement | null) {
     gsap.killTweensOf(img);
     gsap.fromTo(
       img,
-      { scale: 1.07 },
-      { scale: 1, duration: 0.72, ease: "power3.out", clearProps: "scale" }
+      { scale: 1.05 },
+      { scale: 1, duration: 0.6, ease: "power2.out", force3D: true, clearProps: "scale" }
     );
   }
 
@@ -100,9 +99,10 @@ export function useHomeGsapChoreography(rootRef: RefObject<HTMLDivElement | null
     if (!root || typeof window === "undefined" || prefersReducedMotion()) return;
 
     const cleanups: Array<() => void> = [];
+    const lowPower = isLowPowerDevice();
 
     const ctx = gsap.context(() => {
-      // 1. Rotating seal & hover speed acceleration
+      // 1. Rotating seal & hover speed acceleration (paused off-screen for GPU savings)
       const sealSvg = root.querySelector<HTMLElement>(".home-seal-svg");
       const sealWrap = root.querySelector<HTMLElement>(".home-editorial-seal");
       if (sealSvg) {
@@ -111,16 +111,25 @@ export function useHomeGsapChoreography(rootRef: RefObject<HTMLDivElement | null
           duration: 24,
           repeat: -1,
           ease: "none",
+          force3D: true,
+        });
+
+        ScrollTrigger.create({
+          trigger: sealSvg,
+          start: "top bottom",
+          end: "bottom top",
+          onToggle: (self) => (self.isActive ? spinTween.play() : spinTween.pause()),
+          onRefresh: (self) => (self.isActive ? spinTween.play() : spinTween.pause()),
         });
 
         if (sealWrap) {
           const onEnter = () => {
             gsap.to(spinTween, { timeScale: 3.6, duration: 0.45, ease: "power2.out" });
-            gsap.to(".home-seal-core", { scale: 1.08, duration: 0.35, ease: "power2.out" });
+            gsap.to(".home-seal-core", { scale: 1.08, duration: 0.35, ease: "power2.out", force3D: true });
           };
           const onLeave = () => {
             gsap.to(spinTween, { timeScale: 1, duration: 0.65, ease: "power2.out" });
-            gsap.to(".home-seal-core", { scale: 1, duration: 0.45, ease: "power2.out" });
+            gsap.to(".home-seal-core", { scale: 1, duration: 0.45, ease: "power2.out", force3D: true });
           };
           sealWrap.addEventListener("mouseenter", onEnter);
           sealWrap.addEventListener("mouseleave", onLeave);
@@ -176,8 +185,8 @@ export function useHomeGsapChoreography(rootRef: RefObject<HTMLDivElement | null
         )
         .fromTo(
           ".home-editorial-kicker",
-          { y: 42, clipPath: "inset(0 0 100% 0)", opacity: 0.15 },
-          { y: 0, clipPath: "inset(0 0 0% 0)", opacity: 1, duration: 0.9, clearProps: "clipPath,transform" },
+          { y: 24, opacity: 0.15 },
+          { y: 0, opacity: 1, duration: 0.72, force3D: true, clearProps: "transform" },
           0.05
         )
         .fromTo(
@@ -217,10 +226,10 @@ export function useHomeGsapChoreography(rootRef: RefObject<HTMLDivElement | null
           0.1
         );
 
-      // 4. Scroll-linked Cinema Showreel parallax
+      // 4. Scroll-linked Cinema Showreel parallax (skipped on low-power devices for smooth video playback)
       const showreelEl = root.querySelector<HTMLElement>("#showreel");
       const cinemaVideo = root.querySelector<HTMLElement>("#showreel .home-cinema-video");
-      if (showreelEl && cinemaVideo) {
+      if (showreelEl && cinemaVideo && !lowPower) {
         gsap.fromTo(
           cinemaVideo,
           { yPercent: -5, scale: 1.08 },
@@ -236,17 +245,6 @@ export function useHomeGsapChoreography(rootRef: RefObject<HTMLDivElement | null
             },
           }
         );
-
-        gsap.to("#showreel .home-cinema-controls", {
-          y: -18,
-          ease: "none",
-          scrollTrigger: {
-            trigger: showreelEl,
-            start: "top bottom",
-            end: "bottom top",
-            scrub: 0.9,
-          },
-        });
       }
 
       // 5. Sticky header scroll class elevation
@@ -267,10 +265,76 @@ export function useHomeGsapChoreography(rootRef: RefObject<HTMLDivElement | null
         });
       }
 
-      // 6. About & FAQ frame image parallax
+      // 6. About & FAQ frame image parallax + GSAP Viewport-Paused Marquees (smooth on all PCs)
+      const bindMarquee = (selector: string, viewportSelector: string, distancePct: number, dur: number) => {
+        const track = root.querySelector<HTMLElement>(selector);
+        const vp = root.querySelector<HTMLElement>(viewportSelector);
+        if (!track || !vp) return;
+
+        let inViewport = true;
+        let hovered = false;
+        const tween = gsap.fromTo(
+          track,
+          { xPercent: 0 },
+          {
+            xPercent: distancePct,
+            duration: dur,
+            ease: "none",
+            repeat: -1,
+            force3D: true,
+            overwrite: false,
+          }
+        );
+
+        const syncPlayState = () => {
+          if (inViewport && !hovered) {
+            tween.play();
+          } else {
+            tween.pause();
+          }
+        };
+
+        const rect = vp.getBoundingClientRect();
+        inViewport = rect.bottom >= 0 && rect.top <= window.innerHeight;
+        syncPlayState();
+
+        ScrollTrigger.create({
+          trigger: vp,
+          start: "top bottom",
+          end: "bottom top",
+          onToggle: (self) => {
+            inViewport = self.isActive;
+            syncPlayState();
+          },
+          onRefresh: (self) => {
+            inViewport = self.isActive;
+            syncPlayState();
+          },
+        });
+
+        if (window.matchMedia?.("(hover: hover) and (pointer: fine)").matches) {
+          const onEnter = () => {
+            hovered = true;
+            syncPlayState();
+          };
+          const onLeave = () => {
+            hovered = false;
+            syncPlayState();
+          };
+          vp.addEventListener("mouseenter", onEnter);
+          vp.addEventListener("mouseleave", onLeave);
+          cleanups.push(() => {
+            vp.removeEventListener("mouseenter", onEnter);
+            vp.removeEventListener("mouseleave", onLeave);
+          });
+        }
+      };
+      bindMarquee(".lb-marquee-track", ".lb-marquee-viewport", -50, 38);
+      bindMarquee(".lb-keyword-track", ".lb-keyword-marquee", -33.333333, 44);
+
       const aboutFrame = root.querySelector<HTMLElement>(".lb-about-photo-frame");
       const aboutImg = root.querySelector<HTMLElement>(".lb-about-photo-img");
-      if (aboutFrame && aboutImg) {
+      if (aboutFrame && aboutImg && !lowPower) {
         gsap.fromTo(
           aboutImg,
           { yPercent: -6, scale: 1.09 },
@@ -290,7 +354,7 @@ export function useHomeGsapChoreography(rootRef: RefObject<HTMLDivElement | null
 
       const faqFrame = root.querySelector<HTMLElement>(".lb-faq-photo-frame");
       const faqImg = root.querySelector<HTMLElement>(".lb-faq-photo-frame img");
-      if (faqFrame && faqImg) {
+      if (faqFrame && faqImg && !lowPower) {
         gsap.fromTo(
           faqImg,
           { yPercent: -4, scale: 1.08 },
@@ -363,8 +427,8 @@ export function useHomeGsapChoreography(rootRef: RefObject<HTMLDivElement | null
         if (spotMedia) {
           spotTl.fromTo(
             spotMedia,
-            { clipPath: "inset(0 8% 0 0 round 16px)", opacity: 0.45 },
-            { clipPath: "inset(0 0% 0 0 round 16px)", opacity: 1, duration: 0.65, ease: "power4.out", clearProps: "clipPath,opacity" },
+            { y: 14, scale: 0.985, opacity: 0.45 },
+            { y: 0, scale: 1, opacity: 1, duration: 0.55, ease: "power3.out", force3D: true, clearProps: "transform,opacity" },
             0
           );
         }
@@ -372,11 +436,11 @@ export function useHomeGsapChoreography(rootRef: RefObject<HTMLDivElement | null
           spotTl.fromTo(
             spotItems,
             { x: 18, opacity: 0.3 },
-            { x: 0, opacity: 1, duration: 0.46, stagger: 0.04, ease: "power3.out", clearProps: "transform,opacity" },
+            { x: 0, opacity: 1, duration: 0.46, stagger: 0.04, ease: "power3.out", force3D: true, clearProps: "transform,opacity" },
             0.08
           );
         }
-        if (spotImg) {
+        if (spotImg && !lowPower) {
           gsap.fromTo(
             spotImg,
             { yPercent: -4, scale: 1.07 },
@@ -395,12 +459,212 @@ export function useHomeGsapChoreography(rootRef: RefObject<HTMLDivElement | null
         }
       }
 
+      // 8B. What We Do: Pure GPU ScaleY + Opacity Black Curtain (zero clip-path rasterization on low PCs) + Dual X/Y Scroll Parallax
+      const whatWeDoBand = root.querySelector<HTMLElement>(".lb-whatwedo-band");
+      if (whatWeDoBand) {
+        const blackCurtain = whatWeDoBand.querySelector<HTMLElement>(".lb-whatwedo-black-curtain");
+        const isLightTheme = () => document.documentElement.dataset.theme === "light";
+
+        const activateBlack = (fromDirection: "up" | "down" = "down") => {
+          whatWeDoBand.classList.add("is-black-active");
+          if (blackCurtain && isLightTheme()) {
+            gsap.set(blackCurtain, {
+              transformOrigin: fromDirection === "down" ? "center top" : "center bottom",
+            });
+            gsap.to(blackCurtain, {
+              scaleY: 1,
+              opacity: 1,
+              duration: 0.56,
+              ease: "power3.out",
+              force3D: true,
+              overwrite: "auto",
+            });
+          }
+        };
+
+        const deactivateToWhite = (leavingDirection: "up" | "down") => {
+          if (!isLightTheme()) return;
+          whatWeDoBand.classList.remove("is-black-active");
+          if (blackCurtain) {
+            gsap.set(blackCurtain, {
+              transformOrigin: leavingDirection === "down" ? "center top" : "center bottom",
+            });
+            gsap.to(blackCurtain, {
+              scaleY: 0,
+              opacity: 0,
+              duration: 0.45,
+              ease: "power2.inOut",
+              force3D: true,
+              overwrite: "auto",
+            });
+          }
+        };
+
+        const wwTrigger = ScrollTrigger.create({
+          trigger: whatWeDoBand,
+          start: "top 74%",
+          end: "bottom 26%",
+          onEnter: () => activateBlack("down"),
+          onEnterBack: () => activateBlack("up"),
+          onLeave: () => deactivateToWhite("down"),
+          onLeaveBack: () => deactivateToWhite("up"),
+          onRefresh: (self) => {
+            if (!isLightTheme()) {
+              whatWeDoBand.classList.add("is-black-active");
+              if (blackCurtain) gsap.set(blackCurtain, { opacity: 1, scaleY: 1 });
+              return;
+            }
+            if (self.isActive) {
+              whatWeDoBand.classList.add("is-black-active");
+              if (blackCurtain) gsap.set(blackCurtain, { opacity: 1, scaleY: 1 });
+            } else {
+              whatWeDoBand.classList.remove("is-black-active");
+              if (blackCurtain) {
+                gsap.set(blackCurtain, {
+                  transformOrigin: self.progress >= 0.5 ? "center top" : "center bottom",
+                  opacity: 0,
+                  scaleY: 0,
+                });
+              }
+            }
+          },
+        });
+
+        const themeObs = new MutationObserver(() => {
+          wwTrigger.refresh();
+          wwTrigger.vars.onRefresh?.(wwTrigger);
+        });
+        themeObs.observe(document.documentElement, {
+          attributes: true,
+          attributeFilter: ["data-theme"],
+        });
+        cleanups.push(() => themeObs.disconnect());
+
+        {
+          const wwHead = whatWeDoBand.querySelector<HTMLElement>(".lb-centered-header");
+          if (wwHead) {
+            gsap.fromTo(
+              wwHead,
+              { y: -20 },
+              {
+                y: 16,
+                ease: "none",
+                force3D: true,
+                immediateRender: false,
+                scrollTrigger: {
+                  trigger: whatWeDoBand,
+                  start: "top bottom",
+                  end: "bottom top",
+                  scrub: 0.8,
+                },
+              }
+            );
+          }
+
+          const mm = gsap.matchMedia();
+          const wwCards = gsap.utils.toArray<HTMLElement>(".lb-whatwedo-grid .lb-wire-card", whatWeDoBand);
+          const wwWatermarks = gsap.utils.toArray<HTMLElement>(".lb-wire-watermark", whatWeDoBand);
+          const wwImages = gsap.utils.toArray<HTMLElement>(".lb-wire-media img", whatWeDoBand);
+
+          mm.add("(min-width: 768px)", () => {
+            wwCards.forEach((card, i) => {
+              const col = i % 3;
+              const xFrom = col === 0 ? -22 : col === 2 ? 22 : 0;
+              const xTo = col === 0 ? 8 : col === 2 ? -8 : 0;
+              const yFrom = col === 1 ? 34 : 20;
+              const yTo = col === 1 ? -22 : -12;
+
+              gsap.fromTo(
+                card,
+                { x: xFrom, y: yFrom },
+                {
+                  x: xTo,
+                  y: yTo,
+                  ease: "none",
+                  force3D: true,
+                  immediateRender: false,
+                  scrollTrigger: {
+                    trigger: whatWeDoBand,
+                    start: "top bottom",
+                    end: "bottom top",
+                    scrub: 0.85,
+                  },
+                }
+              );
+            });
+          });
+
+          mm.add("(max-width: 767px)", () => {
+            wwCards.forEach((card) => {
+              gsap.fromTo(
+                card,
+                { y: 16 },
+                {
+                  y: -10,
+                  ease: "none",
+                  force3D: true,
+                  immediateRender: false,
+                  scrollTrigger: {
+                    trigger: card,
+                    start: "top bottom",
+                    end: "bottom top",
+                    scrub: 0.75,
+                  },
+                }
+              );
+            });
+          });
+
+          wwWatermarks.forEach((wm, i) => {
+            const dir = i % 2 === 0 ? -16 : 16;
+            gsap.fromTo(
+              wm,
+              { x: dir },
+              {
+                x: -dir,
+                ease: "none",
+                force3D: true,
+                immediateRender: false,
+                scrollTrigger: {
+                  trigger: wm.closest(".lb-wire-card") || whatWeDoBand,
+                  start: "top bottom",
+                  end: "bottom top",
+                  scrub: 0.9,
+                },
+              }
+            );
+          });
+
+          wwImages.forEach((img) => {
+            gsap.fromTo(
+              img,
+              { yPercent: -4, scale: 1.05 },
+              {
+                yPercent: 4,
+                scale: 1,
+                ease: "none",
+                force3D: true,
+                immediateRender: false,
+                scrollTrigger: {
+                  trigger: img.closest(".lb-wire-media") || whatWeDoBand,
+                  start: "top bottom",
+                  end: "bottom top",
+                  scrub: 0.9,
+                },
+              }
+            );
+          });
+
+          cleanups.push(() => mm.revert());
+        }
+      }
+
       // 9. Batched scroll reveal choreography across Home sections
       const batchTargets = [
         ".lb-centered-header",
         ".lb-about-copy > *",
         ".lb-services-grid .lb-service-box",
-        ".lb-whatwedo-grid .lb-wire-card",
+        ".lb-whatwedo-grid .lb-wire-card-inner",
         ".lb-projects-grid .lb-project-card",
         ".lb-testimonials-grid .lb-testimonial-card",
         ".lb-infra-grid .lb-infra-card",
@@ -433,9 +697,9 @@ export function useHomeGsapChoreography(rootRef: RefObject<HTMLDivElement | null
         });
       });
 
-      // 10. Fine-pointer magnetic controls, radial surface glows, and 3D card tilt
+      // 10. Fine-pointer magnetic controls, radial surface glows, and quickTo 3D card tilt (desktop high-power only)
       const finePointer = window.matchMedia?.("(pointer: fine)").matches;
-      if (finePointer) {
+      if (finePointer && !lowPower) {
         const magnetEls = root.querySelectorAll<HTMLElement>(
           ".home-editorial-arrow-box, .lb-btn-rect, .lb-btn-outline-rect, .lb-pkg-est-btn, .lb-fab-inquiry"
         );
@@ -483,18 +747,32 @@ export function useHomeGsapChoreography(rootRef: RefObject<HTMLDivElement | null
         const projectsSection = root.querySelector<HTMLElement>(".lb-projects-section");
         if (projectsSection) {
           let activeCard: HTMLElement | null = null;
+          const quickMap = new WeakMap<
+            HTMLElement,
+            { rx: gsap.QuickToFunc; ry: gsap.QuickToFunc; y: gsap.QuickToFunc }
+          >();
+
+          const getQuick = (card: HTMLElement) => {
+            let entry = quickMap.get(card);
+            if (!entry) {
+              gsap.set(card, { transformPerspective: 1000, force3D: true });
+              entry = {
+                rx: gsap.quickTo(card, "rotateX", { duration: 0.28, ease: "power2.out" }),
+                ry: gsap.quickTo(card, "rotateY", { duration: 0.28, ease: "power2.out" }),
+                y: gsap.quickTo(card, "y", { duration: 0.28, ease: "power2.out" }),
+              };
+              quickMap.set(card, entry);
+            }
+            return entry;
+          };
 
           const onSectionMove = (e: PointerEvent) => {
             const target = (e.target as Element | null)?.closest<HTMLElement>(".lb-project-card");
             if (activeCard && activeCard !== target) {
-              gsap.to(activeCard, {
-                rotateX: 0,
-                rotateY: 0,
-                y: 0,
-                duration: 0.45,
-                ease: "power3.out",
-                clearProps: "transform",
-              });
+              const prev = getQuick(activeCard);
+              prev.rx(0);
+              prev.ry(0);
+              prev.y(0);
             }
             activeCard = target ?? null;
             if (!target) return;
@@ -505,29 +783,18 @@ export function useHomeGsapChoreography(rootRef: RefObject<HTMLDivElement | null
             target.style.setProperty("--mx", `${(px * 100).toFixed(1)}%`);
             target.style.setProperty("--my", `${(py * 100).toFixed(1)}%`);
 
-            const rotY = (px - 0.5) * 6.5;
-            const rotX = -(py - 0.5) * 5.5;
-            gsap.to(target, {
-              rotateX: rotX,
-              rotateY: rotY,
-              y: -4,
-              transformPerspective: 1000,
-              duration: 0.35,
-              ease: "power2.out",
-              overwrite: "auto",
-            });
+            const q = getQuick(target);
+            q.rx(-(py - 0.5) * 5.5);
+            q.ry((px - 0.5) * 6.5);
+            q.y(-4);
           };
 
           const onSectionLeave = () => {
             if (activeCard) {
-              gsap.to(activeCard, {
-                rotateX: 0,
-                rotateY: 0,
-                y: 0,
-                duration: 0.5,
-                ease: "power3.out",
-                clearProps: "transform",
-              });
+              const prev = getQuick(activeCard);
+              prev.rx(0);
+              prev.ry(0);
+              prev.y(0);
               activeCard = null;
             }
           };

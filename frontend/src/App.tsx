@@ -16,9 +16,7 @@ import {
     Lock,
     Menu,
     Minus,
-    Moon,
-    Pause,
-    Play,
+    Phone,
     Plus,
     RefreshCw,
     Server,
@@ -26,7 +24,6 @@ import {
     Smartphone,
     Sparkles,
     Star,
-    Sun,
     Terminal,
     TrendingUp,
     Users,
@@ -1163,20 +1160,20 @@ function Home({ theme = "dark" }: { theme?: "dark" | "light" }) {
               <span className="kicker-half kicker-half-bottom" aria-hidden="true">DIGENT TECH</span>
               <span className="kicker-mid-bar" aria-hidden="true">
                 <span className="kicker-mid-text">
-                  ARCHITECTURE, PRODUCT ENGINEERING &amp; DEEP AI
+                  WEBSITES · APPS · GRAPHICS · COACHING · FREE IT SUPPORT
                 </span>
               </span>
               <span className="sr-only">DIGENT TECH</span>
             </div>
             <h1 className="home-editorial-title">
-              Engineering Digital Legacies
+              Websites, Apps &amp; Graphics.
               <br />
-              in Product, Cloud &amp; <em>Deep AI</em>
+              Coaching, Internships &amp; <em>Free Tech Help</em>
             </h1>
             <p className="home-editorial-disciplines">
-              Web Platforms <span>|</span> Mobile Apps <span>|</span> Autonomous AI{" "}
-              <span>|</span> Cloud Mesh <span>|</span> Product Systems <span>|</span>{" "}
-              Enterprise UI
+              Web Development <span>|</span> App Development <span>|</span> Graphics &amp; Design{" "}
+              <span>|</span> Coding Coaching <span>|</span> Free Internships <span>|</span>{" "}
+              Free Online IT Support
             </p>
           </div>
 
@@ -1192,7 +1189,7 @@ function Home({ theme = "dark" }: { theme?: "dark" | "light" }) {
                 <circle cx="60" cy="60" r="54" className="home-seal-outer" />
                 <text className="home-seal-ring-text">
                   <textPath href="#digentSealPath" startOffset="0%">
-                    DIGENT TECH · DEEP SYSTEMS · ARCHITECTURE · ATELIER ·
+                    DIGENT TECH · WEB · APPS · GRAPHICS · FREE IT HELP ·
                   </textPath>
                 </text>
               </svg>
@@ -1200,9 +1197,9 @@ function Home({ theme = "dark" }: { theme?: "dark" | "light" }) {
             </div>
 
             <p className="home-editorial-note">
-              We are a collective of systems architects, product designers, and AI
-              engineers working together to craft enduring software anchored in
-              precision and performance.
+              We build clean, fast websites, mobile apps, and custom graphics for your business.
+              We also help students grow through friendly coaching classes, zero-fee internships,
+              and free online IT support whenever you are stuck with tech.
             </p>
 
             <div className="home-editorial-proof-row">
@@ -1261,22 +1258,6 @@ function Home({ theme = "dark" }: { theme?: "dark" | "light" }) {
           playsInline
           preload="auto"
         />
-        <div className="home-cinema-controls">
-          <span className="home-cinema-chip">Studio Reel · 01–07</span>
-          <button
-            type="button"
-            className="home-reel-toggle"
-            onClick={() => setReelPlaying((p) => !p)}
-            aria-label={reelPlaying ? "Pause studio reel video" : "Play studio reel video"}
-            title={reelPlaying ? "Pause video" : "Play video"}
-          >
-            {reelPlaying ? <Pause size={12} aria-hidden="true" /> : <Play size={12} aria-hidden="true" />}
-            <span>{reelPlaying ? "Pause" : "Play"}</span>
-          </button>
-          <a href="/contact" className="home-cinema-brief-pill">
-            Initiate Brief <ArrowUpRight size={13} />
-          </a>
-        </div>
       </section>
 
       <HomeEditorialSections
@@ -1515,60 +1496,17 @@ export default function App() {
   const [search, setSearch] = useState(location.search);
   const mainRef = useRef<HTMLElement>(null);
   const scrollProgressRef = useRef<HTMLDivElement>(null);
-  const [theme, setTheme] = useState<"dark" | "light">(() => {
-    try {
-      const saved = localStorage.getItem("dotcode-theme");
-      if (saved === "light" || saved === "dark") return saved;
-    } catch {}
-    if (document.documentElement.dataset.theme === "light") return "light";
-    return typeof window !== "undefined" &&
-      window.matchMedia?.("(prefers-color-scheme: light)").matches
-      ? "light"
-      : "dark";
-  });
+  const theme = "light" as const;
   useEffect(() => {
-    document.documentElement.dataset.theme = theme;
+    document.documentElement.dataset.theme = "light";
     const tcMeta = document.querySelector<HTMLMetaElement>("meta[name=theme-color]");
-    if (tcMeta) tcMeta.content = theme === "light" ? "#f5f4eb" : "#060812";
+    if (tcMeta) tcMeta.content = "#f5f4eb";
     const csMeta = document.querySelector<HTMLMetaElement>('meta[name="color-scheme"]');
-    let hasSaved = false;
+    if (csMeta) csMeta.content = "light";
     try {
-      const saved = localStorage.getItem("dotcode-theme");
-      hasSaved = saved === "light" || saved === "dark";
+      localStorage.removeItem("dotcode-theme");
     } catch {}
-    if (csMeta) csMeta.content = hasSaved ? theme : "light dark";
-  }, [theme]);
-  useEffect(() => {
-    const mq = window.matchMedia?.("(prefers-color-scheme: light)");
-    const onMq = (e: MediaQueryListEvent) => {
-      try {
-        const saved = localStorage.getItem("dotcode-theme");
-        if (saved === "light" || saved === "dark") return;
-      } catch {}
-      setTheme(e.matches ? "light" : "dark");
-    };
-    const onStorage = (e: StorageEvent) => {
-      if (e.key === "dotcode-theme") {
-        if (e.newValue === "light" || e.newValue === "dark") setTheme(e.newValue);
-        else setTheme(mq?.matches ? "light" : "dark");
-      }
-    };
-    mq?.addEventListener?.("change", onMq);
-    window.addEventListener("storage", onStorage);
-    return () => {
-      mq?.removeEventListener?.("change", onMq);
-      window.removeEventListener("storage", onStorage);
-    };
   }, []);
-  const toggleTheme = () => {
-    const next = theme === "dark" ? "light" : "dark";
-    const sys = window.matchMedia?.("(prefers-color-scheme: light)").matches ? "light" : "dark";
-    try {
-      if (next !== sys) localStorage.setItem("dotcode-theme", next);
-      else localStorage.removeItem("dotcode-theme");
-    } catch {}
-    setTheme(next);
-  };
   useEffect(() => {
     const bar = scrollProgressRef.current;
     if (
@@ -1788,12 +1726,11 @@ export default function App() {
             aria-label="Main navigation"
           >
             {[
-              { label: "Home", href: "/", icon: HomeIcon },
+              { label: "Home", href: "/", icon: HomeIcon, iconOnly: true },
               { label: "Work", href: "/work" },
               { label: "Services", href: "/services" },
               { label: "About", href: "/about" },
               { label: "Careers", href: "/careers" },
-              { label: "Contact", href: "/contact" },
             ].map((item) => {
               const Icon = item.icon;
               const isActive =
@@ -1911,33 +1848,40 @@ export default function App() {
                 <a
                   href={item.href}
                   key={item.href}
-                  className={isActive ? "active" : ""}
+                  className={[isActive ? "active" : "", item.iconOnly ? "nav-home-link" : ""]
+                    .filter(Boolean)
+                    .join(" ") || undefined}
+                  aria-label={item.iconOnly ? item.label : undefined}
+                  title={item.iconOnly ? item.label : undefined}
                   aria-current={isActive ? "page" : undefined}
                 >
                   {Icon && (
                     <Icon
-                      size={15}
-                      style={{ marginRight: "5px", verticalAlign: "-2px" }}
+                      size={item.iconOnly ? 17 : 15}
+                      aria-hidden={item.iconOnly ? "true" : undefined}
+                      style={
+                        item.iconOnly
+                          ? undefined
+                          : { marginRight: "5px", verticalAlign: "-2px" }
+                      }
                     />
                   )}
-                  {item.label}
+                  {!item.iconOnly && item.label}
                 </a>
               );
             })}
+            <a
+              className="nav-phone-link"
+              href="tel:+919194134646"
+              aria-label="Call +91-9194134646"
+            >
+              <Phone size={14} aria-hidden="true" />
+              <span>+91-9194134646</span>
+            </a>
             <a className="mobile-contact" href="/contact">
               Let's talk ↗
             </a>
           </nav>
-          <button
-            className="theme-toggle icon-button"
-            onClick={toggleTheme}
-            aria-label={
-              theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
-            }
-            title={theme === "dark" ? "Light mode" : "Dark mode"}
-          >
-            {theme === "dark" ? <Sun size={19} /> : <Moon size={19} />}
-          </button>
           <a className="nav-cta" href="/contact">
             Let's talk <ArrowUpRight size={17} />
           </a>

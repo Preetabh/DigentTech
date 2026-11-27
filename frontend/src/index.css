@@ -213,12 +213,11 @@ textarea:focus-visible {
   color: var(--muted);
 }
 .site-header {
-  background: var(--header);
+  background: rgba(245, 244, 235, 0.96);
   border-bottom: 1px solid var(--line);
   position: sticky;
   top: 0;
   z-index: 40;
-  backdrop-filter: blur(18px);
 }
 .header-inner {
   height: 91px;
@@ -272,6 +271,29 @@ html[data-theme="dark"] .studio-seal > img {
   position: relative;
   display: inline-flex;
   align-items: center;
+}
+.navigation a.nav-home-link {
+  padding-inline: 6px;
+  justify-content: center;
+}
+.navigation a.nav-phone-link {
+  gap: 6px;
+  padding: 6px 11px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+.navigation a.nav-phone-link svg {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+.navigation a.nav-phone-link:hover {
+  border-color: var(--accent);
 }
 .navigation a:hover,
 .navigation .active {
@@ -1517,7 +1539,7 @@ select option {
     font-size: 62px;
   }
   .navigation {
-    gap: 23px;
+    gap: 14px;
     margin-right: 10px;
   }
   .header-inner {
@@ -1601,11 +1623,9 @@ select option {
   .navigation a.mobile-contact {
     display: block;
   }
-  .theme-toggle {
-    margin-left: auto;
-  }
   .menu-button {
     display: flex;
+    margin-left: auto;
   }
   .hero {
     grid-template-columns: 1fr 1fr;
@@ -3531,12 +3551,10 @@ select option {
   border-radius: 16px;
   background: var(--surface);
   border: 1px solid var(--line);
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35), 0 0 28px rgba(0, 101, 252, 0.12);
-  backdrop-filter: blur(28px);
-  -webkit-backdrop-filter: blur(28px);
-  transition: opacity 0.26s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.26s cubic-bezier(0.16, 1, 0.3, 1),
-              visibility 0.26s;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.14);
+  transition: opacity 0.24s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.24s cubic-bezier(0.16, 1, 0.3, 1),
+              visibility 0.24s;
   z-index: 1000;
 }
 
@@ -5073,40 +5091,6 @@ html[data-theme="light"] .glass-indicator {
   ::view-transition-old(*),
   ::view-transition-new(*) {
     animation: none !important;
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  @supports ((animation-timeline: view()) and (animation-range: entry)) {
-    @keyframes dt-view-rise {
-      0% {
-        opacity: 0.25;
-        transform: translateY(22px) scale(0.985);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
-    }
-    main:not(:has(.home-page))
-      :is(
-        .atelier-engagement-card,
-        .atelier-course-card,
-        .service-card,
-        .project-card,
-        .process-grid article,
-        .feature-box,
-        .roadmap-card,
-        .wrk-card-interactive,
-        .crx-pillar-card,
-        .crx-step-card,
-        .principle-bento-card,
-        .timeline-card
-      ) {
-      animation: dt-view-rise auto cubic-bezier(0.22, 1, 0.36, 1) both;
-      animation-timeline: view(block);
-      animation-range: entry 0% entry 28%;
-    }
   }
 }
 

@@ -62,6 +62,15 @@
   transform: translateY(-2px);
 }
 
+.wk-btn-primary:active,
+.wk-btn-secondary:active,
+.wk-orbit-arrow:active,
+.wk-tab:active,
+.wk-cap-proj-link:active,
+.wk-proc-step:active {
+  transform: scale(0.96);
+}
+
 /* ==========================================================================
    SECTION A — CINEMATIC PORTFOLIO HERO
    ========================================================================== */
@@ -104,7 +113,6 @@
 .wk-hero-glow {
   position: absolute;
   border-radius: 50%;
-  filter: blur(95px);
   pointer-events: none;
   z-index: 1;
 }
@@ -114,7 +122,7 @@
   left: -6%;
   width: 560px;
   height: 460px;
-  background: radial-gradient(circle, rgba(56, 189, 248, 0.16), transparent 72%);
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.14) 0%, rgba(56, 189, 248, 0.04) 40%, transparent 72%);
 }
 
 .wk-hero-glow-b {
@@ -122,7 +130,7 @@
   right: 2%;
   width: 540px;
   height: 440px;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.16), transparent 72%);
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.14) 0%, rgba(99, 102, 241, 0.04) 40%, transparent 72%);
 }
 
 :root[data-theme="light"] .wk-hero-glow-a {
@@ -163,7 +171,7 @@
   height: 7px;
   border-radius: 50%;
   background: #10b981;
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.7);
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.55);
 }
 
 .wk-hero-title {
@@ -303,6 +311,12 @@
   fill: none;
   stroke: var(--line);
   stroke-width: 1.5;
+  transition: stroke 0.25s ease, stroke-width 0.25s ease;
+}
+
+.wk-bp-connectors path.is-active {
+  stroke: var(--accent);
+  stroke-width: 2;
 }
 
 .wk-bp-preview {
@@ -406,9 +420,12 @@
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 12px;
+  perspective: 900px;
 }
 
 .wk-stat-card {
+  position: relative;
+  overflow: hidden;
   padding: 18px 16px;
   border-radius: 14px;
   background: var(--raised);
@@ -416,12 +433,31 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  transition: border-color 0.2s ease, transform 0.2s ease;
+  transform-style: preserve-3d;
+  transition: border-color 0.22s ease, box-shadow 0.22s ease;
+}
+
+.wk-stat-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    220px circle at var(--wk-mx, 50%) var(--wk-my, 50%),
+    rgba(56, 189, 248, 0.16),
+    transparent 70%
+  );
+  transition: opacity 0.28s ease;
 }
 
 .wk-stat-card:hover {
   border-color: var(--accent);
-  transform: translateY(-2px);
+  box-shadow: 0 14px 32px rgba(2, 6, 23, 0.22);
+}
+
+.wk-stat-card:hover::before {
+  opacity: 1;
 }
 
 .wk-stat-highlight {
@@ -1199,6 +1235,15 @@ dialog.wk-case-dialog[open]::backdrop {
 .wk-topo-edge.is-lit {
   stroke: var(--accent);
   stroke-width: 2;
+  stroke-opacity: 0.45;
+}
+
+.wk-topo-signal {
+  stroke: var(--accent);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-dasharray: 8 10;
+  pointer-events: none;
 }
 
 .wk-topo-node rect {
@@ -1483,6 +1528,24 @@ dialog.wk-case-dialog[open]::backdrop {
   border: 1px solid var(--line);
   overflow: hidden;
   text-align: center;
+}
+
+.wk-cta-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    420px circle at var(--wk-cta-x, 50%) var(--wk-cta-y, 50%),
+    rgba(56, 189, 248, 0.14),
+    transparent 65%
+  );
+  transition: opacity 0.3s ease;
+}
+
+.wk-cta-panel:hover::before {
+  opacity: 1;
 }
 
 .wk-cta-grid-overlay {

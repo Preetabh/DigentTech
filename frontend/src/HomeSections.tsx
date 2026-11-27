@@ -133,12 +133,12 @@ const MARQUEE_PARTNERS = [
 ];
 
 const TICKER_DISCIPLINES = [
-  { text: "WEB PLATFORMS", accent: true },
-  { text: "MOBILE APPS", accent: false },
-  { text: "AUTONOMOUS AI", accent: true },
-  { text: "CLOUD MESH", accent: false },
-  { text: "DESIGN SYSTEMS", accent: true },
-  { text: "HEADLESS COMMERCE", accent: false },
+  { text: "WEB DEVELOPMENT", accent: true },
+  { text: "APP DEVELOPMENT", accent: false },
+  { text: "GRAPHICS & UI DESIGN", accent: true },
+  { text: "FREE ONLINE IT SUPPORT", accent: false },
+  { text: "CODING COACHING", accent: true },
+  { text: "FREE STUDENT INTERNSHIPS", accent: false },
 ];
 
 interface HighlightStat {
@@ -150,90 +150,100 @@ interface HighlightStat {
 }
 
 const KEY_HIGHLIGHTS: HighlightStat[] = [
-  { target: 50, suffix: "+", label: "Production Systems Shipped" },
-  { target: 99.98, decimals: 2, suffix: "%", label: "Edge Uptime & SLA Reliability" },
-  { target: 4.9, decimals: 1, suffix: "★", label: "Verified Delivery Rating" },
-  { target: 280, prefix: "<", suffix: "ms", label: "Global Edge P95 TTFB" },
-  { target: 100, suffix: "%", label: "Full Code & IP Ownership" },
+  { target: 50, suffix: "+", label: "Websites, Apps & Designs Delivered" },
+  { target: 100, suffix: "%", label: "Free Online IT Support for People" },
+  { target: 4.9, decimals: 1, suffix: "★", label: "Trusted Client & Student Rating" },
+  { target: 100, suffix: "%", label: "Free Real-Project Internships" },
+  { target: 100, suffix: "%", label: "Full Code Ownership for Clients" },
 ];
 
 const SERVICE_CARDS = [
   {
     code: "01",
-    title: "Web Platforms",
-    desc: "Sub-300ms Next.js applications, enterprise portals, and headless commerce built on typed edge runtimes.",
+    title: "Web Development",
+    desc: "Fast, mobile-friendly business websites, online stores, and custom web portals built clearly from scratch.",
     route: "/web-development",
-    cta: "EXPLORE WEB",
+    cta: "EXPLORE WEB DEVELOPMENT",
     Icon: Globe,
+    highlightTag: "",
   },
   {
     code: "02",
-    title: "Mobile Apps",
-    desc: "Offline-first React Native, Flutter, and native Swift/Kotlin mobile products engineered for daily resilience.",
+    title: "App Development",
+    desc: "Smooth Android and iOS mobile apps designed so your customers and team can use them effortlessly every day.",
     route: "/app-development",
-    cta: "EXPLORE MOBILE",
+    cta: "EXPLORE APP DEVELOPMENT",
     Icon: Smartphone,
+    highlightTag: "",
   },
   {
     code: "03",
-    title: "Autonomous AI",
-    desc: "Private VPC RAG pipelines, LangGraph multi-agent operations, and deterministic document workflows.",
-    route: "/ai-solutions",
-    cta: "EXPLORE AI",
-    Icon: Bot,
+    title: "Graphics, Coaching & Internships",
+    desc: "Logos, posters, UI designs, friendly step-by-step tech classes, and zero-fee internships on live projects.",
+    route: "/online-courses",
+    cta: "EXPLORE CLASSES & INTERNSHIPS",
+    Icon: Layers,
+    highlightTag: "FREE INTERNSHIPS",
   },
   {
     code: "04",
-    title: "Digital Growth",
-    desc: "Technical SEO foundations, conversion telemetry, analytics attribution, and high-velocity performance funnels.",
-    route: "/digital-marketing",
-    cta: "EXPLORE GROWTH",
-    Icon: TrendingUp,
+    title: "Free Online IT Support",
+    desc: "Stuck with software errors, laptop setup, website bugs, or tech questions? We help people online completely free.",
+    route: "/contact?service=Free%20Online%20IT%20Support",
+    cta: "GET FREE TECH HELP",
+    Icon: ShieldCheck,
+    highlightTag: "100% FREE ONLINE HELP",
   },
 ];
 
 const WHAT_WE_DO_ITEMS = [
   {
-    title: "Web & SaaS Architecture",
+    title: "Website Development",
     watermark: "W",
-    desc: "Multi-tenant SaaS portals, high-concurrency customer dashboards, and SSR marketing surfaces.",
+    badge: "",
+    desc: "Modern business websites, company portals, and online stores that open fast and look great on every phone.",
     image: "/assets/projects/novacommerce-web-portal.png",
     route: "/web-development",
   },
   {
-    title: "Mobile Product Suites",
-    watermark: "M",
-    desc: "Smooth 60fps iOS & Android apps with offline local queues, biometric auth, and OTA releases.",
+    title: "Android & iOS Mobile Apps",
+    watermark: "A",
+    badge: "",
+    desc: "Simple, reliable mobile apps for shops, startups, and teams with smooth screens and real-time updates.",
     image: "/assets/projects/infrapilot-mobile-app.png",
     route: "/app-development",
   },
   {
-    title: "Autonomous AI Agents",
-    watermark: "A",
-    desc: "Citation-grounded enterprise search, automated triage agents, and zero-leak VPC LLM deployment.",
-    image: "/assets/projects/quantos-web-terminal.png",
-    route: "/ai-solutions",
-  },
-  {
-    title: "Enterprise ERPs & Portals",
-    watermark: "E",
-    desc: "Unified workforce, HRMS, and operational command centers tailored around real internal workflows.",
-    image: "/assets/projects/hrmitra-hrm-portal.png",
-    route: "/services",
-  },
-  {
-    title: "Design Systems & Tokens",
-    watermark: "D",
-    desc: "Multi-theme Obsidian & Ivory design languages shipped in Figma and strict React component libraries.",
+    title: "Graphics & Brand Design",
+    watermark: "G",
+    badge: "",
+    desc: "Clean logos, social media graphics, banners, and modern app UI designs that make people trust your brand.",
     image: "/assets/projects/claymorphism-design-tokens.png",
     route: "/services",
   },
   {
-    title: "Fintech & Growth Engines",
-    watermark: "F",
-    desc: "Payment gateways, ledger telemetry, conversion instrumentation, and multi-channel growth stacks.",
+    title: "Coding & Design Coaching",
+    watermark: "C",
+    badge: "",
+    desc: "Easy-to-follow live coaching classes where beginners and students learn web, app, and design skills practically.",
+    image: "/assets/projects/hrmitra-hrm-portal.png",
+    route: "/online-courses",
+  },
+  {
+    title: "Free Student Internships",
+    watermark: "I",
+    badge: "ZERO FEE",
+    desc: "Zero-fee internships on real studio projects with mentor guidance so students gain confidence and portfolio work.",
+    image: "/assets/projects/quantos-web-terminal.png",
+    route: "/careers",
+  },
+  {
+    title: "Free Online IT Support",
+    watermark: "S",
+    badge: "100% FREE HELP",
+    desc: "Dedicated free online IT help for fixing tech issues, website bugs, software setups, and student questions.",
     image: "/assets/projects/aurapay-mobile-app.png",
-    route: "/digital-marketing",
+    route: "/contact?service=Free%20Online%20IT%20Support",
   },
 ];
 
@@ -248,27 +258,27 @@ const PORTFOLIO_FILTERS = [
 const DELIVERY_FLOW_STEPS = [
   {
     step: "01",
-    phase: "DISCOVER & TRACE",
-    title: "System Audit",
-    detail: "Latency budgets, domain schemas, and threat boundary specs.",
+    phase: "TALK & UNDERSTAND",
+    title: "Share Your Idea",
+    detail: "Tell us what you need in simple words—websites, apps, graphics, or help.",
   },
   {
     step: "02",
-    phase: "ARCHITECT",
-    title: "Edge & Tokens",
-    detail: "Type-safe API contracts, OKLCH design tokens, and state models.",
+    phase: "PLAN & DESIGN",
+    title: "Preview the Look",
+    detail: "Review clean screen designs, clear timelines, and honest pricing upfront.",
   },
   {
     step: "03",
-    phase: "BUILD & HARDEN",
-    title: "Velocity Sprint",
-    detail: "Weekly CI builds, Playwright verification, and load benchmarks.",
+    phase: "BUILD & CHECK",
+    title: "Weekly Live Progress",
+    detail: "See real working links every week and test everything on phone and desktop.",
   },
   {
     step: "04",
-    phase: "SHIP & OBSERVE",
-    title: "Production SLA",
-    detail: "Zero-downtime rollouts, live telemetry, and 100% repo handover.",
+    phase: "LAUNCH & HELP",
+    title: "Go Live + Support",
+    detail: "Launch smoothly with full code ownership and friendly ongoing IT support.",
   },
 ];
 
@@ -475,30 +485,30 @@ const CLIENT_TESTIMONIALS = [
   {
     initials: "RK",
     name: "Raghavendra Kulkarni",
-    role: "Director of Operations · InfraPilot Systems",
+    role: "Director · InfraPilot Systems",
     quote:
-      "DigentTech re-architected our entire field app and admin CRM into one offline-capable platform. Our site engineers now close reports in minutes instead of waiting until evening.",
+      "DigentTech built our field mobile app and web dashboard cleanly from scratch. Our team now finishes daily reports in minutes without any confusion.",
   },
   {
     initials: "AM",
     name: "Ananya Malhotra",
     role: "Founder · NovaCommerce Studio",
     quote:
-      "Their obsession with Core Web Vitals showed immediately—our storefront TTFB dropped below 220ms nationwide and paid checkout conversion climbed 38% within the first month.",
+      "They made our online store fast and super easy to browse on phones. Visitors find products faster and our orders grew quickly in the first month.",
   },
   {
     initials: "VS",
     name: "Vikramaditya Singh",
-    role: "Head of Technology · HRMitra Enterprise",
+    role: "Head of Technology · HRMitra",
     quote:
-      "Having principal engineers handle both UI polish and database indexing meant zero handoff friction. Every two-week sprint shipped tested, production-ready code on schedule.",
+      "Talking directly to the people building our product saved weeks of back-and-forth. Every update arrived on time, tested, and ready for real users.",
   },
   {
     initials: "NK",
     name: "Neha Kapoor",
-    role: "VP Product · QuantOS Research",
+    role: "Product Lead · QuantOS",
     quote:
-      "Our compliance team needed private AI automation with zero external data leakage. DigentTech delivered a grounded LangGraph desk inside our own VPC with verifiable citations.",
+      "Clean design, clear communication, and reliable support even after launch. They explain every step in plain English without hiding behind technical jargon.",
   },
 ];
 
@@ -528,97 +538,96 @@ interface EngagementPackage {
 
 const ENGAGEMENT_PACKAGES: EngagementPackage[] = [
   {
-    id: "mvp-sprint",
+    id: "starter-web",
     tierNumber: "01",
-    title: "Focused MVP Sprint",
-    badge: "VALIDATION & LAUNCH",
-    price: "From $4,500",
-    timeline: "3 – 4 Weeks",
+    title: "Business Website & Graphics",
+    badge: "FAST LAUNCH",
+    price: "Custom Quote",
+    timeline: "2 – 4 Weeks",
     summary:
-      "Rapid product architecture, interactive Figma design language, and deployed production core to validate with real users.",
+      "A clean, mobile-friendly website with custom logo, posters, and Google setup so customers find and trust your business online.",
     highlights: [
-      "Principal Architect + Senior Fullstack",
-      "Core Database, Auth & Payments",
-      "Responsive Dark & Light UI",
-      "Automated Vercel / AWS Deploy",
+      "Custom Modern Website Design",
+      "Logo, Banners & UI Graphics",
+      "Fast Mobile & Desktop Views",
+      "Full Hosting & Code Ownership",
     ],
     proposalStages: [
-      { step: "01", title: "Architecture & Spec Blueprint", detail: "Schema modeling, user flow wireframes, and fixed milestone delivery schedule within 72 hours." },
-      { step: "02", title: "UI System & Brand Polish", detail: "Typography hierarchy, accessible component primitives, and desktop + mobile responsive views." },
-      { step: "03", title: "Core Full-Stack Build", detail: "Typed API endpoints, authentication, dashboard views, and core business workflows." },
-      { step: "04", title: "Staging QA & Production Launch", detail: "End-to-end smoke checks, Core Web Vitals tuning, DNS cutover, and full Git handover." },
+      { step: "01", title: "Simple Discussion & Plan", detail: "We listen to your business goals and finalize pages, colors, and fixed budget within 48 hours." },
+      { step: "02", title: "Website Layout & Graphics", detail: "Custom design mockups, logo polish, and clean mobile layouts ready for your approval." },
+      { step: "03", title: "Fast Development", detail: "Clean code built for quick loading, contact forms, WhatsApp/email leads, and SEO basics." },
+      { step: "04", title: "Live Launch & Guidance", detail: "Domain setup, testing on phone and desktop, and easy guide so you stay in full control." },
     ],
   },
   {
     id: "core-platform",
     tierNumber: "02",
-    title: "Core Production Platform",
-    badge: "MOST POPULAR · FLAGSHIP",
-    price: "From $9,800",
-    timeline: "6 – 8 Weeks",
+    title: "Complete Web & Mobile App",
+    badge: "MOST POPULAR · ALL-IN-ONE",
+    price: "Project Based",
+    timeline: "5 – 8 Weeks",
     featured: true,
     summary:
-      "Complete custom web or cross-platform mobile system with third-party integrations, Playwright QA, and telemetry dashboards.",
+      "Custom website plus Android & iOS mobile app with admin dashboard, online payments, graphics, and smooth post-launch support.",
     highlights: [
-      "Dedicated 4-Person Specialist Squad",
-      "Multi-Theme Design System",
-      "<280ms Global Edge P95 Speed",
-      "CI/CD + Playwright E2E Suite",
-      "CRM / ERP / Stripe Integrations",
-      "30-Day Post-Launch SLA Warranty",
+      "Website + Android & iOS App",
+      "Custom Admin Panel & Login",
+      "Payment Gateway & Notifications",
+      "UI Design & Brand Graphics",
+      "Tested on Real Phones & Browsers",
+      "Friendly Post-Launch Tech Help",
     ],
     proposalStages: [
-      { step: "01", title: "Technical Discovery & RFC", detail: "Full domain model, concurrency targets, API contracts, and security threat checklist." },
-      { step: "02", title: "Atelier Design System in Figma", detail: "Dual-theme token library, interactive prototypes, and motion choreography specs." },
-      { step: "03", title: "Parallel Web / Mobile Sprints", detail: "Weekly live staging builds with typed REST/GraphQL backends and caching layer." },
-      { step: "04", title: "Automated Testing & Hardening", detail: "Playwright E2E tests, load testing, Sentry error tracking, and SEO metadata audit." },
-      { step: "05", title: "Production Rollout & Handover", detail: "Zero-downtime deployment, team walkthrough workshops, and 30-day priority support." },
+      { step: "01", title: "Feature Plan & Screens", detail: "Step-by-step screen flow so you see every button and user journey clearly before coding starts." },
+      { step: "02", title: "Graphics & App UI System", detail: "Clean light and dark themes, custom icons, and responsive screens for mobile and web." },
+      { step: "03", title: "Weekly Live Previews", detail: "Try new features every week on your phone and browser and share quick feedback directly." },
+      { step: "04", title: "Play Store, App Store & Web Launch", detail: "Smooth release handling, speed checks, and full GitHub & cloud handover to you." },
     ],
   },
   {
-    id: "enterprise-ai",
+    id: "learning-support",
     tierNumber: "03",
-    title: "Enterprise AI & Cloud Scale",
-    badge: "DEDICATED POD",
-    price: "Custom Retainer",
-    timeline: "10 – 14 Weeks+",
+    title: "Coaching, Free Internship & Free IT Help",
+    badge: "HELPING PEOPLE · ZERO FEE OPTIONS",
+    price: "Free Help / Coaching",
+    timeline: "Ongoing / Flexible",
     summary:
-      "Multi-region cloud modernization, private VPC LangGraph AI agents, offline mobile suites, and continuous release velocity.",
+      "Need free online IT support, beginner-friendly coding & design coaching, or a zero-fee internship to gain real experience? Reach out directly.",
     highlights: [
-      "Private VPC AI & Vector Search",
-      "Multi-Tenant Security & Audit Logs",
-      "Shared Slack + Bi-Weekly Exec Drops",
-      "Full DevOps & Terraform IaC",
+      "100% Free Online IT Support for People",
+      "Free Student Internships on Live Work",
+      "Practical Web, App & Graphics Coaching",
+      "Clear Career & Portfolio Guidance",
     ],
     proposalStages: [
-      { step: "01", title: "Systems Audit & AI Feasibility", detail: "Infrastructure review, latency profiling, data privacy boundaries, and ROI benchmarks." },
-      { step: "02", title: "Cloud IaC & Data Backbone", detail: "Multi-region VPC, Terraform modules, PostgreSQL/Qdrant vector pipelines, and IAM roles." },
-      { step: "03", title: "Agentic & Platform Engineering", detail: "Citation-verified RAG workflows, offline-first mobile apps, and real-time operational UI." },
-      { step: "04", title: "Observability & SRE Handover", detail: "Distributed tracing, eval regression harnesses, runbooks, and internal engineer training." },
+      { step: "01", title: "Ask for Free IT Support Online", detail: "Share your laptop, software, app, or website issue via our form—we guide and help fix it free." },
+      { step: "02", title: "Join Friendly Coaching Classes", detail: "Learn HTML, React, mobile apps, or graphic design with easy explanations and hands-on tasks." },
+      { step: "03", title: "Apply for Zero-Fee Internship", detail: "Work alongside senior developers on live studio projects and build real confidence—₹0 fee." },
+      { step: "04", title: "Grow Your Portfolio & Career", detail: "Get code reviews, project certificates, and practical help preparing for real tech jobs." },
     ],
   },
 ];
 
 const HOME_FAQS = [
   {
-    q: "How do DigentTech engagements start and how fast can we launch?",
-    a: "Every engagement starts with a crisp 48–72 hour technical architecture spec and fixed milestone roadmap. Focused MVPs ship to production in 3–4 weeks, while comprehensive production web, mobile, and AI platforms typically launch in 6–8 weeks with live weekly staging builds.",
+    q: "What services and help does DigentTech provide?",
+    a: "We build fast websites, Android & iOS mobile apps, and custom graphics/UI designs for businesses. We also offer friendly coding & design coaching, free zero-fee student internships, and free online IT support to help people solve tech problems.",
   },
   {
-    q: "Do we retain 100% ownership of the source code and cloud infrastructure?",
-    a: "Yes, without exception. Every repository, Figma design file, Terraform script, database schema, and deployment pipeline is built inside your organization's GitHub and cloud accounts with full intellectual property transfer.",
+    q: "Is your online IT support really 100% free?",
+    a: "Yes! Helping people with technology is at the heart of what we do. If you are stuck with a software error, website setup, laptop problem, or learning question, reach out through our contact form and we will help guide and troubleshoot it online for free.",
   },
   {
-    q: "Can you deploy private AI agents without sending company data to public models?",
-    a: "Absolutely. We architect private VPC RAG and LangGraph workflows using isolated enterprise API endpoints or self-hosted open-weight models behind role-based access control, citation grounding, and zero third-party training retention.",
+    q: "How do the Free Internships and Coding Coaching work?",
+    a: "Our student internships have zero fees—you never pay to learn with us. Interns work on real projects with direct mentor guidance. We also run practical coaching classes for beginners wanting to learn web development, mobile apps, and graphic design step by step.",
   },
   {
-    q: "How does DigentTech ensure performance and zero regressions after launch?",
-    a: "We enforce strict TypeScript boundaries, automated Playwright browser tests, Core Web Vitals budgets (<280ms TTFB), and Sentry telemetry before any production tag is cut—backed by a 30-day warranty and optional ongoing engineering retainers.",
+    q: "Do I get full ownership of my website or app code?",
+    a: "Always yes. Every line of code, design file, logo, and domain stays 100% in your name and your accounts so you are never locked in.",
   },
   {
-    q: "Where is your team based, and how do you collaborate across time zones?",
-    a: "Our engineering atelier is headquartered in Lucknow, India, working daily with founders and enterprises across India, the US, Europe, and the Middle East via shared Slack channels, Linear sprint boards, and overlapping standups.",
+    q: "How do I start a project, ask for free IT help, or apply for an internship?",
+    a: "Simply click 'Let's talk' in the top bar or 'Get Free IT Help' below. Tell us in plain words what you need—whether it is a business website, mobile app, graphics, coaching, internship, or free tech support—and we will reply within 24 hours.",
   },
 ];
 
@@ -1093,6 +1102,152 @@ function ProjectDossierModal({
   );
 }
 
+function WelcomeHighlightModal({
+  open,
+  onClose,
+  onNavigate,
+  onOpenEstimate,
+}: {
+  open: boolean;
+  onClose: () => void;
+  onNavigate: (path: string) => void;
+  onOpenEstimate: (pkgTitle: string) => void;
+}) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const titleId = useId();
+  useDialogSync(dialogRef, open, onClose);
+
+  const dismiss = () => {
+    dialogRef.current?.close();
+    onClose();
+  };
+
+  return (
+    <dialog
+      ref={dialogRef}
+      className="lb-dialog lb-welcome-modal"
+      aria-labelledby={titleId}
+      {...({ closedby: "any" } as Record<string, string>)}
+    >
+      {open && (
+        <div className="lb-welcome-split">
+          <div className="lb-welcome-visual">
+            <img
+              src="/assets/visuals/welcome-helpdesk.jpg"
+              alt="Friendly DigentTech engineer offering free online IT support, coding coaching, and web app builds"
+            />
+            <div className="lb-welcome-visual-scrim" aria-hidden="true" />
+            <div className="lb-welcome-visual-cap">
+              <span className="lb-welcome-cap-kicker">ONLINE HELP DESK · INDIA &amp; GLOBAL</span>
+              <strong>Real builders ready to help you free online.</strong>
+              <a href="tel:+919194134646" className="lb-welcome-phone-link">
+                Call: +91-9194134646
+              </a>
+            </div>
+          </div>
+
+          <div className="lb-welcome-shell">
+            <div className="lb-welcome-top">
+              <span className="lb-welcome-pill">
+                <span className="lb-free-help-dot" aria-hidden="true" />
+                <span>FREE ONLINE IT SUPPORT · COACHING · BUILDS</span>
+              </span>
+              <button
+                type="button"
+                className="lb-modal-close lb-welcome-close"
+                onClick={dismiss}
+                aria-label="Close popup"
+                title="Close"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <h2 id={titleId} className="lb-welcome-heading">
+              Need Free Tech Help, a Website, App, or Internship?
+            </h2>
+            <p className="lb-welcome-text">
+              Tell us what you need in simple words. We build websites, mobile apps, and
+              graphics—and help students &amp; people for free with online IT support, coaching, and
+              zero-fee internships.
+            </p>
+
+            <div className="lb-welcome-cards">
+              <button
+                type="button"
+                className="lb-welcome-option is-help"
+                onClick={() => {
+                  dismiss();
+                  onNavigate("/contact?service=Free%20Online%20IT%20Support");
+                }}
+              >
+                <div>
+                  <span className="lb-welcome-tag">100% FREE</span>
+                  <strong>Free Online IT Support</strong>
+                  <small>Laptop, software, setup &amp; tech troubleshooting</small>
+                </div>
+                <ArrowRight size={15} />
+              </button>
+
+              <button
+                type="button"
+                className="lb-welcome-option"
+                onClick={() => {
+                  dismiss();
+                  onOpenEstimate("Website, App or Graphics Build");
+                }}
+              >
+                <div>
+                  <span className="lb-welcome-tag">CLIENT BUILDS</span>
+                  <strong>Websites, Mobile Apps &amp; Graphics</strong>
+                  <small>Custom portals, Android/iOS apps, logos &amp; UI design</small>
+                </div>
+                <ArrowRight size={15} />
+              </button>
+
+              <button
+                type="button"
+                className="lb-welcome-option"
+                onClick={() => {
+                  dismiss();
+                  onNavigate("/careers");
+                }}
+              >
+                <div>
+                  <span className="lb-welcome-tag">₹0 FEE</span>
+                  <strong>Coaching &amp; Free Internships</strong>
+                  <small>Learn coding &amp; work on live projects with mentors</small>
+                </div>
+                <ArrowRight size={15} />
+              </button>
+            </div>
+
+            <div className="lb-welcome-actions">
+              <button
+                type="button"
+                className="lb-welcome-skip"
+                onClick={dismiss}
+              >
+                Close &amp; browse site
+              </button>
+              <button
+                type="button"
+                className="lb-btn-rect"
+                onClick={() => {
+                  dismiss();
+                  onNavigate("/contact?service=Free%20Online%20IT%20Support");
+                }}
+              >
+                ASK FOR FREE IT HELP <ArrowRight size={15} />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </dialog>
+  );
+}
+
 // ============================================================================
 // Main Exported Home Sections Composite
 // ============================================================================
@@ -1122,8 +1277,27 @@ export function HomeEditorialSections({ theme, onNavigate }: HomeSectionsProps) 
   const [proposalPkg, setProposalPkg] = useState<EngagementPackage | null>(null);
   const [estimateOpen, setEstimateOpen] = useState(false);
   const [estimatePackageLabel, setEstimatePackageLabel] = useState("Core Production Platform");
+  const [welcomeOpen, setWelcomeOpen] = useState(false);
 
   const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      if (sessionStorage.getItem("dt-welcome-popup-v1") === "1") return;
+    } catch {}
+    const timer = window.setTimeout(() => {
+      setWelcomeOpen(true);
+    }, 2100);
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  const handleCloseWelcome = () => {
+    setWelcomeOpen(false);
+    try {
+      sessionStorage.setItem("dt-welcome-popup-v1", "1");
+    } catch {}
+  };
 
   useEffect(() => {
     const el = highlightsRef.current;
@@ -1276,14 +1450,14 @@ export function HomeEditorialSections({ theme, onNavigate }: HomeSectionsProps) 
               </div>
 
               <h2 className="lb-about-title">
-                Turning Product Vision into <em>Resilient</em> Software Reality
+                Smart Software for Business. <em>Free Tech Help</em> for People.
               </h2>
 
               <p className="lb-about-desc">
-                DigentTech is a principal-led software, mobile, and applied AI studio crafting
-                production infrastructure for ambitious founders and enterprises. We pair disciplined
-                editorial taste with sub-300ms edge engineering—delivering scalable codebases you
-                own 100% from day one.
+                Need a clean website, mobile app, or custom graphics? We build everything in simple,
+                clear steps with zero confusing jargon. Alongside our client projects, we love
+                helping people—offering practical tech coaching, zero-fee student internships,
+                and free online IT support whenever someone gets stuck.
               </p>
 
               <div className="lb-about-actions">
@@ -1326,12 +1500,12 @@ export function HomeEditorialSections({ theme, onNavigate }: HomeSectionsProps) 
         </div>
       </section>
 
-      {/* 3. Key Highlights Dark Textured Stats Banner */}
+      {/* 3. Key Highlights Dark Textured Stats Banner + Highlighted Free Online IT Support Callout */}
       <section ref={highlightsRef} className="lb-highlights-section">
         <div className="wrap">
           <div className="lb-centered-header">
-            <SlantedBadge label="PROVEN METRICS" />
-            <h2 className="lb-section-heading">Our Key Highlights</h2>
+            <SlantedBadge label="PROVEN NUMBERS & COMMUNITY CARE" />
+            <h2 className="lb-section-heading">Why People Trust DigentTech</h2>
           </div>
         </div>
 
@@ -1344,25 +1518,77 @@ export function HomeEditorialSections({ theme, onNavigate }: HomeSectionsProps) 
             </div>
           </div>
         </div>
+
+        <div className="wrap">
+          <div className="lb-free-help-banner" role="region" aria-label="Free Online IT Support and Community Programs">
+            <div className="lb-free-help-copy">
+              <div className="lb-free-help-badge">
+                <span className="lb-free-help-dot" aria-hidden="true" />
+                <span>FREE ONLINE IT SUPPORT · FREE INTERNSHIPS · FRIENDLY COACHING</span>
+              </div>
+              <h3>Need Tech Help, Coaching, or a Free Internship? We Are Here for You.</h3>
+              <p>
+                Whether your laptop is acting up, a website has an error, or you are a student
+                looking to learn coding and get free real-project experience—reach out anytime.
+                Our online IT support for individuals and student guidance is 100% free.
+              </p>
+              <div className="lb-free-help-pills">
+                <span><Check size={13} /> Free Online IT Help</span>
+                <span><Check size={13} /> Zero-Fee Student Internships</span>
+                <span><Check size={13} /> Step-by-Step Coaching</span>
+              </div>
+            </div>
+            <div className="lb-free-help-actions">
+              <a
+                href="/contact?service=Free%20Online%20IT%20Support"
+                className="lb-btn-rect"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onNavigate("/contact?service=Free%20Online%20IT%20Support");
+                }}
+              >
+                ASK FOR FREE IT HELP <ArrowRight size={15} />
+              </a>
+              <a
+                href="/careers"
+                className="lb-btn-outline-rect"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onNavigate("/careers");
+                }}
+              >
+                APPLY FOR FREE INTERNSHIP
+              </a>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* 4. Our Services — 4 Dashed Corner-Anchor Chamfer Cards */}
       <section className="lb-services-section">
         <div className="wrap">
           <div className="lb-centered-header">
-            <SlantedBadge label="WHAT WE ENGINEER" />
-            <h2 className="lb-section-heading">Our Services</h2>
+            <SlantedBadge label="HOW WE CAN HELP YOU" />
+            <h2 className="lb-section-heading">What We Offer</h2>
             <p className="lb-section-sub">
-              Four specialized engineering practices operating under one principal-led team.
+              Easy-to-understand web, app, and graphic design services for businesses—plus coaching, free internships, and free online IT support for learners and people in need.
             </p>
           </div>
 
           <div className="lb-services-grid">
             {SERVICE_CARDS.map((svc) => (
-              <article key={svc.code} className="lb-service-box">
+              <article
+                key={svc.code}
+                className={`lb-service-box ${svc.highlightTag ? "is-community-highlight" : ""}`}
+              >
                 <span className="lb-service-corner-sq" aria-hidden="true" />
                 <div className="lb-service-box-top">
-                  <span className="lb-service-num">{svc.code}</span>
+                  <span className="lb-service-num">
+                    {svc.code}
+                    {svc.highlightTag && (
+                      <em className="lb-service-highlight-pill">{svc.highlightTag}</em>
+                    )}
+                  </span>
                   <div className="lb-service-icon">
                     <svc.Icon size={24} strokeWidth={1.65} />
                   </div>
@@ -1389,21 +1615,23 @@ export function HomeEditorialSections({ theme, onNavigate }: HomeSectionsProps) 
 
       {/* 5. Dark Band: What We Do (6 Offset-Wireframe Cards + Watermarks) */}
       <section id="what-we-do" className="lb-whatwedo-band">
-        <div className="wrap">
+        <div className="lb-whatwedo-black-curtain" aria-hidden="true" />
+        <div className="wrap lb-whatwedo-wrap">
           <div className="lb-centered-header on-dark">
-            <SlantedBadge label="CORE DELIVERABLES" darkBand />
+            <SlantedBadge label="EVERYTHING IN ONE PLACE" darkBand />
             <h2 className="lb-section-heading on-dark">What We Do</h2>
             <p className="lb-section-sub on-dark">
-              Architecture, full-stack product delivery, and automated cloud intelligence built for longevity.
+              Web development, mobile apps, graphics &amp; UI design, coding coaching, free internships, and free online IT support—explained simply.
             </p>
           </div>
 
           <div className="lb-whatwedo-grid">
             {WHAT_WE_DO_ITEMS.map((item) => (
-              <article key={item.title} className="lb-wire-card">
+              <article key={item.title} className={`lb-wire-card ${item.badge ? "is-free-highlight" : ""}`}>
                 <div className="lb-wire-card-inner">
                   <div className="lb-wire-media">
                     <img src={item.image} alt={item.title} loading="lazy" />
+                    {item.badge && <span className="lb-wire-free-badge">{item.badge}</span>}
                   </div>
                   <div className="lb-wire-body">
                     <h3>{item.title}</h3>
@@ -1417,7 +1645,7 @@ export function HomeEditorialSections({ theme, onNavigate }: HomeSectionsProps) 
                       }}
                     >
                       <span className="lb-dash-line" />
-                      <span>READ MORE</span>
+                      <span>{item.badge ? "GET FREE HELP" : "EXPLORE MORE"}</span>
                       <ArrowRight size={13} />
                     </a>
                   </div>
@@ -1432,15 +1660,15 @@ export function HomeEditorialSections({ theme, onNavigate }: HomeSectionsProps) 
       </section>
 
       {/* 6. Shipped Platforms, Delivery Flow Strip, Interactive Spotlight & 9 Flagship Cards */}
-      <section className="lb-projects-section" aria-label="Shipped Platforms & Engineering Flow">
+      <section className="lb-projects-section" aria-label="Our Work and Simple Process">
         <div className="wrap">
           <div className="lb-centered-header">
-            <SlantedBadge label="FLAGSHIP WORK · 09 SYSTEMS" />
+            <SlantedBadge label="OUR WORK · 09 REAL PROJECTS" />
             <h2 className="lb-section-heading">
-              Shipped Platforms &amp; <em>Engineering Craft</em>
+              Websites, Apps &amp; Designs <em>Built Cleanly</em>
             </h2>
             <p className="lb-section-sub">
-              From latency audits and OKLCH token systems to autonomous AI pipelines—inspect the flow, explore live spotlights, or open full architectural dossiers.
+              See how our step-by-step process works, preview featured projects, or click any card below to inspect real work we have built.
             </p>
           </div>
 
@@ -1780,14 +2008,14 @@ export function HomeEditorialSections({ theme, onNavigate }: HomeSectionsProps) 
         </div>
       </section>
 
-      {/* 8B. 3-Tier Horizontal Engineering Packages */}
+      {/* 8B. 3-Tier Horizontal Options: Business Builds + Learning & Free IT Help */}
       <section className="lb-packages-section">
         <div className="wrap">
           <div className="lb-centered-header">
-            <SlantedBadge label="ENGAGEMENT TIERS" />
-            <h2 className="lb-section-heading">Engineering Packages</h2>
+            <SlantedBadge label="WAYS WE WORK TOGETHER" />
+            <h2 className="lb-section-heading">Plans, Learning &amp; Free Tech Help</h2>
             <p className="lb-section-sub">
-              Clear fixed-milestone budgets or dedicated enterprise pods—inspect deliverables or request a tailored estimate.
+              Choose a website or mobile app plan for your business—or join our coding coaching, free internships, and free online IT support.
             </p>
           </div>
 
@@ -1853,8 +2081,8 @@ export function HomeEditorialSections({ theme, onNavigate }: HomeSectionsProps) 
                   loading="lazy"
                 />
                 <div className="lb-faq-photo-note">
-                  <strong>Principal-Led Engineering</strong>
-                  <span>Every milestone reviewed &amp; architected directly with senior leads.</span>
+                  <strong>Friendly &amp; Direct Support</strong>
+                  <span>Work directly with real builders—or ask us for free online IT help anytime.</span>
                 </div>
               </div>
             </div>
@@ -1940,6 +2168,12 @@ export function HomeEditorialSections({ theme, onNavigate }: HomeSectionsProps) 
       </div>
 
       {/* Native <dialog> Modals */}
+      <WelcomeHighlightModal
+        open={welcomeOpen && !proposalPkg && !estimateOpen && !selectedProject}
+        onClose={handleCloseWelcome}
+        onNavigate={onNavigate}
+        onOpenEstimate={handleOpenEstimate}
+      />
       <ProposalModal
         pkg={proposalPkg}
         onClose={() => setProposalPkg(null)}
