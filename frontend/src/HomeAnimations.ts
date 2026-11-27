@@ -9,83 +9,22 @@ function prefersReducedMotion(): boolean {
 }
 
 /**
- * Staggers project cards smoothly whenever the user filters the homepage grid.
- */
-export function animateProjectFilterGrid(container: HTMLElement | null) {
-  if (!container) return;
-  if (prefersReducedMotion()) {
-    ScrollTrigger.refresh();
-    return;
-  }
-
-  const cards = gsap.utils.toArray<HTMLElement>(".lb-project-card", container);
-  if (!cards.length) return;
-
-  gsap.killTweensOf(cards);
-  gsap.fromTo(
-    cards,
-    { y: 26, scale: 0.96, opacity: 0 },
-    {
-      y: 0,
-      scale: 1,
-      opacity: 1,
-      duration: 0.54,
-      stagger: { amount: 0.32, from: "start" },
-      ease: "power3.out",
-      clearProps: "transform,opacity",
-      onComplete: () => {
-        ScrollTrigger.refresh();
-      },
-    }
-  );
-}
-
-/**
- * Transitions the spotlight preview media and text stagger when cycling projects.
+ * Transitions the active project details when CardSwap cycles or swaps cards.
  */
 export function animateWorkSpotlight(container: HTMLElement | null) {
   if (!container || prefersReducedMotion()) return;
 
-  const media = container.querySelector<HTMLElement>(".lb-work-spotlight-media");
-  const img = container.querySelector<HTMLElement>(".lb-work-spotlight-media img");
   const items = gsap.utils.toArray<HTMLElement>(".lb-work-spotlight-stagger", container);
-
-  if (media) {
-    gsap.killTweensOf(media);
-    gsap.fromTo(
-      media,
-      { y: 12, scale: 0.985, opacity: 0.45 },
-      {
-        y: 0,
-        scale: 1,
-        opacity: 1,
-        duration: 0.5,
-        ease: "power3.out",
-        force3D: true,
-        clearProps: "transform,opacity",
-      }
-    );
-  }
-
-  if (img) {
-    gsap.killTweensOf(img);
-    gsap.fromTo(
-      img,
-      { scale: 1.05 },
-      { scale: 1, duration: 0.6, ease: "power2.out", force3D: true, clearProps: "scale" }
-    );
-  }
-
   if (items.length) {
     gsap.killTweensOf(items);
     gsap.fromTo(
       items,
-      { x: 18, opacity: 0.15 },
+      { x: 16, opacity: 0.2 },
       {
         x: 0,
         opacity: 1,
-        duration: 0.48,
-        stagger: 0.045,
+        duration: 0.44,
+        stagger: 0.038,
         ease: "power2.out",
         clearProps: "transform,opacity",
       }
@@ -265,14 +204,12 @@ export function useHomeGsapChoreography(rootRef: RefObject<HTMLDivElement | null
         });
       }
 
-      // 6. About & FAQ frame image parallax + GSAP Viewport-Paused Marquees (smooth on all PCs)
+      // 6. About & FAQ frame image parallax + GSAP Viewport-Paused Marquees (smooth on all PCs, never pauses on hover)
       const bindMarquee = (selector: string, viewportSelector: string, distancePct: number, dur: number) => {
         const track = root.querySelector<HTMLElement>(selector);
         const vp = root.querySelector<HTMLElement>(viewportSelector);
         if (!track || !vp) return;
 
-        let inViewport = true;
-        let hovered = false;
         const tween = gsap.fromTo(
           track,
           { xPercent: 0 },
@@ -286,48 +223,21 @@ export function useHomeGsapChoreography(rootRef: RefObject<HTMLDivElement | null
           }
         );
 
-        const syncPlayState = () => {
-          if (inViewport && !hovered) {
-            tween.play();
-          } else {
-            tween.pause();
-          }
-        };
-
         const rect = vp.getBoundingClientRect();
-        inViewport = rect.bottom >= 0 && rect.top <= window.innerHeight;
-        syncPlayState();
+        const initiallyVisible = rect.bottom >= 0 && rect.top <= window.innerHeight;
+        if (initiallyVisible) {
+          tween.play();
+        } else {
+          tween.pause();
+        }
 
         ScrollTrigger.create({
           trigger: vp,
           start: "top bottom",
           end: "bottom top",
-          onToggle: (self) => {
-            inViewport = self.isActive;
-            syncPlayState();
-          },
-          onRefresh: (self) => {
-            inViewport = self.isActive;
-            syncPlayState();
-          },
+          onToggle: (self) => (self.isActive ? tween.play() : tween.pause()),
+          onRefresh: (self) => (self.isActive ? tween.play() : tween.pause()),
         });
-
-        if (window.matchMedia?.("(hover: hover) and (pointer: fine)").matches) {
-          const onEnter = () => {
-            hovered = true;
-            syncPlayState();
-          };
-          const onLeave = () => {
-            hovered = false;
-            syncPlayState();
-          };
-          vp.addEventListener("mouseenter", onEnter);
-          vp.addEventListener("mouseleave", onLeave);
-          cleanups.push(() => {
-            vp.removeEventListener("mouseenter", onEnter);
-            vp.removeEventListener("mouseleave", onLeave);
-          });
-        }
       };
       bindMarquee(".lb-marquee-track", ".lb-marquee-viewport", -50, 38);
       bindMarquee(".lb-keyword-track", ".lb-keyword-marquee", -33.333333, 44);
@@ -665,7 +575,8 @@ export function useHomeGsapChoreography(rootRef: RefObject<HTMLDivElement | null
         ".lb-about-copy > *",
         ".lb-services-grid .lb-service-box",
         ".lb-whatwedo-grid .lb-wire-card-inner",
-        ".lb-projects-grid .lb-project-card",
+        ".lb-cardswap-showcase",
+        ".lb-cardswap-dock",
         ".lb-testimonials-grid .lb-testimonial-card",
         ".lb-infra-grid .lb-infra-card",
         ".lb-packages-stack .lb-package-row",
@@ -728,7 +639,7 @@ export function useHomeGsapChoreography(rootRef: RefObject<HTMLDivElement | null
         });
 
         const glowTargets = root.querySelectorAll<HTMLElement>(
-          ".lb-service-box, .lb-wire-card-inner, .lb-package-row, .lb-infra-card, .lb-ecosystem-card, .lb-work-flow-step, .lb-work-spotlight"
+          ".lb-service-box, .lb-wire-card-inner, .lb-package-row, .lb-infra-card, .lb-ecosystem-card, .lb-work-flow-step, .lb-cardswap-showcase"
         );
         glowTargets.forEach((el) => {
           const onPointerMove = (e: PointerEvent) => {
@@ -743,69 +654,6 @@ export function useHomeGsapChoreography(rootRef: RefObject<HTMLDivElement | null
             el.removeEventListener("pointermove", onPointerMove);
           });
         });
-
-        const projectsSection = root.querySelector<HTMLElement>(".lb-projects-section");
-        if (projectsSection) {
-          let activeCard: HTMLElement | null = null;
-          const quickMap = new WeakMap<
-            HTMLElement,
-            { rx: gsap.QuickToFunc; ry: gsap.QuickToFunc; y: gsap.QuickToFunc }
-          >();
-
-          const getQuick = (card: HTMLElement) => {
-            let entry = quickMap.get(card);
-            if (!entry) {
-              gsap.set(card, { transformPerspective: 1000, force3D: true });
-              entry = {
-                rx: gsap.quickTo(card, "rotateX", { duration: 0.28, ease: "power2.out" }),
-                ry: gsap.quickTo(card, "rotateY", { duration: 0.28, ease: "power2.out" }),
-                y: gsap.quickTo(card, "y", { duration: 0.28, ease: "power2.out" }),
-              };
-              quickMap.set(card, entry);
-            }
-            return entry;
-          };
-
-          const onSectionMove = (e: PointerEvent) => {
-            const target = (e.target as Element | null)?.closest<HTMLElement>(".lb-project-card");
-            if (activeCard && activeCard !== target) {
-              const prev = getQuick(activeCard);
-              prev.rx(0);
-              prev.ry(0);
-              prev.y(0);
-            }
-            activeCard = target ?? null;
-            if (!target) return;
-
-            const rect = target.getBoundingClientRect();
-            const px = (e.clientX - rect.left) / rect.width;
-            const py = (e.clientY - rect.top) / rect.height;
-            target.style.setProperty("--mx", `${(px * 100).toFixed(1)}%`);
-            target.style.setProperty("--my", `${(py * 100).toFixed(1)}%`);
-
-            const q = getQuick(target);
-            q.rx(-(py - 0.5) * 5.5);
-            q.ry((px - 0.5) * 6.5);
-            q.y(-4);
-          };
-
-          const onSectionLeave = () => {
-            if (activeCard) {
-              const prev = getQuick(activeCard);
-              prev.rx(0);
-              prev.ry(0);
-              prev.y(0);
-              activeCard = null;
-            }
-          };
-
-          projectsSection.addEventListener("pointermove", onSectionMove, { passive: true });
-          projectsSection.addEventListener("pointerleave", onSectionLeave);
-          cleanups.push(() => {
-            projectsSection.removeEventListener("pointermove", onSectionMove);
-            projectsSection.removeEventListener("pointerleave", onSectionLeave);
-          });
-        }
       }
     }, root);
 

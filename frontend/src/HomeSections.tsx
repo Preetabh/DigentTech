@@ -21,7 +21,8 @@ import {
   X,
   Zap,
 } from "lucide-react";
-import { animateProjectFilterGrid, animateWorkSpotlight } from "./HomeAnimations";
+import { animateWorkSpotlight } from "./HomeAnimations";
+import CardSwap, { Card, type CardSwapHandle } from "./components/CardSwap";
 import {
   CloudflareAwsLogo,
   DockerKubernetesLogo,
@@ -1257,12 +1258,11 @@ export function HomeEditorialSections({ theme, onNavigate }: HomeSectionsProps) 
   const [highlightsVisible, setHighlightsVisible] = useState(false);
 
   const [activeFilter, setActiveFilter] = useState<string>("ALL");
-  const [filterInteracted, setFilterInteracted] = useState(false);
   const [spotlightId, setSpotlightId] = useState<string>(PORTFOLIO_PROJECTS[0].id);
   const [selectedProject, setSelectedProject] = useState<PortfolioProject | null>(null);
 
-  const spotlightRef = useRef<HTMLElement>(null);
-  const projectsGridRef = useRef<HTMLDivElement>(null);
+  const spotlightRef = useRef<HTMLDivElement>(null);
+  const cardSwapRef = useRef<CardSwapHandle | null>(null);
   const spotlightInteracted = useRef(false);
 
   const [testimonialSlide, setTestimonialSlide] = useState(0);
@@ -1343,13 +1343,8 @@ export function HomeEditorialSections({ theme, onNavigate }: HomeSectionsProps) 
     filteredProjects.find((p) => p.id === spotlightId) ??
     filteredProjects[0] ??
     PORTFOLIO_PROJECTS[0];
-  const spotlightIdx = filteredProjects.findIndex((p) => p.id === spotlightProject.id);
-
-  useEffect(() => {
-    if (filterInteracted) {
-      animateProjectFilterGrid(projectsGridRef.current);
-    }
-  }, [activeFilter, filterInteracted]);
+  const rawSpotlightIdx = filteredProjects.findIndex((p) => p.id === spotlightProject.id);
+  const spotlightIdx = rawSpotlightIdx >= 0 ? rawSpotlightIdx : 0;
 
   useEffect(() => {
     if (spotlightInteracted.current) {
@@ -1358,7 +1353,6 @@ export function HomeEditorialSections({ theme, onNavigate }: HomeSectionsProps) 
   }, [spotlightProject.id]);
 
   const handleSelectFilter = (cat: string, buttonEl?: HTMLElement | null) => {
-    setFilterInteracted(true);
     spotlightInteracted.current = true;
     setActiveFilter(cat);
     const nextFirst =
@@ -1370,17 +1364,20 @@ export function HomeEditorialSections({ theme, onNavigate }: HomeSectionsProps) 
   };
 
   const stepSpotlight = (delta: number) => {
-    if (!filteredProjects.length) return;
+    if (filteredProjects.length < 2) return;
     spotlightInteracted.current = true;
-    const nextIdx = (spotlightIdx + delta + filteredProjects.length) % filteredProjects.length;
-    setSpotlightId(filteredProjects[nextIdx].id);
+    if (delta < 0) {
+      cardSwapRef.current?.prev();
+    } else {
+      cardSwapRef.current?.next();
+    }
   };
 
-  const handlePinSpotlight = (e: React.MouseEvent, id: string) => {
-    e.stopPropagation();
-    spotlightInteracted.current = true;
-    setSpotlightId(id);
-    spotlightRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  const renderCategoryBadgeIcon = (category: string) => {
+    if (category.includes("AI")) return <Bot size={13} aria-hidden="true" />;
+    if (category.includes("MOBILE")) return <Smartphone size={13} aria-hidden="true" />;
+    if (category.includes("DESIGN")) return <Layers size={13} aria-hidden="true" />;
+    return <Globe size={13} aria-hidden="true" />;
   };
 
   const visibleTestimonials = CLIENT_TESTIMONIALS.slice(
@@ -1428,11 +1425,7 @@ export function HomeEditorialSections({ theme, onNavigate }: HomeSectionsProps) 
             <div className="lb-about-photo-frame">
               <img
                 className="lb-about-photo-img"
-                src={
-                  theme === "dark"
-                    ? "/assets/visuals/workspace-dark.webp"
-                    : "/assets/visuals/workspace-light.webp"
-                }
+                src="/assets/visuals/workspace-light.webp"
                 alt="DigentTech engineering workspace and architecture studio"
                 loading="lazy"
               />
@@ -1717,30 +1710,15 @@ export function HomeEditorialSections({ theme, onNavigate }: HomeSectionsProps) 
             </div>
           </div>
 
-          {/* Interactive Flagship Spotlight */}
-          <article
-            ref={spotlightRef}
-            className="lb-work-spotlight"
-            aria-label={`Spotlight case study: ${spotlightProject.title}`}
+          {/* Interactive 3D CardSwap Flagship Showcase */}
+          <div
+            className="lb-cardswap-showcase"
+            aria-label={`Interactive project stack: ${spotlightProject.title}`}
           >
-            <div className="lb-work-spotlight-media-col">
-              <div className="lb-work-spotlight-media">
-                <img
-                  src={spotlightProject.image}
-                  alt={`${spotlightProject.title} platform preview`}
-                />
-                <div className="lb-work-spotlight-badges">
-                  <span className="lb-work-spot-badge-live">
-                    <span className="lb-spot-pulse" aria-hidden="true" />
-                    {spotlightProject.metric}
-                  </span>
-                  <span className="lb-work-spot-badge-vel">{spotlightProject.velocity}</span>
-                </div>
-              </div>
-
+            <div ref={spotlightRef} className="lb-work-spotlight-body lb-cardswap-info">
               <div className="lb-work-spotlight-controls">
                 <span className="lb-work-spot-counter">
-                  SPOTLIGHT {String(spotlightIdx + 1).padStart(2, "0")} /{" "}
+                  PROJECT {String(spotlightIdx + 1).padStart(2, "0")} /{" "}
                   {String(filteredProjects.length).padStart(2, "0")}
                 </span>
                 <div className="lb-work-spot-arrows">
@@ -1749,6 +1727,7 @@ export function HomeEditorialSections({ theme, onNavigate }: HomeSectionsProps) 
                     className="lb-work-spot-arrow-btn"
                     aria-label="Previous spotlight project"
                     onClick={() => stepSpotlight(-1)}
+                    disabled={filteredProjects.length < 2}
                   >
                     <ChevronLeft size={16} />
                   </button>
@@ -1757,23 +1736,32 @@ export function HomeEditorialSections({ theme, onNavigate }: HomeSectionsProps) 
                     className="lb-work-spot-arrow-btn"
                     aria-label="Next spotlight project"
                     onClick={() => stepSpotlight(1)}
+                    disabled={filteredProjects.length < 2}
                   >
                     <ChevronRight size={16} />
                   </button>
                 </div>
               </div>
-            </div>
 
-            <div className="lb-work-spotlight-body">
               <div className="lb-work-spotlight-kicker lb-work-spotlight-stagger">
                 <Layers size={14} aria-hidden="true" />
                 <span>
                   {spotlightProject.category} · {spotlightProject.client}
                 </span>
               </div>
+
               <h3 className="lb-work-spotlight-title lb-work-spotlight-stagger">
                 {spotlightProject.title}
               </h3>
+
+              <div className="lb-cardswap-meta-row lb-work-spotlight-stagger">
+                <span className="lb-swap-pill-metric">
+                  <Zap size={12} aria-hidden="true" />
+                  {spotlightProject.metric}
+                </span>
+                <span className="lb-swap-pill-vel">{spotlightProject.velocity}</span>
+              </div>
+
               <p className="lb-work-spotlight-summary lb-work-spotlight-stagger">
                 {spotlightProject.summary}
               </p>
@@ -1825,59 +1813,97 @@ export function HomeEditorialSections({ theme, onNavigate }: HomeSectionsProps) 
                 </a>
               </div>
             </div>
-          </article>
 
-          <div ref={projectsGridRef} className="lb-projects-grid">
-            {filteredProjects.map((proj) => {
-              const isPinned = proj.id === spotlightProject.id;
-              return (
-                <article
-                  key={proj.id}
-                  className={`lb-project-card ${isPinned ? "is-spotlight" : ""}`}
-                  onClick={() => setSelectedProject(proj)}
-                  tabIndex={0}
-                  role="button"
-                  aria-label={`Inspect ${proj.title} case study`}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
+            <div className="lb-cardswap-stage-col">
+              <div className="lb-cardswap-stage-wrap">
+                <CardSwap
+                  key={activeFilter}
+                  ref={cardSwapRef}
+                  theme="light"
+                  width={460}
+                  height={350}
+                  cardDistance={46}
+                  verticalDistance={54}
+                  depth={82}
+                  skewAmount={5}
+                  visibleCards={Math.min(4, Math.max(1, filteredProjects.length))}
+                  delay={4200}
+                  autoplay={filteredProjects.length > 1}
+                  pauseOnHover={true}
+                  draggable={filteredProjects.length > 1}
+                  parallax={0.42}
+                  hoverSpread={0.12}
+                  dim={0.42}
+                  cardRadius={16}
+                  onChange={(idx) => {
+                    spotlightInteracted.current = true;
+                    const proj = filteredProjects[idx];
+                    if (proj) setSpotlightId(proj.id);
+                  }}
+                  onCardClick={(idx) => {
+                    const proj = filteredProjects[idx];
+                    if (proj && idx === spotlightIdx) {
                       setSelectedProject(proj);
                     }
                   }}
                 >
-                  <div className="lb-project-media-wrap">
-                    <img src={proj.image} alt={proj.title} loading="lazy" />
-                    <span className="lb-project-index-chip">{proj.index}</span>
-                    <span className="lb-project-top-badge">{proj.category}</span>
-                  </div>
+                  {filteredProjects.map((proj) => (
+                    <Card key={proj.id} className="lb-swap-project-tile">
+                      <div className="card-swap-item">
+                        <div className="card-swap-head">
+                          <span className="card-swap-icon" aria-hidden="true">
+                            {renderCategoryBadgeIcon(proj.category)}
+                          </span>
+                          <span className="lb-swap-idx">{proj.index}</span>
+                          <span className="card-swap-title">{proj.title}</span>
+                          <span className="lb-swap-cat">{proj.category}</span>
+                        </div>
+                        <div className="card-swap-media">
+                          <img
+                            src={proj.image}
+                            alt={`${proj.title} platform preview`}
+                            draggable={false}
+                          />
+                          <div className="lb-swap-media-bar">
+                            <span className="lb-swap-metric">{proj.metric}</span>
+                            <span className="lb-swap-action">
+                              Dossier <ArrowUpRight size={13} aria-hidden="true" />
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </CardSwap>
+              </div>
+              <p className="lb-swap-hint">
+                Drag any front card to swap, click a stacked card to bring it forward, or click the front card to open its full case study.
+              </p>
+            </div>
+          </div>
 
-                  <div className="lb-project-card-body">
-                    <div className="lb-project-card-meta">
-                      <Zap size={12} aria-hidden="true" />
-                      <span>{proj.metric}</span>
-                    </div>
-                    <h3>{proj.title}</h3>
-                    <p>{proj.summary}</p>
-                    <div className="lb-project-card-tags">
-                      {proj.stack.slice(0, 3).map((tech) => (
-                        <span key={tech}>{tech}</span>
-                      ))}
-                    </div>
-                    <div className="lb-project-card-foot">
-                      <button
-                        type="button"
-                        className={`lb-project-pin-btn ${isPinned ? "is-pinned" : ""}`}
-                        onClick={(e) => handlePinSpotlight(e, proj.id)}
-                        aria-label={`Preview ${proj.title} in spotlight`}
-                      >
-                        {isPinned ? "In Spotlight" : "Preview Spotlight"}
-                      </button>
-                      <span className="lb-overlay-cta">
-                        Dossier <ArrowUpRight size={14} />
-                      </span>
-                    </div>
-                  </div>
-                </article>
+          {/* Quick-Jump Project Index Dock */}
+          <div className="lb-cardswap-dock" role="list" aria-label="Quick project selector">
+            {filteredProjects.map((proj, idx) => {
+              const isFront = proj.id === spotlightProject.id;
+              return (
+                <button
+                  key={proj.id}
+                  type="button"
+                  role="listitem"
+                  className={`lb-cardswap-dock-btn ${isFront ? "is-active" : ""}`}
+                  onClick={() => {
+                    spotlightInteracted.current = true;
+                    if (idx === spotlightIdx) {
+                      setSelectedProject(proj);
+                    } else {
+                      cardSwapRef.current?.goToIndex(idx);
+                    }
+                  }}
+                >
+                  <span className="lb-dock-idx">{proj.index}</span>
+                  <span className="lb-dock-title">{proj.title}</span>
+                </button>
               );
             })}
           </div>
