@@ -31,6 +31,11 @@
     "estimatorSummary": "7 Sprints (~14 wks)",
     "webMobileOverflow": false
   },
+  "contactCheck": {
+    "contactReadinessAfter": "100%",
+    "contactConduitCards": 3,
+    "contactMobileOverflow": false
+  },
   "pageErrors": [],
   "brokenAssets": [],
   "matrixResults": [
@@ -117,7 +122,7 @@
     },
     {
       "route": "/contact",
-      "h1": "Start with a clear architectural brief.",
+      "h1": "Start with a clear\narchitectural brief.",
       "overflowX": false
     }
   ]

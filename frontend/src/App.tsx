@@ -8,14 +8,12 @@ import {
     Clock,
     Cloud,
     Code2,
-    Copy,
     Cpu,
     Database,
     Globe2,
     Home as HomeIcon,
     Layers,
     Lock,
-    MapPin,
     Menu,
     Minus,
     Moon,
@@ -40,6 +38,7 @@ import { AISolutions } from "./AISolutions";
 import { AboutPage } from "./AboutPage";
 import { AppDevelopment } from "./AppDevelopment";
 import { CareersPage } from "./CareersPage";
+import { ContactPage } from "./ContactPage";
 import { WorkPage } from "./WorkPage";
 import { DigitalMarketing } from "./DigitalMarketing";
 import { useHomeGsapChoreography } from "./HomeAnimations";
@@ -1554,266 +1553,12 @@ function Careers() {
   return <CareersPage />;
 }
 function Contact({ theme = "dark" }: { theme?: "dark" | "light" }) {
-  const params = new URLSearchParams(location.search);
-  const query = params.get("service") || "";
-  const prefilledBrief = params.get("brief") || "";
-  const [copied, setCopied] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [feedback, setFeedback] = useState<{
-    type: "idle" | "success" | "error";
-    message: string;
-    draftUrl?: string;
-  }>({ type: "idle", message: "" });
-
-  const handleCopyEmail = () => {
-    navigator.clipboard?.writeText(email);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2200);
-  };
-
-  async function submit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const d = new FormData(form);
-
-    const payload = {
-      name: String(d.get("name") || "").trim(),
-      email: String(d.get("email") || "").trim(),
-      service: String(d.get("service") || "Web development"),
-      budget: String(d.get("budget") || "Let's discuss"),
-      message: String(d.get("message") || "").trim(),
-    };
-
-    const mailtoBody = `Hello DigentTech,\n\nName: ${payload.name}\nEmail: ${payload.email}\nService: ${payload.service}\nBudget: ${payload.budget}\n\nProject brief:\n${payload.message}`;
-    const backupUrl = `mailto:${email}?subject=${encodeURIComponent("Project inquiry: " + payload.service)}&body=${encodeURIComponent(mailtoBody)}`;
-
-    setSubmitting(true);
-    setFeedback({ type: "idle", message: "" });
-
-    try {
-      const apiBase = ((import.meta.env.VITE_API_URL as string) || "").replace(/\/$/, "");
-      const response = await fetch(`${apiBase}/api/contact`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await response.json().catch(() => ({}));
-
-      if (response.ok && data.success) {
-        setFeedback({
-          type: "success",
-          message:
-            data.message ||
-            "Thank you! Your project inquiry has been received. A lead architect will respond within 24 hours.",
-        });
-        form.reset();
-      } else {
-        throw new Error(
-          data.message || "Failed to submit your inquiry. Please try again or use direct email."
-        );
-      }
-    } catch (err: any) {
-      setFeedback({
-        type: "error",
-        message:
-          err.message ||
-          "Could not reach backend API. You can send directly via your email client below.",
-        draftUrl: backupUrl,
-      });
-    } finally {
-      setSubmitting(false);
-    }
-  }
-
   return (
-    <>
-      <PageHero
-        theme={theme}
-        label="EXECUTIVE CONSULTATION DESK"
-        title={
-          <>
-            Start with a clear <em>architectural brief.</em>
-          </>
-        }
-        text="Share your goals, product constraints, or system bottlenecks. Every inquiry is reviewed directly by a principal architect—never routed through junior sales queues."
-        highlights={[
-          "< 24h Architect Response",
-          "Fixed-Milestone Scope Proposal",
-          "NDA Ready Before Discovery",
-        ]}
-      />
-      <section className="contact-layout wrap section">
-        <aside>
-          <span className="eyebrow">DIRECT PRINCIPAL CHANNEL</span>
-          <h2>Speak straight with the builders.</h2>
-          <p>
-            Whether you have a full technical RFP or an operational problem to solve,
-            we respond with concrete architecture options and timeline clarity.
-          </p>
-          <a className="contact-email" href={"mailto:" + email}>
-            {email}
-            <ArrowUpRight size={18} />
-          </a>
-          <button
-            type="button"
-            className="atelier-copy-email-btn"
-            onClick={handleCopyEmail}
-          >
-            <Copy size={13} />
-            <span>{copied ? "Copied email address" : "Copy studio email"}</span>
-          </button>
-
-          <div className="atelier-contact-sla-list">
-            <div className="atelier-sla-item">
-              <Clock size={15} />
-              <span>24-hour review with a scoped milestone roadmap</span>
-            </div>
-            <div className="atelier-sla-item">
-              <ShieldCheck size={15} />
-              <span>100% client IP ownership &amp; zero lock-in terms</span>
-            </div>
-            <div className="atelier-sla-item">
-              <MapPin size={15} />
-              <span>Barabanki &amp; Lucknow, India · Serving global teams</span>
-            </div>
-          </div>
-        </aside>
-        <form className="atelier-contact-card" onSubmit={submit}>
-          {prefilledBrief && (
-            <div className="atelier-brief-prefill-pill">
-              <Sparkles size={13} />
-              <span>Pre-populated from your Deep Research Workbench brief</span>
-            </div>
-          )}
-          <div className="form-row">
-            <label>
-              Your name
-              <input
-                name="name"
-                autoComplete="name"
-                placeholder="Alex Morgan"
-                required
-                maxLength={100}
-                disabled={submitting}
-              />
-            </label>
-            <label>
-              Work email address
-              <input
-                type="email"
-                name="email"
-                autoComplete="email"
-                placeholder="alex@company.com"
-                required
-                maxLength={200}
-                disabled={submitting}
-              />
-            </label>
-          </div>
-          <div className="form-row">
-            <label>
-              Primary practice track
-              <select
-                name="service"
-                defaultValue={query || "Web development"}
-                disabled={submitting}
-              >
-                {query && !services.some((s) => s.title === query) && (
-                  <option>{query}</option>
-                )}
-                {services.map((s) => (
-                  <option key={s.title}>{s.title}</option>
-                ))}
-                <option>Product &amp; brand design</option>
-                <option>Something else</option>
-              </select>
-            </label>
-            <label>
-              Target budget range
-              <select
-                name="budget"
-                defaultValue="Let's discuss"
-                disabled={submitting}
-              >
-                <option>Let's discuss</option>
-                <option>Under ₹50,000</option>
-                <option>₹50,000 – ₹2,00,000</option>
-                <option>₹2,00,000 – ₹5,00,000</option>
-                <option>₹5,00,000+</option>
-              </select>
-            </label>
-          </div>
-          <label>
-            Project goals &amp; technical context
-            <textarea
-              name="message"
-              defaultValue={prefilledBrief}
-              rows={5}
-              placeholder="Describe what you are building, key user workflows, or timeline goals..."
-              required
-              minLength={10}
-              maxLength={5000}
-              disabled={submitting}
-            />
-          </label>
-          <p className="form-note">
-            Encrypted submission routed straight to DigentTech engineering leadership. Response guaranteed within 24 hours.
-          </p>
-          <button className="button" type="submit" disabled={submitting}>
-            {submitting ? (
-              <>Transmitting brief...</>
-            ) : (
-              <>
-                Send architectural inquiry <ArrowUpRight size={18} />
-              </>
-            )}
-          </button>
-          {feedback.type === "success" && (
-            <div
-              className="form-status"
-              role="status"
-              style={{
-                borderColor: "rgba(16, 185, 129, 0.4)",
-                background: "rgba(16, 185, 129, 0.08)",
-              }}
-            >
-              <strong style={{ color: "#10b981", display: "block", marginBottom: 4 }}>
-                ✓ Brief Transmitted
-              </strong>
-              {feedback.message}
-            </div>
-          )}
-          {feedback.type === "error" && (
-            <div
-              className="form-status"
-              role="alert"
-              style={{
-                borderColor: "rgba(239, 68, 68, 0.4)",
-                background: "rgba(239, 68, 68, 0.08)",
-              }}
-            >
-              <strong style={{ color: "#f87171", display: "block", marginBottom: 4 }}>
-                Notice
-              </strong>
-              {feedback.message}
-              {feedback.draftUrl && (
-                <a
-                  href={feedback.draftUrl}
-                  style={{ marginTop: 8, display: "inline-block" }}
-                >
-                  Open pre-filled draft in your email client ↗
-                </a>
-              )}
-            </div>
-          )}
-        </form>
-      </section>
-      <FAQ />
-    </>
+    <ContactPage
+      theme={theme}
+      email={email}
+      availableServices={services.map((s) => s.title)}
+    />
   );
 }
 export default function App() {
