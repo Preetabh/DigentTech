@@ -10,12 +10,26 @@
     "mobileCount": 2
   },
   "workCheck": {
-    "workFlowSteps": 4,
-    "workCarouselHasCanvas": true,
-    "workActiveBefore": "PulseMesh Neural Ops",
-    "workActiveAfter": "PulseMesh Neural Ops",
-    "workCardCount": 9,
+    "filterMatrix": {
+      "Web Platforms": 3,
+      "Mobile Applications": 2,
+      "AI & Automation": 2,
+      "Design Systems": 2,
+      "All Systems": 9
+    },
+    "modalTitleBefore": "PulseMesh Neural Ops",
+    "modalTitleRelated": "Kinetix Spatial Twin",
+    "procHeading": "04 — Quality Assurance",
+    "workFlowSteps": 6,
     "workMobileOverflow": false
+  },
+  "webCheck": {
+    "webLightBg": "rgba(0, 0, 0, 0)",
+    "vitalsCount": 4,
+    "processStepsCount": 6,
+    "webModalTitle": "InfraPilot",
+    "estimatorSummary": "7 Sprints (~14 wks)",
+    "webMobileOverflow": false
   },
   "pageErrors": [],
   "brokenAssets": [],
@@ -93,7 +107,7 @@
     },
     {
       "route": "/work",
-      "h1": "Architected for scale.\nShipped with uncompromising craft.",
+      "h1": "Systems Engineered for\nReal-World Scale.",
       "overflowX": false
     },
     {

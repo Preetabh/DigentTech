@@ -211,9 +211,9 @@ function startStaticServer() {
       routeChecks.push({ route: r, h1: h1.slice(0, 60), overflowX });
     }
 
-    // Detailed /work page checks & route-switch loader test
+    // Detailed /work QA suite (hero, overview, filters, search, 10-section case study modal, capabilities, 6-stage process, CTAs)
     await page.goto(baseUrl + "/", { waitUntil: "load" });
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(250);
     await page.locator('header nav a[href="/work"]').first().click();
     await page.locator(".dt-route-loader").waitFor({ state: "visible", timeout: 2500 });
     await page.waitForTimeout(40);
@@ -224,43 +224,143 @@ function startStaticServer() {
     await page.waitForFunction(() => !document.querySelector(".dt-route-loader"), { timeout: 3000 });
     await page.waitForTimeout(750);
     await page.screenshot({ path: path.join(OUT_DIR, "work-light-1440-top.png") });
-    const workFlowSteps = await page.locator(".wrk-flow-card").count();
-    await page.locator(".circular-carousel[data-ready]").waitFor({ state: "attached", timeout: 4000 });
-    const workCarouselHasCanvas = (await page.locator(".circular-carousel__card").count()) > 0;
-    const workActiveBefore = (await page.locator(".wrk-carousel-dock-title").innerText()).trim();
-    const workNextBtn = page.getByRole("button", { name: "Next showcase project" });
-    if (await workNextBtn.count()) {
-      await workNextBtn.click();
-      await page.waitForTimeout(800);
-    }
-    const workActiveAfter = (await page.locator(".wrk-carousel-dock-title").innerText()).trim();
+
     await page.evaluate(() => localStorage.setItem("dotcode-theme", "dark"));
     await page.reload({ waitUntil: "load" });
-    await page.locator(".circular-carousel[data-ready]").waitFor({ state: "attached", timeout: 4000 });
     await page.waitForTimeout(700);
     await page.screenshot({ path: path.join(OUT_DIR, "work-dark-1440-top.png") });
-    await page.locator(".wrk-carousel-shell").scrollIntoViewIfNeeded();
-    await page.waitForTimeout(800);
-    await page.screenshot({ path: path.join(OUT_DIR, "work-dark-1440-grid.png"), animations: "allow" });
-    await page.locator(".wrk-carousel-inspect").click();
-    await page.locator("dialog.wrk-modal-dialog").waitFor({ state: "visible" });
-    await page.waitForTimeout(250);
+
+    // Scroll overview & explorer
+    await page.locator(".wk-overview").scrollIntoViewIfNeeded();
+    await page.waitForTimeout(850);
+    await page.screenshot({ path: path.join(OUT_DIR, "work-dark-1440-overview.png") });
+
+    await page.locator(".wk-explorer").scrollIntoViewIfNeeded();
+    await page.locator(".circular-carousel[data-ready]").waitFor({ state: "attached", timeout: 4500 });
+    await page.waitForTimeout(750);
+    await page.screenshot({ path: path.join(OUT_DIR, "work-dark-1440-grid.png") });
+
+    // Also capture Light mode #F5F4EB open CircularCarousel stage
+    await page.evaluate(() => localStorage.setItem("dotcode-theme", "light"));
+    await page.reload({ waitUntil: "load" });
+    await page.locator(".wk-explorer").scrollIntoViewIfNeeded();
+    await page.locator(".circular-carousel[data-ready]").waitFor({ state: "attached", timeout: 4500 });
+    await page.waitForTimeout(750);
+    await page.screenshot({ path: path.join(OUT_DIR, "work-light-1440-grid.png") });
+
+    // Switch back to Dark and test category filter tabs, search, empty reset & modal
+    await page.evaluate(() => localStorage.setItem("dotcode-theme", "dark"));
+    await page.reload({ waitUntil: "load" });
+    await page.locator(".wk-explorer").scrollIntoViewIfNeeded();
+    await page.locator(".circular-carousel[data-ready]").waitFor({ state: "attached", timeout: 4500 });
+    await page.waitForTimeout(450);
+
+    const filterMatrix = {};
+    for (const tabLabel of ["Web Platforms", "Mobile Applications", "AI & Automation", "Design Systems", "All Systems"]) {
+      await page.locator(".wk-tabs").getByRole("tab", { name: new RegExp(tabLabel, "i") }).click();
+      await page.waitForTimeout(350);
+      filterMatrix[tabLabel] = await page.locator(".circular-carousel__card").count();
+    }
+
+    // Open Case Study Modal + Related switching
+    await page.locator(".wk-orbit-inspect").click();
+    await page.locator("dialog.wk-case-dialog").waitFor({ state: "visible" });
+    await page.waitForTimeout(300);
+    const modalTitleBefore = (await page.locator(".wk-case-title").innerText()).trim();
     await page.screenshot({ path: path.join(OUT_DIR, "work-dark-1440-modal.png") });
+    await page.locator(".wk-case-related-card").first().click();
+    await page.waitForTimeout(250);
+    const modalTitleRelated = (await page.locator(".wk-case-title").innerText()).trim();
     await page.keyboard.press("Escape");
     await page.waitForFunction(() => !document.querySelector("dialog[open]"));
-    await page.getByRole("button", { name: "Blueprint view" }).click();
-    await page.waitForTimeout(450);
-    const workCardCount = await page.locator(".wrk-blueprint-row").count();
-    await page.screenshot({ path: path.join(OUT_DIR, "work-dark-1440-blueprint.png") });
+
+    // Test Section E Capabilities & Section F 6-stage Process
+    await page.locator(".wk-tech-section").scrollIntoViewIfNeeded();
+    await page.waitForTimeout(400);
+    await page.getByRole("tab", { name: /Backend Architecture/i }).click();
+    await page.waitForTimeout(200);
+    await page.screenshot({ path: path.join(OUT_DIR, "work-dark-1440-capabilities.png") });
+
+    await page.locator(".wk-process-section").scrollIntoViewIfNeeded();
+    await page.waitForTimeout(550);
+    await page.getByRole("tab", { name: /04.*Quality Assurance/i }).click();
+    await page.waitForTimeout(200);
+    const procHeading = (await page.locator(".wk-proc-ins-left h3").innerText()).trim();
+    const workFlowSteps = await page.locator(".wk-proc-step").count();
+    await page.screenshot({ path: path.join(OUT_DIR, "work-dark-1440-process.png") });
+
     await page.locator(".footer-global-banner").scrollIntoViewIfNeeded();
     await page.waitForTimeout(450);
     await page.screenshot({ path: path.join(OUT_DIR, "work-dark-1440-footer.png") });
+
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(350);
     const workMobileOverflow = await page.evaluate(
       () => document.documentElement.scrollWidth > window.innerWidth
     );
     await page.screenshot({ path: path.join(OUT_DIR, "work-dark-390-top.png") });
+
+    // 4. Thorough verification of /web-development (Light #F5F4EB + Dark + GSAP + Interactive controls)
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.evaluate(() => localStorage.setItem("dotcode-theme", "light"));
+    await page.goto(`${baseUrl}/web-development`, { waitUntil: "load" });
+    await page.waitForTimeout(950);
+    const webLightBg = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
+    await page.screenshot({ path: path.join(OUT_DIR, "web-light-1440-top.png") });
+
+    // Switch Hero Inspector tab on light mode
+    await page.locator(".inspector-tabs").getByRole("tab", { name: /Core Vitals/i }).click();
+    await page.waitForTimeout(400);
+    const vitalsCount = await page.locator(".vitals-grid .vital-card").count();
+
+    // Switch to Dark mode for scrolled sections + GSAP checks
+    await page.evaluate(() => localStorage.setItem("dotcode-theme", "dark"));
+    await page.reload({ waitUntil: "load" });
+    await page.waitForTimeout(950);
+    await page.screenshot({ path: path.join(OUT_DIR, "web-dark-1440-top.png") });
+
+    await page.locator("#web-services").scrollIntoViewIfNeeded();
+    await page.waitForTimeout(650);
+    await page.screenshot({ path: path.join(OUT_DIR, "web-dark-1440-services.png") });
+
+    await page.locator("#web-stack").scrollIntoViewIfNeeded();
+    await page.waitForTimeout(550);
+    await page.locator(".tech-format-switcher").getByRole("button", { name: /Live Benchmarks/i }).click();
+    await page.waitForTimeout(650);
+    await page.screenshot({ path: path.join(OUT_DIR, "web-dark-1440-benchmarks.png") });
+
+    await page.locator("#web-compare").scrollIntoViewIfNeeded();
+    await page.waitForTimeout(600);
+    await page.screenshot({ path: path.join(OUT_DIR, "web-dark-1440-compare.png") });
+
+    await page.locator("#web-process").scrollIntoViewIfNeeded();
+    await page.waitForTimeout(650);
+    const processStepsCount = await page.locator("#web-process .roadmap-card").count();
+    await page.screenshot({ path: path.join(OUT_DIR, "web-dark-1440-process.png") });
+
+    await page.locator("#web-showcase").scrollIntoViewIfNeeded();
+    await page.waitForTimeout(550);
+    await page.locator("#web-showcase .showcase-card button").first().click();
+    await page.waitForTimeout(350);
+    const webModalTitle = (await page.locator(".project-modal h2").innerText()).trim();
+    await page.locator(".project-modal .close-modal").click();
+    await page.waitForTimeout(200);
+
+    await page.locator("#web-estimator").scrollIntoViewIfNeeded();
+    await page.waitForTimeout(550);
+    await page.locator("#web-estimator").getByRole("button", { name: /Headless CMS \+ AI Copilot/i }).click();
+    await page.waitForTimeout(350);
+    const estimatorSummary = (await page.locator(".estimator-output strong").first().innerText()).trim();
+    await page.screenshot({ path: path.join(OUT_DIR, "web-dark-1440-estimator.png") });
+
+    // Mobile 390x844 overflow check for /web-development
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.waitForTimeout(450);
+    const webMobileOverflow = await page.evaluate(
+      () => document.documentElement.scrollWidth > window.innerWidth
+    );
+    await page.screenshot({ path: path.join(OUT_DIR, "web-dark-390-top.png") });
 
     const report = {
       stickyHeaderFixedAfterScroll: stickyCheck,
@@ -268,12 +368,20 @@ function startStaticServer() {
       spotlightCheck: { spotlightTitleBefore, spotlightTitleAfter },
       filterCounts: { allCount, mobileCount },
       workCheck: {
+        filterMatrix,
+        modalTitleBefore,
+        modalTitleRelated,
+        procHeading,
         workFlowSteps,
-        workCarouselHasCanvas,
-        workActiveBefore,
-        workActiveAfter,
-        workCardCount,
         workMobileOverflow,
+      },
+      webCheck: {
+        webLightBg,
+        vitalsCount,
+        processStepsCount,
+        webModalTitle,
+        estimatorSummary,
+        webMobileOverflow,
       },
       pageErrors,
       brokenAssets,

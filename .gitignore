@@ -1,6 +1,8 @@
 # Dependencies
 node_modules/
 
+docs/handoff/
+
 # Environment files
 .env
 .env*.local

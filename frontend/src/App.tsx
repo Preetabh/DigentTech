@@ -1837,7 +1837,7 @@ export default function App() {
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
     const tcMeta = document.querySelector<HTMLMetaElement>("meta[name=theme-color]");
-    if (tcMeta) tcMeta.content = theme === "light" ? "#f5f8ff" : "#060812";
+    if (tcMeta) tcMeta.content = theme === "light" ? "#f5f4eb" : "#060812";
     const csMeta = document.querySelector<HTMLMetaElement>('meta[name="color-scheme"]');
     let hasSaved = false;
     try {
@@ -2033,8 +2033,14 @@ export default function App() {
   }, [path]);
   let content: React.ReactNode;
   if (path === "/") content = <Home theme={theme} />;
-  else if (path === "/work" || path === "/projects")
-    content = <WorkPage />;
+  else if (
+    path === "/work" ||
+    path === "/projects" ||
+    path.startsWith("/work/")
+  ) {
+    const slug = path.startsWith("/work/") ? path.slice("/work/".length) : undefined;
+    content = <WorkPage initialProjectId={slug} />;
+  }
   else if (path === "/services")
     content = (
       <>
