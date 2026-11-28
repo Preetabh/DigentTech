@@ -124,7 +124,7 @@ async function run() {
     const outFile =
       route === "/"
         ? path.join(distDir, "index.html")
-        : path.join(distDir, route.slice(1), "index.html");
+        : path.join(distDir, `${route.slice(1)}.html`);
     renderAndWrite(route, outFile);
   }
 
