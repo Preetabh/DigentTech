@@ -1,19 +1,20 @@
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-gsap.registerPlugin(ScrollTrigger);
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+  // Low-PC friendly global GSAP runtime tuning: prevent jump bursts after GC/tab switches
+  gsap.ticker.lagSmoothing(500, 33);
+  gsap.defaults({
+    ease: "power2.out",
+    overwrite: "auto",
+  });
 
-// Low-PC friendly global GSAP runtime tuning: prevent jump bursts after GC/tab switches
-gsap.ticker.lagSmoothing(500, 33);
-gsap.defaults({
-  ease: "power2.out",
-  overwrite: "auto",
-});
-
-ScrollTrigger.config({
-  limitCallbacks: true,
-  ignoreMobileResize: true,
-});
+  ScrollTrigger.config({
+    limitCallbacks: true,
+    ignoreMobileResize: true,
+  });
+}
 
 /**
  * Detects reduced-motion preferences or ultra-constrained hardware (<= 2 CPU cores / <= 2GB RAM)

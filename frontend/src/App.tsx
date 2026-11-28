@@ -30,15 +30,8 @@ import {
     X,
     Zap
 } from "lucide-react";
-import React, { useEffect, useRef, useState } from "react";
-import { AISolutions } from "./AISolutions";
-import { AboutPage } from "./AboutPage";
-import { AppDevelopment } from "./AppDevelopment";
-import { CareersPage } from "./CareersPage";
-import { ContactPage } from "./ContactPage";
-import { WorkPage } from "./WorkPage";
-import { DigitalMarketing } from "./DigitalMarketing";
-import { ServicesPage } from "./ServicesPage";
+import React, { Suspense, useEffect, useRef, useState } from "react";
+import { getRouteComponents, preloadRouteModule, type RouteModuleSet } from "./routeModules";
 import { useHomeGsapChoreography } from "./HomeAnimations";
 import { HomeEditorialSections } from "./HomeSections";
 import { SEO } from "./SEO";
@@ -48,9 +41,6 @@ import {
     DesignDetails,
     ProjectStarter
 } from "./VisualExperience";
-import { WebDevelopment } from "./WebDevelopment";
-import GhostFibers from "./GhostFibers";
-import { DeepResearchHeroConsole, DeepResearchWorkbench } from "./HomeDashboard";
 const email = (import.meta.env.VITE_CONTACT_EMAIL as string) || "hr.digenttech@gmail.com";
 const services = [
   {
@@ -321,31 +311,36 @@ function PageHero({
   text,
   theme = "dark",
   highlights = [],
+  GhostFibersComp,
 }: {
   label: string;
   title: React.ReactNode;
   text: string;
   theme?: "dark" | "light";
   highlights?: string[];
+  GhostFibersComp?: RouteModuleSet["GhostFibers"];
 }) {
+  const GhostComponent = GhostFibersComp;
   return (
     <header className="atelier-hero-stage">
       <div className="home-hero-ghost-bg" aria-hidden="true">
-        <GhostFibers
-          lineColor={theme === "light" ? "#1d4ed8" : "#11224d"}
-          glowColor={theme === "light" ? "#0284c7" : "#38bdf8"}
-          speed={0.18}
-          scale={1.9}
-          layers={3}
-          brightness={theme === "light" ? 1.08 : 1.25}
-          glowIntensity={theme === "light" ? 0.5 : 0.85}
-          blueBoost={theme === "light" ? 1.0 : 1.1}
-          vignette={0.85}
-          grain={0.03}
-          lightMode={theme === "light"}
-          dpr={1.2}
-          fps={40}
-        />
+        {GhostComponent && (
+          <GhostComponent
+            lineColor={theme === "light" ? "#1d4ed8" : "#11224d"}
+            glowColor={theme === "light" ? "#0284c7" : "#38bdf8"}
+            speed={0.18}
+            scale={1.9}
+            layers={3}
+            brightness={theme === "light" ? 1.08 : 1.25}
+            glowIntensity={theme === "light" ? 0.5 : 0.85}
+            blueBoost={theme === "light" ? 1.0 : 1.1}
+            vignette={0.85}
+            grain={0.03}
+            lightMode={theme === "light"}
+            dpr={1.2}
+            fps={40}
+          />
+        )}
       </div>
       <div className="atelier-hero-inner wrap">
         <span className="atelier-hero-badge">
@@ -1155,15 +1150,15 @@ function Home({ theme = "dark" }: { theme?: "dark" | "light" }) {
         <div className="wrap home-editorial-grid">
           <div className="home-editorial-left">
             <div className="home-editorial-kicker" tabIndex={0}>
-              <span className="kicker-sizer" aria-hidden="true">DIGENT TECH</span>
-              <span className="kicker-half kicker-half-top" aria-hidden="true">DIGENT TECH</span>
-              <span className="kicker-half kicker-half-bottom" aria-hidden="true">DIGENT TECH</span>
+              <span className="kicker-sizer" aria-hidden="true">DIGENTTECH</span>
+              <span className="kicker-half kicker-half-top" aria-hidden="true">DIGENTTECH</span>
+              <span className="kicker-half kicker-half-bottom" aria-hidden="true">DIGENTTECH</span>
               <span className="kicker-mid-bar" aria-hidden="true">
                 <span className="kicker-mid-text">
                   WEBSITES · APPS · GRAPHICS · COACHING · FREE IT SUPPORT
                 </span>
               </span>
-              <span className="sr-only">DIGENT TECH</span>
+              <span className="sr-only">DIGENTTECH</span>
             </div>
             <h1 className="home-editorial-title">
               Websites, Apps &amp; Graphics.
@@ -1189,7 +1184,7 @@ function Home({ theme = "dark" }: { theme?: "dark" | "light" }) {
                 <circle cx="60" cy="60" r="54" className="home-seal-outer" />
                 <text className="home-seal-ring-text">
                   <textPath href="#digentSealPath" startOffset="0%">
-                    DIGENT TECH · WEB · APPS · GRAPHICS · FREE IT HELP ·
+                    DIGENTTECH · WEB · APPS · GRAPHICS · FREE IT HELP ·
                   </textPath>
                 </text>
               </svg>
@@ -1206,9 +1201,11 @@ function Home({ theme = "dark" }: { theme?: "dark" | "light" }) {
               <div className="home-editorial-rating-cluster">
                 <div className="home-avatar-stack">
                   <img
-                    src="/assets/founder.png"
+                    src="/assets/founder-avatar.webp"
                     alt="DigentTech Founding Architect"
                     className="home-avatar-img"
+                    width={120}
+                    height={160}
                   />
                   <span className="home-avatar-token">AK</span>
                   <span className="home-avatar-token alt">MT</span>
@@ -1256,7 +1253,7 @@ function Home({ theme = "dark" }: { theme?: "dark" | "light" }) {
           loop
           muted
           playsInline
-          preload="auto"
+          preload="metadata"
         />
       </section>
 
@@ -1310,13 +1307,20 @@ function FAQ() {
     </section>
   );
 }
-function ServicePage({ s }: { s: (typeof services)[number] }) {
+function ServicePage({
+  s,
+  GhostFibersComp,
+}: {
+  s: (typeof services)[number];
+  GhostFibersComp?: RouteModuleSet["GhostFibers"];
+}) {
   return (
     <>
       <PageHero
         label={"SERVICES / " + s.title.toUpperCase()}
         title={s.headline}
         text={s.text}
+        GhostFibersComp={GhostFibersComp}
       />
       <section className="service-detail wrap">
         <div className="service-intro">
@@ -1355,10 +1359,13 @@ function ServicePage({ s }: { s: (typeof services)[number] }) {
     </>
   );
 }
-function About() {
-  return <AboutPage />;
-}
-function Academy({ theme = "dark" }: { theme?: "dark" | "light" }) {
+function Academy({
+  theme = "dark",
+  GhostFibersComp,
+}: {
+  theme?: "dark" | "light";
+  GhostFibersComp?: RouteModuleSet["GhostFibers"];
+}) {
   const tracks = [
     {
       title: "Full-Stack Product Engineering",
@@ -1406,6 +1413,7 @@ function Academy({ theme = "dark" }: { theme?: "dark" | "light" }) {
       <PageHero
         theme={theme}
         label="DIGENTTECH ACADEMY · APPLIED MENTORSHIP"
+        GhostFibersComp={GhostFibersComp}
         title={
           <>
             Production skills taught by <em>practicing architects.</em>
@@ -1477,23 +1485,38 @@ function Academy({ theme = "dark" }: { theme?: "dark" | "light" }) {
     </>
   );
 }
-function Careers() {
-  return <CareersPage />;
-}
-function Contact({ theme = "dark" }: { theme?: "dark" | "light" }) {
-  return (
-    <ContactPage
-      theme={theme}
-      email={email}
-      availableServices={services.map((s) => s.title)}
-    />
+export default function App({
+  initialPath,
+  initialSearch = "",
+  ssrPages,
+}: {
+  initialPath?: string;
+  initialSearch?: string;
+  ssrPages?: RouteModuleSet;
+} = {}) {
+  const routes = getRouteComponents(ssrPages);
+  const {
+    WorkPage: WorkView,
+    ServicesPage: ServicesView,
+    WebDevelopment: WebDevView,
+    AppDevelopment: AppDevView,
+    DigitalMarketing: DigitalMarketingView,
+    AISolutions: AISolutionsView,
+    AboutPage: AboutView,
+    CareersPage: CareersView,
+    ContactPage: ContactView,
+    GhostFibers: GhostFibersComp,
+  } = routes;
+  const [path, setPath] = useState(() =>
+    typeof window !== "undefined"
+      ? window.location.pathname.replace(/\/$/, "") || "/"
+      : (initialPath ?? "/").replace(/\/$/, "") || "/"
   );
-}
-export default function App() {
-  const [path, setPath] = useState(location.pathname.replace(/\/$/, "") || "/");
   const [menu, setMenu] = useState(false);
   const [servicesOpen, setServicesOpen] = useState(false);
-  const [search, setSearch] = useState(location.search);
+  const [search, setSearch] = useState(() =>
+    typeof window !== "undefined" ? window.location.search : initialSearch
+  );
   const mainRef = useRef<HTMLElement>(null);
   const scrollProgressRef = useRef<HTMLDivElement>(null);
   const theme = "light" as const;
@@ -1568,6 +1591,7 @@ export default function App() {
         return;
       }
       clearSwitchTimers();
+      void preloadRouteModule(targetPath);
       const headerEl = document.querySelector<HTMLElement>(".site-header");
       const top = Math.max(0, Math.round(headerEl?.getBoundingClientRect().bottom ?? 76));
       const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
@@ -1669,24 +1693,34 @@ export default function App() {
     path.startsWith("/work/")
   ) {
     const slug = path.startsWith("/work/") ? path.slice("/work/".length) : undefined;
-    content = <WorkPage initialProjectId={slug} />;
+    content = <WorkView initialProjectId={slug} />;
   }
-  else if (path === "/services") content = <ServicesPage services={services} />;
-  else if (path === "/web-development") content = <WebDevelopment />;
-  else if (path === "/app-development") content = <AppDevelopment />;
-  else if (path === "/digital-marketing") content = <DigitalMarketing />;
-  else if (path === "/ai-solutions") content = <AISolutions />;
-  else if (s) content = <ServicePage s={s} />;
-  else if (path === "/about") content = <About />;
-  else if (path === "/contact") content = <Contact key={search} theme={theme} />;
-  else if (path === "/careers") content = <Careers />;
-  else if (path === "/online-courses") content = <Academy theme={theme} />;
+  else if (path === "/services") content = <ServicesView services={services} />;
+  else if (path === "/web-development") content = <WebDevView />;
+  else if (path === "/app-development") content = <AppDevView />;
+  else if (path === "/digital-marketing") content = <DigitalMarketingView />;
+  else if (path === "/ai-solutions") content = <AISolutionsView />;
+  else if (s) content = <ServicePage s={s} GhostFibersComp={GhostFibersComp} />;
+  else if (path === "/about") content = <AboutView />;
+  else if (path === "/contact") {
+    content = (
+      <ContactView
+        key={search}
+        theme={theme}
+        email={email}
+        availableServices={services.map((svc) => svc.title)}
+      />
+    );
+  }
+  else if (path === "/careers") content = <CareersView />;
+  else if (path === "/online-courses") content = <Academy theme={theme} GhostFibersComp={GhostFibersComp} />;
   else
     content = (
       <>
         <PageHero
           theme={theme}
           label="404 / ROUTE NOT FOUND"
+          GhostFibersComp={GhostFibersComp}
           title={
             <>
               That route isn't part of our <em>atelier.</em>
@@ -1918,7 +1952,7 @@ export default function App() {
         </div>
       )}
       <main id="main" ref={mainRef} tabIndex={-1}>
-        {content}
+        <Suspense fallback={<div style={{ minHeight: "70vh" }} />}>{content}</Suspense>
       </main>
       <footer className="footer">
         <div className="footer-global-wrap">
@@ -1927,6 +1961,8 @@ export default function App() {
               src="/assets/footer-global-banner.jpg"
               alt=""
               className="footer-global-bg"
+              width={1024}
+              height={384}
               loading="lazy"
               aria-hidden="true"
             />
@@ -2033,7 +2069,7 @@ export default function App() {
               <a href="/contact">
                 Initiate your
                 <br />
-                next system. <ArrowUpRight />
+                next systems. <ArrowUpRight />
               </a>
             </div>
           </div>

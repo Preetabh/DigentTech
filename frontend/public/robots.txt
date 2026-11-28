@@ -1,9 +1,5 @@
-# robots.txt for DigentTech
 User-agent: *
 Allow: /
 Disallow: /api/
-Disallow: /backend/
 
-# Host and Sitemap
-Host: https://digenttech.pages.dev
 Sitemap: https://digenttech.pages.dev/sitemap.xml

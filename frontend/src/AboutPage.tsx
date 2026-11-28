@@ -380,8 +380,10 @@ export function AboutPage() {
               <div className="abx-founder-aside">
                 <div className="abx-portrait-wrap">
                   <img
-                    src="/assets/founder.png"
+                    src="/assets/founder.webp"
                     alt="Vishu Awasthi, Founder and Principal Strategist of DigentTech"
+                    width={720}
+                    height={960}
                     loading="eager"
                   />
                 </div>

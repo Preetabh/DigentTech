@@ -24,25 +24,15 @@ export function ThemeImage({
   className?: string;
   priority?: boolean;
 }) {
-  const [theme, setTheme] = useState(
-    document.documentElement.dataset.theme === "light" ? "light" : "dark",
-  );
+  const [theme, setTheme] = useState<"light" | "dark">("light");
   useEffect(() => {
-    const root = document.documentElement;
-    const observer = new MutationObserver(() =>
-      setTheme(root.dataset.theme === "light" ? "light" : "dark"),
-    );
-    observer.observe(root, {
-      attributes: true,
-      attributeFilter: ["data-theme"],
-    });
-    return () => observer.disconnect();
+    setTheme("light");
   }, []);
   return (
     <img
       className={"theme-image " + className}
       data-theme-visual={theme}
-      src={`/assets/visuals/${variant}-${theme}.webp`}
+      src={`/assets/visuals/${variant}-light.webp`}
       alt={alt}
       width={1536}
       height={1024}

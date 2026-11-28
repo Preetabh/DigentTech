@@ -5,13 +5,26 @@ import path from 'path';
 import { cloudflare } from "@cloudflare/vite-plugin";
 
 // https://vite.dev/config/
-export default defineConfig({
-  plugins: [react(), cloudflare()],
+export default defineConfig(({ isSsrBuild }) => ({
+  plugins: isSsrBuild ? [react()] : [react(), cloudflare()],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
   },
+  build: isSsrBuild
+    ? undefined
+    : {
+        rollupOptions: {
+          output: {
+            manualChunks: {
+              vendor: ['react', 'react-dom'],
+              motion: ['gsap'],
+              icons: ['lucide-react'],
+            },
+          },
+        },
+      },
   server: {
     port: 3000,
     open: false,
@@ -23,4 +36,4 @@ export default defineConfig({
       },
     },
   },
-});
+}));

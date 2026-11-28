@@ -741,9 +741,9 @@ function ProposalModal({
               <span className="lb-modal-kicker">
                 TIER {pkg.tierNumber} · {pkg.badge}
               </span>
-              <h1 id={titleId} className="lb-modal-title">
+              <h2 id={titleId} className="lb-modal-title">
                 {pkg.title} — Architecture Proposal
-              </h1>
+              </h2>
             </div>
             <button
               type="button"
@@ -869,9 +869,9 @@ function EstimateModal({
           <span className="lb-modal-kicker">
             PROJECT SCOPING · {initialPackage.toUpperCase()}
           </span>
-          <h1 id={titleId} className="lb-modal-title">
+          <h2 id={titleId} className="lb-modal-title">
             Get a Tailored Engineering Estimate
-          </h1>
+          </h2>
         </div>
         <button
           type="button"
@@ -1047,9 +1047,9 @@ function ProjectDossierModal({
               <span className="lb-modal-kicker">
                 {project.category} · {project.client}
               </span>
-              <h1 id={titleId} className="lb-project-modal-title">
+              <h2 id={titleId} className="lb-project-modal-title">
                 {project.title}
-              </h1>
+              </h2>
               <p className="lb-project-modal-summary">{project.summary}</p>
 
               <div className="lb-project-modal-arch">
@@ -1136,6 +1136,8 @@ function WelcomeHighlightModal({
             <img
               src="/assets/visuals/welcome-helpdesk.jpg"
               alt="Friendly DigentTech engineer offering free online IT support, coding coaching, and web app builds"
+              width={896}
+              height={1200}
             />
             <div className="lb-welcome-visual-scrim" aria-hidden="true" />
             <div className="lb-welcome-visual-cap">
@@ -1427,6 +1429,8 @@ export function HomeEditorialSections({ theme, onNavigate }: HomeSectionsProps) 
                 className="lb-about-photo-img"
                 src="/assets/visuals/workspace-light.webp"
                 alt="DigentTech engineering workspace and architecture studio"
+                width={1536}
+                height={1024}
                 loading="lazy"
               />
               <div className="lb-about-photo-caption">
@@ -1439,7 +1443,7 @@ export function HomeEditorialSections({ theme, onNavigate }: HomeSectionsProps) 
                 <span className="lb-welcome-icon" aria-hidden="true">
                   <Cpu size={14} />
                 </span>
-                <span>WELCOME TO DIGENT TECH</span>
+                <span>WELCOME TO DIGENTTECH</span>
               </div>
 
               <h2 className="lb-about-title">
@@ -2102,8 +2106,10 @@ export function HomeEditorialSections({ theme, onNavigate }: HomeSectionsProps) 
             <div className="lb-faq-photo-col">
               <div className="lb-faq-photo-frame">
                 <img
-                  src="/assets/founder.png"
+                  src="/assets/founder.webp"
                   alt="DigentTech engineering leadership portrait"
+                  width={720}
+                  height={960}
                   loading="lazy"
                 />
                 <div className="lb-faq-photo-note">

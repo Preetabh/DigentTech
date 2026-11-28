@@ -1,12 +1,13 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "www",
-  "workers_dev": true,
+  "name": "digenttech",
+  "workers_dev": false,
   "compatibility_date": "2026-10-01",
   "observability": {
     "enabled": true
   },
   "assets": {
-    "not_found_handling": "single-page-application"
+    "html_handling": "drop-trailing-slash",
+    "not_found_handling": "404-page"
   }
 }

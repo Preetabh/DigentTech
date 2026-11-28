@@ -2,6 +2,8 @@
 
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
+const useIsomorphicLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
+
 import './CircularCarousel.css';
 
 export interface CircularCarouselItem {
@@ -490,7 +492,7 @@ const CircularCarousel: React.FC<CircularCarouselProps> = ({
     return () => window.clearTimeout(timer);
   }, [leaving]);
 
-  useLayoutEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const root = rootRef.current;
     const stage = stageRef.current;
     const camera = cameraRef.current;
@@ -799,7 +801,7 @@ const CircularCarousel: React.FC<CircularCarouselProps> = ({
     };
   }, []);
 
-  useLayoutEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     measureRef.current();
     wakeRef.current();
   }, [radius, cardW, cardH, tiltValue, perspective, preset, captions, count]);

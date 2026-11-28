@@ -3,8 +3,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const siteUrl = process.env.VITE_SITE_URL || "https://digenttech.pages.dev";
-const today = new Date().toISOString().split("T")[0];
+const siteUrl = (process.env.VITE_SITE_URL || "https://digenttech.pages.dev").replace(/\/+$/, "");
 
 const routes = [
   { path: "/", priority: "1.0", changefreq: "weekly" },
@@ -21,15 +20,11 @@ const routes = [
 ];
 
 const sitemapContent = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
-        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${routes
   .map(
     (r) => `  <url>
     <loc>${siteUrl}${r.path}</loc>
-    <lastmod>${today}</lastmod>
     <changefreq>${r.changefreq}</changefreq>
     <priority>${r.priority}</priority>
   </url>`
@@ -38,6 +33,16 @@ ${routes
 </urlset>
 `;
 
-const outputPath = path.resolve(__dirname, "../public/sitemap.xml");
-fs.writeFileSync(outputPath, sitemapContent, "utf-8");
-console.log(`Successfully generated sitemap.xml at ${outputPath}`);
+const outputPaths = [
+  path.resolve(__dirname, "../public/sitemap.xml"),
+  path.resolve(__dirname, "../dist/sitemap.xml"),
+];
+
+for (const outPath of outputPaths) {
+  if (outPath.includes(`${path.sep}dist${path.sep}`) && !fs.existsSync(path.dirname(outPath))) {
+    continue;
+  }
+  fs.writeFileSync(outPath, sitemapContent, "utf-8");
+}
+
+console.log(`Generated sitemap.xml for ${routes.length} routes (${siteUrl})`);
